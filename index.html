@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TCG Tracker — One Piece & Pokémon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--surf:#0d1117;--card:#111827;--card2:#161f2e;
+  --bord:#1e2d3d;--bord2:#243447;
+  --teal:#00d4aa;--teal-d:rgba(0,212,170,.12);--teal-g:rgba(0,212,170,.25);
+  --gold:#f59e0b;--gold-d:rgba(245,158,11,.12);
+  --red:#ef4444;--red-d:rgba(239,68,68,.12);
+  --green:#10b981;--green-d:rgba(16,185,129,.12);
+  --blue:#3b82f6;--blue-d:rgba(59,130,246,.12);
+  --txt:#e2e8f0;--txt2:#94a3b8;--txt3:#4b6276;
+  --op:#ef4444;--op-d:rgba(239,68,68,.12);
+  --pk:#f59e0b;--pk-d:rgba(245,158,11,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;font-size:14px;min-height:100vh}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+.mono{font-family:'Space Mono',monospace}
+
+/* HEADER */
+.hdr{background:var(--surf);border-bottom:1px solid var(--bord);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--teal),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-badge{font-size:11px;background:var(--teal-d);color:var(--teal);border:1px solid var(--teal-g);border-radius:20px;padding:2px 10px;font-weight:700}
+.hdr-actions{display:flex;gap:8px}
+
+/* TABS */
+.tabs{background:var(--surf);border-bottom:1px solid var(--bord);display:flex;padding:0 20px;overflow-x:auto}
+.tab{padding:13px 18px;cursor:pointer;color:var(--txt2);font-weight:700;font-size:13px;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--txt)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* FILTER BAR */
+.fbar{padding:10px 20px;display:flex;align-items:center;gap:8px;background:var(--surf);border-bottom:1px solid var(--bord);flex-wrap:wrap}
+.chip{padding:4px 13px;border-radius:20px;border:1px solid var(--bord2);background:transparent;color:var(--txt2);cursor:pointer;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;transition:all .18s}
+.chip:hover{border-color:var(--teal);color:var(--teal)}
+.chip.active{background:var(--teal-d);border-color:var(--teal);color:var(--teal)}
+.chip.op.active{background:var(--op-d);border-color:var(--op);color:var(--op)}
+.chip.pk.active{background:var(--pk-d);border-color:var(--pk);color:var(--pk)}
+.fsep{width:1px;height:18px;background:var(--bord);margin:0 2px}
+.fsearch{background:var(--card);border:1px solid var(--bord2);border-radius:8px;padding:5px 12px;color:var(--txt);font-family:'Nunito',sans-serif;font-size:12px;width:180px;outline:none;transition:border-color .2s}
+.fsearch:focus{border-color:var(--teal)}
+.fsearch::placeholder{color:var(--txt3)}
+.ml-auto{margin-left:auto}
+
+/* MAIN */
+.main{padding:16px 20px}
+.tc{display:none}.tc.active{display:block}
+
+/* STAT CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.sc{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.invest::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.sc.rev::before{background:linear-gradient(90deg,var(--teal),transparent)}
+.sc.pl::before{background:linear-gradient(90deg,var(--green),transparent)}
+.sc.roi::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.sc.stk::before{background:linear-gradient(90deg,var(--teal),transparent)}
+.sc.cnt::before{background:linear-gradient(90deg,#8b5cf6,transparent)}
+.sl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.sv{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;line-height:1}
+.sv.pos{color:var(--green)}.sv.neg{color:var(--red)}.sv.teal{color:var(--teal)}.sv.gold{color:var(--gold)}
+.ssub{font-size:11px;color:var(--txt3);margin-top:4px}
+
+/* DASH GRID */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.dpanel{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:16px}
+.dptitle{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-lbl{font-size:11px;color:var(--txt2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-trk{flex:1;background:var(--card2);border-radius:3px;height:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.bar-val{font-family:'Space Mono',monospace;font-size:10px;color:var(--txt2);width:50px;text-align:right;flex-shrink:0}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.dlegend{display:flex;flex-direction:column;gap:8px}
+.dleg-item{display:flex;align-items:center;gap:8px}
+.dleg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dleg-lbl{font-size:12px;color:var(--txt2)}
+.dleg-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--txt);margin-left:auto}
+.tl-item{display:flex;gap:10px;padding-bottom:10px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:5px;top:13px;bottom:0;width:1px;background:var(--bord)}
+.tl-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid}
+.tl-dot.sale{border-color:var(--green);background:var(--green-d)}
+.tl-dot.buy{border-color:var(--blue);background:var(--blue-d)}
+.tl-content{flex:1;min-width:0}
+.tl-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-meta{font-size:11px;color:var(--txt3)}
+.tl-price{font-family:'Space Mono',monospace;font-size:11px;flex-shrink:0}
+
+/* SECTION */
+.sechdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sectitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.seccnt{font-size:11px;color:var(--txt3);background:var(--card);border:1px solid var(--bord);border-radius:20px;padding:2px 10px}
+
+/* TABLE */
+.twrap{background:var(--card);border:1px solid var(--bord);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--card2)}
+th{padding:9px 11px;text-align:left;font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;border-bottom:1px solid var(--bord);cursor:pointer;user-select:none}
+th:hover{color:var(--teal)}
+th.sorted{color:var(--teal)}
+td{padding:8px 11px;border-bottom:1px solid rgba(30,45,61,.4);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,170,.02)}
+.td-nom strong{display:block;font-weight:600;font-size:13px;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-nom span{font-size:11px;color:var(--txt3);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.price{font-family:'Space Mono',monospace;font-size:12px}
+.price.pos{color:var(--green)}.price.neg{color:var(--red)}.price.mut{color:var(--txt2)}.price.gold{color:var(--gold)}.price.teal{color:var(--teal)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;border:1px solid}
+.b-op{background:var(--op-d);color:var(--op);border-color:rgba(239,68,68,.25)}
+.b-pk{background:var(--pk-d);color:var(--pk);border-color:rgba(245,158,11,.25)}
+.b-cm{background:var(--blue-d);color:#60a5fa;border-color:rgba(59,130,246,.25)}
+.b-vt{background:rgba(236,72,153,.1);color:#f472b6;border-color:rgba(236,72,153,.25)}
+.b-stock{background:var(--teal-d);color:var(--teal);border-color:var(--teal-g)}
+.b-vendu{background:var(--green-d);color:var(--green);border-color:rgba(16,185,129,.25)}
+.b-retour{background:var(--gold-d);color:var(--gold);border-color:rgba(245,158,11,.25)}
+.b-cat{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)}
+.b-disp{background:var(--blue-d);color:#60a5fa;border-color:rgba(59,130,246,.2)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:7px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;transition:all .18s}
+.btn-p{background:var(--teal);color:#000}.btn-p:hover{background:#00e6b8}
+.btn-g{background:transparent;color:var(--txt2);border:1px solid var(--bord2)}.btn-g:hover{border-color:var(--teal);color:var(--teal)}
+.btn-d{background:var(--red-d);color:var(--red);border:1px solid rgba(239,68,68,.3)}.btn-d:hover{background:var(--red);color:#fff}
+.btn-sm{padding:4px 9px;font-size:11px}
+.bico{width:26px;height:26px;padding:0;justify-content:center;border-radius:6px;background:transparent;border:1px solid var(--bord);color:var(--txt2);font-size:13px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center}
+.bico:hover{border-color:var(--teal);color:var(--teal)}
+
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.moverlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--bord2);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.mhdr{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between}
+.mtitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.mbody{padding:16px 22px;display:grid;gap:12px}
+.mfoot{padding:0 22px 18px;display:flex;justify-content:flex-end;gap:8px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.flbl{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.04em}
+.fi,.fs{background:var(--card2);border:1px solid var(--bord2);border-radius:7px;padding:7px 11px;color:var(--txt);font-family:'Nunito',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+.fi:focus,.fs:focus{border-color:var(--teal)}
+.fs option{background:var(--card2)}
+textarea.fi{resize:vertical;font-size:11px;font-family:monospace}
+
+/* ALERT */
+.alert{display:flex;align-items:flex-start;gap:9px;padding:10px 14px;border-radius:8px;background:var(--gold-d);border:1px solid rgba(245,158,11,.3);margin-bottom:14px}
+.alert-txt{font-size:12px;color:var(--txt2);line-height:1.5}
+.alert-txt strong{color:var(--gold)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--teal-g);border-radius:9px;padding:10px 16px;font-size:13px;color:var(--teal);font-weight:700;z-index:1000;transform:translateY(60px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* IMPORT DROP */
+.import-area{border:2px dashed var(--bord2);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all .2s}
+.import-area:hover,.import-area.drag{border-color:var(--teal);background:var(--teal-d)}
+.import-area p{font-size:12px;color:var(--txt2);margin-top:6px}
+
+/* VENTES TOTALS */
+.vtotals{margin-top:10px;background:var(--card);border:1px solid var(--bord);border-radius:9px;padding:12px 16px;display:flex;gap:24px;flex-wrap:wrap}
+.vtot-item .vtot-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:3px}
+.vtot-item .vtot-val{font-family:'Space Mono',monospace;font-size:15px;font-weight:700}
+
+@media(max-width:768px){
+  .dgrid{grid-template-columns:1fr}
+  .frow{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:1fr 1fr}
+  th,td{padding:7px 8px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="12" stroke="#00d4aa" stroke-width="1.5"/><path d="M7 17L10 10L13 15.5L16 12L19 17" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13" cy="13" r="2.5" fill="none" stroke="#00d4aa" stroke-width="1"/></svg>
+    <span class="hdr-title">TCG TRACKER</span>
+    <span class="hdr-badge" id="hdrDate"></span>
+  </div>
+  <div class="hdr-actions">
+    <button class="btn btn-g btn-sm" onclick="openImport()">📥 Import CSV</button>
+    <button class="btn btn-p btn-sm" onclick="openAdd()">+ Ajouter</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tab active" onclick="goTab('dash')" id="tab-dash">📊 Dashboard</div>
+  <div class="tab" onclick="goTab('stock')" id="tab-stock">📦 Stock <span id="stk-badge" style="margin-left:4px;font-size:10px;background:var(--teal-d);color:var(--teal);border-radius:10px;padding:0 6px"></span></div>
+  <div class="tab" onclick="goTab('achats')" id="tab-achats">📥 Achats</div>
+  <div class="tab" onclick="goTab('ventes')" id="tab-ventes">📤 Ventes</div>
+</nav>
+
+<div class="fbar" id="fbar">
+  <button class="chip active" onclick="setF('jeu','Tous')" id="fj-all">Tous</button>
+  <button class="chip op" onclick="setF('jeu','One Piece')" id="fj-op">🏴‍☠️ One Piece</button>
+  <button class="chip pk" onclick="setF('jeu','Pokémon')" id="fj-pk">⚡ Pokémon</button>
+  <div class="fsep"></div>
+  <button class="chip" onclick="setF('plat','Toutes')" id="fp-all" style="display:none">Toutes</button>
+  <button class="chip" onclick="setF('plat','Cardmarket')" id="fp-cm" style="display:none">Cardmarket</button>
+  <button class="chip" onclick="setF('plat','Vinted')" id="fp-vt" style="display:none">Vinted</button>
+  <div class="fsep" id="fsep2" style="display:none"></div>
+  <input class="fsearch" id="fsearch" placeholder="🔍 Rechercher..." oninput="renderAll()" style="display:none">
+  <button class="btn btn-g btn-sm ml-auto" onclick="exportCSV()">⬇ CSV</button>
+</div>
+
+<!-- TABS CONTENT -->
+<div class="tc active main" id="tc-dash">
+  <div class="sgrid" id="sgrid"></div>
+  <div id="alertArea"></div>
+  <div class="dgrid">
+    <div class="dpanel"><div class="dptitle">📈 Top ventes</div><div id="topSales"></div></div>
+    <div class="dpanel"><div class="dptitle">🎯 Stock par jeu</div><div class="donut-wrap"><canvas id="donut" width="90" height="90"></canvas><div class="dlegend" id="dlegend"></div></div></div>
+    <div class="dpanel"><div class="dptitle">⏱ Activité récente</div><div id="recentAct"></div></div>
+    <div class="dpanel"><div class="dptitle">🔥 Top investissements stock</div><div id="topStock"></div></div>
+  </div>
+</div>
+
+<div class="tc main" id="tc-stock">
+  <div class="sechdr"><span class="sectitle">Articles en stock</span><span class="seccnt" id="stk-cnt"></span></div>
+  <div class="twrap">
+    <table><thead><tr>
+      <th onclick="srt('stock','nom')" id="h-s-nom">Article ↕</th>
+      <th onclick="srt('stock','jeu')" id="h-s-jeu">Jeu ↕</th>
+      <th onclick="srt('stock','categorie')" id="h-s-cat">Cat ↕</th>
+      <th onclick="srt('stock','plateforme')" id="h-s-plat">Plateforme ↕</th>
+      <th onclick="srt('stock','dateAchat')" id="h-s-date">Date ↕</th>
+      <th onclick="srt('stock','prixAchat')" id="h-s-prix">Achat ↕</th>
+      <th>Marché</th><th>+/−</th><th></th>
+    </tr></thead><tbody id="stk-tbody"></tbody></table>
+  </div>
+</div>
+
+<div class="tc main" id="tc-achats">
+  <div class="sechdr"><span class="sectitle">Tous les achats</span><span class="seccnt" id="ach-cnt"></span></div>
+  <div class="twrap">
+    <table><thead><tr>
+      <th onclick="srt('achats','nom')" id="h-a-nom">Article ↕</th>
+      <th onclick="srt('achats','jeu')" id="h-a-jeu">Jeu ↕</th>
+      <th onclick="srt('achats','categorie')" id="h-a-cat">Cat ↕</th>
+      <th onclick="srt('achats','plateforme')" id="h-a-plat">Plateforme ↕</th>
+      <th onclick="srt('achats','dateAchat')" id="h-a-date">Date ↕</th>
+      <th onclick="srt('achats','prixAchat')" id="h-a-prix">Prix achat ↕</th>
+      <th onclick="srt('achats','statut')" id="h-a-stat">Statut ↕</th>
+      <th>P&amp;L</th><th></th>
+    </tr></thead><tbody id="ach-tbody"></tbody></table>
+  </div>
+</div>
+
+<div class="tc main" id="tc-ventes">
+  <div class="sechdr"><span class="sectitle">Toutes les ventes</span><span class="seccnt" id="ven-cnt"></span></div>
+  <div class="alert" id="venAlert" style="display:none">
+    <span style="font-size:15px">⚠️</span>
+    <div class="alert-txt"><strong id="missingCnt"></strong> ventes sans prix d'achat — cliquer <strong>✏️</strong> pour renseigner.</div>
+  </div>
+  <div class="twrap">
+    <table><thead><tr>
+      <th onclick="srt('ventes','nom')" id="h-v-nom">Article ↕</th>
+      <th onclick="srt('ventes','jeu')" id="h-v-jeu">Jeu ↕</th>
+      <th onclick="srt('ventes','plateformeVente')" id="h-v-plat">Plateforme ↕</th>
+      <th onclick="srt('ventes','dateVente')" id="h-v-date">Date vente ↕</th>
+      <th onclick="srt('ventes','prixVente')" id="h-v-pv">Prix vente ↕</th>
+      <th>Comm.</th><th>Net</th><th>Achat</th><th>P&amp;L net</th><th></th>
+    </tr></thead><tbody id="ven-tbody"></tbody></table>
+  </div>
+  <div class="vtotals" id="vtotals"></div>
+</div>
+
+<!-- MODAL ADD/EDIT PURCHASE -->
+<div class="moverlay" id="mPurchase">
+  <div class="modal">
+    <div class="mhdr"><h3 class="mtitle" id="mPTitle">Ajouter un article</h3><button class="bico" onclick="cm('mPurchase')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="mp-id">
+      <div class="fg" style="grid-column:1/-1"><label class="flbl">Nom</label><input class="fi" id="mp-nom" placeholder="Ex: Monkey D. Luffy (OP13-118)"></div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Jeu</label><select class="fs" id="mp-jeu"><option>One Piece</option><option>Pokémon</option></select></div>
+        <div class="fg"><label class="flbl">Catégorie</label><select class="fs" id="mp-cat"><option>Carte</option><option>Display</option><option>Booster</option><option>Autre</option></select></div>
+      </div>
+      <div class="fg"><label class="flbl">Extension</label><input class="fi" id="mp-exp" placeholder="Ex: Carrying on his Will"></div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Plateforme achat</label><select class="fs" id="mp-plat"><option>Cardmarket</option><option>Vinted</option></select></div>
+        <div class="fg"><label class="flbl">Date achat</label><input class="fi" type="date" id="mp-date"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Prix achat (€)</label><input class="fi" type="number" step="0.01" id="mp-pa" placeholder="0.00"></div>
+        <div class="fg"><label class="flbl">Prix marché (€)</label><input class="fi" type="number" step="0.01" id="mp-pm" placeholder="optionnel"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Statut</label><select class="fs" id="mp-stat" onchange="toggleSale()"><option>Stock</option><option>Vendu</option><option>Retour</option></select></div>
+        <div class="fg" id="mp-pv-wrap" style="display:none"><label class="flbl">Prix vente (€)</label><input class="fi" type="number" step="0.01" id="mp-pv" placeholder="0.00"></div>
+      </div>
+      <div class="frow" id="mp-sale-wrap" style="display:none">
+        <div class="fg"><label class="flbl">Plateforme vente</label><select class="fs" id="mp-platv"><option>Cardmarket</option><option>Vinted</option></select></div>
+        <div class="fg"><label class="flbl">Date vente</label><input class="fi" type="date" id="mp-datev"></div>
+      </div>
+      <div class="fg"><label class="flbl">Notes</label><input class="fi" id="mp-notes" placeholder="Condition, commentaires..."></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-d btn-sm" id="mp-del" onclick="delPurchase()" style="display:none">Supprimer</button>
+      <button class="btn btn-g btn-sm" onclick="cm('mPurchase')">Annuler</button>
+      <button class="btn btn-p btn-sm" onclick="savePurchase()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT SALE -->
+<div class="moverlay" id="mSale">
+  <div class="modal">
+    <div class="mhdr"><h3 class="mtitle">Modifier la vente</h3><button class="bico" onclick="cm('mSale')">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="ms-id">
+      <div class="fg"><label class="flbl">Nom</label><input class="fi" id="ms-nom"></div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Jeu</label><select class="fs" id="ms-jeu"><option>One Piece</option><option>Pokémon</option></select></div>
+        <div class="fg"><label class="flbl">Catégorie</label><select class="fs" id="ms-cat"><option>Carte</option><option>Display</option><option>Booster</option><option>Autre</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Plateforme vente</label><select class="fs" id="ms-platv"><option>Cardmarket</option><option>Vinted</option></select></div>
+        <div class="fg"><label class="flbl">Date vente</label><input class="fi" type="date" id="ms-datev"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Prix vente (€)</label><input class="fi" type="number" step="0.01" id="ms-pv"></div>
+        <div class="fg"><label class="flbl">Prix achat (€) <span style="color:var(--teal)">← saisir</span></label><input class="fi" type="number" step="0.01" id="ms-pa" placeholder="laisser vide si inconnu"></div>
+      </div>
+      <div class="fg"><label class="flbl">Notes</label><input class="fi" id="ms-notes"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-d btn-sm" onclick="delSale()">Supprimer</button>
+      <button class="btn btn-g btn-sm" onclick="cm('mSale')">Annuler</button>
+      <button class="btn btn-p btn-sm" onclick="saveSale()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPORT -->
+<div class="moverlay" id="mImport">
+  <div class="modal">
+    <div class="mhdr"><h3 class="mtitle">📥 Import CSV Cardmarket</h3><button class="bico" onclick="cm('mImport')">✕</button></div>
+    <div class="mbody">
+      <p style="font-size:12px;color:var(--txt2);line-height:1.6">Charge ou colle un export CSV Cardmarket. Les doublons (même Shipment nr.) sont ignorés automatiquement.</p>
+      <div class="fg"><label class="flbl">Type</label><select class="fs" id="csv-type"><option value="purchase">Achats (Purchased_Articles)</option><option value="sale">Ventes (Sold_Articles)</option></select></div>
+      <div class="import-area" id="iarea" onclick="document.getElementById('csvFile').click()">
+        <div style="font-size:28px">📄</div>
+        <p>Cliquer pour sélectionner · ou glisser-déposer</p>
+        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFile(event)">
+      </div>
+      <div class="fg"><label class="flbl">Ou coller le CSV ici</label><textarea class="fi" id="csv-paste" rows="5" placeholder="Coller le contenu CSV..."></textarea></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-g btn-sm" onclick="cm('mImport')">Annuler</button>
+      <button class="btn btn-p btn-sm" onclick="doImport()">Importer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const KEY = 'tcg_v4';
+const INIT_P = [{"id": "p1", "nom": "Collect 151 Gathering Booster Box", "jeu": "Pokémon", "expansion": "Collect 151", "categorie": "Display", "plateforme": "Cardmarket", "dateAchat": "2025-12-30", "prixAchat": 55, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "New sealed"}, {"id": "p2", "nom": "Gem Pack Vol.2 Booster Box", "jeu": "Pokémon", "expansion": "Gem Pack Vol.2", "categorie": "Display", "plateforme": "Cardmarket", "dateAchat": "2025-12-30", "prixAchat": 50, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "All sealed"}, {"id": "p3", "nom": "Monkey D. Luffy (OP13-118) V.2", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-07", "prixAchat": 55, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p4", "nom": "Monkey D. Luffy (ST21-014) V.1", "jeu": "One Piece", "expansion": "Unnumbered Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-07", "prixAchat": 99.99, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Sealed from Japan"}, {"id": "p5", "nom": "Tashigi (OP06-050)", "jeu": "One Piece", "expansion": "Legacy of the Master", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-13", "prixAchat": 45, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p6", "nom": "Nami (OP09-050) V.2", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-13", "prixAchat": 9.9, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p7", "nom": "Magellan (OP02-085)", "jeu": "One Piece", "expansion": "Kingdoms of Intrigue", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-13", "prixAchat": 50, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p8", "nom": "Crocodile (OP01-067) V.2", "jeu": "One Piece", "expansion": "Romance Dawn", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-13", "prixAchat": 35, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p9", "nom": "O-Nami (OP06-101) V.2", "jeu": "One Piece", "expansion": "Wings of the Captain", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-16", "prixAchat": 25, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p10", "nom": "Buggy (OP02-058) V.2", "jeu": "One Piece", "expansion": "Paramount War", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-16", "prixAchat": 10, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p11", "nom": "Sanji (OP11-051) V.2", "jeu": "One Piece", "expansion": "A Fist of Divine Speed", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-16", "prixAchat": 8, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p12", "nom": "Buggy (OP09-042) V.2", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-01-23", "prixAchat": 26.9, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p13", "nom": "Monkey D. Luffy P-075 Japan Expo 2025", "jeu": "One Piece", "expansion": "Special Promos", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-01-14", "prixAchat": 30, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Scellé"}, {"id": "p14", "nom": "Nami (OP09-050) V.2 [Vinted #1]", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-01-14", "prixAchat": 6.5, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p15", "nom": "Nami (OP09-050) V.2 [Vinted #2]", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-01-15", "prixAchat": 7, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p16", "nom": "Box OP14 sealed english", "jeu": "One Piece", "expansion": "The Azure Sea's Seven", "categorie": "Display", "plateforme": "Vinted", "dateAchat": "2026-01-16", "prixAchat": 145, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Sealed"}, {"id": "p17", "nom": "One Piece Uta Collection", "jeu": "One Piece", "expansion": "Special Promos", "categorie": "Display", "plateforme": "Vinted", "dateAchat": "2026-01-24", "prixAchat": 25, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p18", "nom": "Monkey D. Luffy (OP07-073)", "jeu": "One Piece", "expansion": "Unnumbered Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-02-04", "prixAchat": 110, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p19", "nom": "Nami (ST29-008) V.2", "jeu": "One Piece", "expansion": "Starter Deck: Egghead", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-02-19", "prixAchat": 12.99, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p20", "nom": "Monkey D. Luffy (V.1) Promos", "jeu": "One Piece", "expansion": "Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-04", "prixAchat": 10, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p21", "nom": "Monkey D. Luffy (PRB02-005) V.2", "jeu": "One Piece", "expansion": "The Best Vol.2", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-04", "prixAchat": 20, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p22", "nom": "Makino (ST13-012) V.1", "jeu": "One Piece", "expansion": "Unnumbered Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-04", "prixAchat": 1.95, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p23", "nom": "Nami (OP02-036)", "jeu": "One Piece", "expansion": "Unnumbered Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-04", "prixAchat": 14.25, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p24", "nom": "Buggy (OP09-051) Promos", "jeu": "One Piece", "expansion": "Unnumbered Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-04", "prixAchat": 34.9, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p25", "nom": "Buggy (OP09-051) V.2", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-12", "prixAchat": 12, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p26", "nom": "Ace & Sabo & Luffy (OP13-007) V.2", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-03-23", "prixAchat": 20, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p27", "nom": "Trafalgar Law PRB02 Alt Art", "jeu": "One Piece", "expansion": "The Best Vol.2", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-03-04", "prixAchat": 12, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Super Rare AA"}, {"id": "p28", "nom": "Buggy (OP03-008) SP Chinese", "jeu": "One Piece", "expansion": "Pillars of Strength", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-03-07", "prixAchat": 35, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "True King of Pirates"}, {"id": "p29", "nom": "Kuzan (OP02-121) English", "jeu": "One Piece", "expansion": "Paramount War", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-03-13", "prixAchat": 14, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p30", "nom": "Kaido (OP05-118) Alt Art", "jeu": "One Piece", "expansion": "Awakening of the New Era", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-03-13", "prixAchat": 12, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "SEC Alternate Art"}, {"id": "p31", "nom": "Buggy (P-084)", "jeu": "One Piece", "expansion": "Special Tournament Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-04-02", "prixAchat": 20, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p32", "nom": "Nami (OP09-070) livret", "jeu": "One Piece", "expansion": "Emperors in the New World", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-04-02", "prixAchat": 28, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p33", "nom": "New Gaban (OP13-067) Chinese", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-04-23", "prixAchat": 71, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Treasure Rare"}, {"id": "p34", "nom": "Charlotte Pudding SP + O-Nami Promo", "jeu": "One Piece", "expansion": "Royal Blood", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-04-25", "prixAchat": 62, "statut": "Retour", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Retour initié"}, {"id": "p35", "nom": "Dracule Mihawk (ST12-003) Finalist", "jeu": "One Piece", "expansion": "Starter Deck", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-04-26", "prixAchat": 35, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Finalist promo"}, {"id": "p36", "nom": "Portgas D. Ace (OP13-119) V.1", "jeu": "One Piece", "expansion": "Special Tournament Promos", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-05-04", "prixAchat": 79.99, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": "Sealed"}, {"id": "p37", "nom": "Nami (ST21-009) V.2", "jeu": "One Piece", "expansion": "Starter Deck: EX Gear 5", "categorie": "Carte", "plateforme": "Cardmarket", "dateAchat": "2026-05-06", "prixAchat": 7, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p38", "nom": "Gold D. Roger (OP13-064) English", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-05-10", "prixAchat": 17.9, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}, {"id": "p39", "nom": "Nami Promo (OP05-062) English", "jeu": "One Piece", "expansion": "Awakening of the New Era", "categorie": "Carte", "plateforme": "Vinted", "dateAchat": "2026-05-10", "prixAchat": 11.9, "statut": "Stock", "prixVente": null, "plateformeVente": null, "dateVente": null, "prixMarche": null, "notes": ""}];
+const INIT_S = [{"id": "s1", "nom": "Victoria Cindry (OP06-091) V.3", "jeu": "One Piece", "expansion": "The Best", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-12", "prixVente": 10, "prixAchat": null, "notes": ""}, {"id": "s2", "nom": "St. Marcus Mars (OP13-091) V.2", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-26", "prixVente": 19, "prixAchat": null, "notes": ""}, {"id": "s3", "nom": "St. Shepherd Ju Peter (OP13-084) V.2", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-26", "prixVente": 19, "prixAchat": null, "notes": ""}, {"id": "s4", "nom": "Eustass Captain Kid (OP10-099) V.2", "jeu": "One Piece", "expansion": "Royal Blood", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-26", "prixVente": 17, "prixAchat": null, "notes": ""}, {"id": "s5", "nom": "Boa Hancock (OP14-112) V.1", "jeu": "One Piece", "expansion": "The Azure Sea's Seven", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-03-24", "prixVente": 6, "prixAchat": null, "notes": ""}, {"id": "s6", "nom": "Roronoa Zoro (EB04-007) V.1", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-09", "prixVente": 10, "prixAchat": null, "notes": ""}, {"id": "s7", "nom": "Enel (OP15-060) V.2", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-10", "prixVente": 23, "prixAchat": null, "notes": ""}, {"id": "s8", "nom": "Sabo (OP15-046) V.1", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-10", "prixVente": 3, "prixAchat": null, "notes": ""}, {"id": "s9", "nom": "Nami (OP15-086) V.1", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-10", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s10", "nom": "Enel (OP15-058) V.2", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-11", "prixVente": 55, "prixAchat": null, "notes": ""}, {"id": "s11", "nom": "Jewelry Bonney (EB04-001) V.2", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-11", "prixVente": 39, "prixAchat": null, "notes": ""}, {"id": "s12", "nom": "Sabo (PRB02-014) V.1", "jeu": "One Piece", "expansion": "The Best Vol.2", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-12", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s13", "nom": "Nami (OP15-086) V.1 [2]", "jeu": "One Piece", "expansion": "Adventure on Kami's Island", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-12", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s14", "nom": "One Piece OP12-0037", "jeu": "One Piece", "expansion": "Wings of the Captain", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-03-08", "prixVente": 75, "prixAchat": null, "notes": ""}, {"id": "s15", "nom": "Deck ST29 One Piece", "jeu": "One Piece", "expansion": "Starter Deck: Egghead", "categorie": "Display", "plateformeVente": "Vinted", "dateVente": "2026-03-13", "prixVente": 3, "prixAchat": null, "notes": ""}, {"id": "s16", "nom": "Monkey D. Garp (OP11-095)", "jeu": "One Piece", "expansion": "A Fist of Divine Speed", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-03-18", "prixVente": 8, "prixAchat": null, "notes": ""}, {"id": "s17", "nom": "Charlotte Katakuri (OP11-062)", "jeu": "One Piece", "expansion": "A Fist of Divine Speed", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-03-27", "prixVente": 12, "prixAchat": null, "notes": ""}, {"id": "s18", "nom": "Sabo (OP13-004) Leader", "jeu": "One Piece", "expansion": "Carrying on his Will", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-04-28", "prixVente": 11, "prixAchat": null, "notes": ""}, {"id": "s19", "nom": "Charizard ex", "jeu": "Pokémon", "expansion": "SV Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-21", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s20", "nom": "Regirock ex", "jeu": "Pokémon", "expansion": "Destined Rivals", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-27", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s21", "nom": "Team Rocket's Mewtwo ex", "jeu": "Pokémon", "expansion": "SV Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-29", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s22", "nom": "Glaceon ex", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-29", "prixVente": 2, "prixAchat": null, "notes": ""}, {"id": "s23", "nom": "Vaporeon ex", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-29", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s24", "nom": "Leafeon ex", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-11-29", "prixVente": 2.9, "prixAchat": null, "notes": ""}, {"id": "s25", "nom": "Maractus", "jeu": "Pokémon", "expansion": "Journey Together", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-01", "prixVente": 2, "prixAchat": null, "notes": ""}, {"id": "s26", "nom": "Battle Cage", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-01", "prixVente": 2.6, "prixAchat": null, "notes": ""}, {"id": "s27", "nom": "Mega Lopunny ex", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-01", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s28", "nom": "Zacian", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-01", "prixVente": 4, "prixAchat": null, "notes": ""}, {"id": "s29", "nom": "Great Tusk ex", "jeu": "Pokémon", "expansion": "Scarlet & Violet", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-07", "prixVente": 11, "prixAchat": null, "notes": ""}, {"id": "s30", "nom": "Misty's Psyduck", "jeu": "Pokémon", "expansion": "Destined Rivals", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-07", "prixVente": 50, "prixAchat": null, "notes": ""}, {"id": "s31", "nom": "Mega Charizard X ex", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-07", "prixVente": 5, "prixAchat": null, "notes": ""}, {"id": "s32", "nom": "Terapagos ex", "jeu": "Pokémon", "expansion": "SV Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-11", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s33", "nom": "Greninja ex", "jeu": "Pokémon", "expansion": "Twilight Masquerade", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-13", "prixVente": 6, "prixAchat": null, "notes": ""}, {"id": "s34", "nom": "Cetitan", "jeu": "Pokémon", "expansion": "Surging Sparks", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-20", "prixVente": 3.7, "prixAchat": null, "notes": ""}, {"id": "s35", "nom": "Rapid Strike Urshifu VMAX", "jeu": "Pokémon", "expansion": "Brilliant Stars", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2025-12-20", "prixVente": 13, "prixAchat": null, "notes": ""}, {"id": "s36", "nom": "Pikachu V", "jeu": "Pokémon", "expansion": "SWSH Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-01", "prixVente": 2, "prixAchat": null, "notes": ""}, {"id": "s37", "nom": "Pikachu VMAX", "jeu": "Pokémon", "expansion": "SWSH Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-01", "prixVente": 2, "prixAchat": null, "notes": ""}, {"id": "s38", "nom": "Salamence ex", "jeu": "Pokémon", "expansion": "Journey Together", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-01", "prixVente": 3, "prixAchat": null, "notes": ""}, {"id": "s39", "nom": "Mega Mawile ex", "jeu": "Pokémon", "expansion": "Mega Evolution", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-01", "prixVente": 6, "prixAchat": null, "notes": ""}, {"id": "s40", "nom": "Mega Kangaskhan ex", "jeu": "Pokémon", "expansion": "Mega Evolution", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-01", "prixVente": 1, "prixAchat": null, "notes": ""}, {"id": "s41", "nom": "Prismatic Evolutions Surprise Box", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Display", "plateformeVente": "Cardmarket", "dateVente": "2026-01-02", "prixVente": 37, "prixAchat": null, "notes": ""}, {"id": "s42", "nom": "Team Rocket's Crobat ex", "jeu": "Pokémon", "expansion": "Destined Rivals", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-09", "prixVente": 39, "prixAchat": null, "notes": ""}, {"id": "s43", "nom": "Iono's Bellibolt ex", "jeu": "Pokémon", "expansion": "Journey Together", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-15", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s44", "nom": "Furret", "jeu": "Pokémon", "expansion": "Journey Together", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-15", "prixVente": 4.5, "prixAchat": null, "notes": ""}, {"id": "s45", "nom": "Team Rocket's Archer", "jeu": "Pokémon", "expansion": "Destined Rivals", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-15", "prixVente": 5, "prixAchat": null, "notes": ""}, {"id": "s46", "nom": "Zamazenta", "jeu": "Pokémon", "expansion": "Destined Rivals", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-17", "prixVente": 7, "prixAchat": null, "notes": ""}, {"id": "s47", "nom": "Kingdra ex", "jeu": "Pokémon", "expansion": "SV Black Star Promos", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-01-31", "prixVente": 28, "prixAchat": null, "notes": ""}, {"id": "s48", "nom": "Cutiefly", "jeu": "Pokémon", "expansion": "Temporal Forces", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-09", "prixVente": 6, "prixAchat": null, "notes": ""}, {"id": "s49", "nom": "Gothorita", "jeu": "Pokémon", "expansion": "Paldea Evolved", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-09", "prixVente": 5, "prixAchat": null, "notes": ""}, {"id": "s50", "nom": "Perrin", "jeu": "Pokémon", "expansion": "Twilight Masquerade", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-09", "prixVente": 4, "prixAchat": null, "notes": ""}, {"id": "s51", "nom": "Surfer", "jeu": "Pokémon", "expansion": "Surging Sparks", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-09", "prixVente": 2, "prixAchat": null, "notes": ""}, {"id": "s52", "nom": "Ignition Energy", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-02-18", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s53", "nom": "Skeledirge ex", "jeu": "Pokémon", "expansion": "Paldea Evolved", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-03-16", "prixVente": 20, "prixAchat": null, "notes": ""}, {"id": "s54", "nom": "Espeon ex", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-04-27", "prixVente": 2.5, "prixAchat": null, "notes": ""}, {"id": "s55", "nom": "Dondozo", "jeu": "Pokémon", "expansion": "Scarlet & Violet", "categorie": "Carte", "plateformeVente": "Cardmarket", "dateVente": "2026-05-03", "prixVente": 14, "prixAchat": null, "notes": ""}, {"id": "s56", "nom": "ETB ME02 Flammes fantasmagoriques", "jeu": "Pokémon", "expansion": "Phantasmal Flames", "categorie": "Display", "plateformeVente": "Vinted", "dateVente": "2026-01-19", "prixVente": 66.5, "prixAchat": null, "notes": "Défaut scellage"}, {"id": "s57", "nom": "Salamèche rc3/rc32", "jeu": "Pokémon", "expansion": "Special Promos", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-02-16", "prixVente": 4, "prixAchat": null, "notes": ""}, {"id": "s58", "nom": "Simiabraz 173/167", "jeu": "Pokémon", "expansion": "Paldea Evolved", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-03-20", "prixVente": 14.5, "prixAchat": null, "notes": ""}, {"id": "s59", "nom": "ETB Pokémon 2.5 Héros Transcendants", "jeu": "Pokémon", "expansion": "Prismatic Evolutions", "categorie": "Display", "plateformeVente": "Vinted", "dateVente": "2026-03-29", "prixVente": 65, "prixAchat": null, "notes": ""}, {"id": "s60", "nom": "Séléroc Promo Stamp Mega Évolution", "jeu": "Pokémon", "expansion": "Mega Evolution", "categorie": "Carte", "plateformeVente": "Vinted", "dateVente": "2026-05-10", "prixVente": 13, "prixAchat": null, "notes": ""}];
+const CM_FEE = 0.05;
+
+let D = load();
+let tab = 'dash';
+let filt = {jeu:'Tous',plat:'Toutes'};
+let sortS = {stock:{c:'dateAchat',a:false},achats:{c:'dateAchat',a:false},ventes:{c:'dateVente',a:false}};
+
+function load() {
+  try { const s=localStorage.getItem(KEY); if(s) return JSON.parse(s); } catch(e){}
+  return {p:JSON.parse(JSON.stringify(INIT_P)),s:JSON.parse(JSON.stringify(INIT_S))};
+}
+function save() { try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){
+  // localStorage blocked (sandboxed iframe) - data stays in memory only
+} }
+function gid(x){ return x+Date.now()+Math.random().toString(36).slice(2,5); }
+function fmt(v){ if(v==null||v===undefined) return '—'; return parseFloat(v).toFixed(2)+'€'; }
+function fdate(d){ if(!d) return '—'; return d.slice(0,10).split('-').reverse().join('/'); }
+function netRev(v){ const f=v.plateformeVente==='Cardmarket'?CM_FEE:0; return (v.prixVente||0)*(1-f); }
+
+// All sales = orphan sales + purchased items marked Vendu
+function allSales() {
+  const fromP = D.p.filter(p=>p.statut==='Vendu'&&p.prixVente).map(p=>Object.assign({_src:'p'},p));
+  const fromS = D.s.map(s=>Object.assign({_src:'s'},s));
+  return [...fromP,...fromS];
+}
+
+function stats() {
+  const stock = D.p.filter(p=>p.statut==='Stock');
+  const investTotal = D.p.filter(p=>p.statut!=='Retour').reduce((s,p)=>s+(p.prixAchat||0),0);
+  const all = allSales();
+  const revNet = all.reduce((s,v)=>s+netRev(v),0);
+  const revBrut = all.reduce((s,v)=>s+(v.prixVente||0),0);
+  const known = all.filter(v=>v.prixAchat!=null);
+  const plNet = known.reduce((s,v)=>s+(netRev(v)-(v.prixAchat||0)),0);
+  const plInv = known.reduce((s,v)=>s+(v.prixAchat||0),0);
+  const roi = plInv>0?(plNet/plInv)*100:0;
+  const stockInv = stock.reduce((s,p)=>s+(p.prixAchat||0),0);
+  const stockVal = stock.reduce((s,p)=>s+(p.prixMarche||p.prixAchat||0),0);
+  const miss = all.filter(v=>v.prixAchat==null).length;
+  return {stock,investTotal,revNet,revBrut,plNet,roi,stockInv,stockVal,miss,all,known,stockCount:stock.length};
+}
+
+// ── TABS ─────────────────────────────────────────────
+function goTab(t) {
+  tab=t;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tc').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tc-'+t).classList.add('active');
+  // Show/hide filter fields
+  const showPlat = t!=='dash';
+  const showSearch = t!=='dash';
+  ['fp-all','fp-cm','fp-vt','fsep2'].forEach(id=>document.getElementById(id).style.display=showPlat?'':'none');
+  document.getElementById('fsearch').style.display=showSearch?'':'none';
+  renderAll();
+}
+
+// ── FILTERS ───────────────────────────────────────────
+function setF(type,val) {
+  filt[type]=val;
+  if(type==='jeu') {
+    ['fj-all','fj-op','fj-pk'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    const map={Tous:'fj-all','One Piece':'fj-op','Pokémon':'fj-pk'};
+    document.getElementById(map[val]).classList.add('active');
+  } else {
+    ['fp-all','fp-cm','fp-vt'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    const map={Toutes:'fp-all',Cardmarket:'fp-cm',Vinted:'fp-vt'};
+    document.getElementById(map[val]).classList.add('active');
+  }
+  renderAll();
+}
+
+function getSearch(){ return (document.getElementById('fsearch').value||'').toLowerCase(); }
+
+function filtP(arr) {
+  let r=[...arr];
+  if(filt.jeu!=='Tous') r=r.filter(p=>p.jeu===filt.jeu);
+  if(filt.plat!=='Toutes') r=r.filter(p=>p.plateforme===filt.plat);
+  const q=getSearch(); if(q) r=r.filter(p=>(p.nom||'').toLowerCase().includes(q)||(p.expansion||'').toLowerCase().includes(q));
+  return r;
+}
+
+function filtS(arr) {
+  let r=[...arr];
+  if(filt.jeu!=='Tous') r=r.filter(v=>v.jeu===filt.jeu);
+  if(filt.plat!=='Toutes') r=r.filter(v=>(v.plateformeVente||v.plateforme)===filt.plat);
+  const q=getSearch(); if(q) r=r.filter(v=>(v.nom||'').toLowerCase().includes(q));
+  return r;
+}
+
+function srtArr(arr,tab) {
+  const {c,a}=sortS[tab];
+  return [...arr].sort((x,y)=>{
+    let va=x[c],vb=y[c];
+    if(typeof va==='number'&&typeof vb==='number') return a?va-vb:vb-va;
+    va=String(va||'');vb=String(vb||'');
+    return a?va.localeCompare(vb):vb.localeCompare(va);
+  });
+}
+
+function srt(t,col) {
+  if(sortS[t].c===col) sortS[t].a=!sortS[t].a; else {sortS[t].c=col;sortS[t].a=false;}
+  renderAll();
+}
+
+// ── BADGES ───────────────────────────────────────────
+function jbadge(j){ return j==='One Piece'?`<span class="badge b-op">🏴‍☠️ OP</span>`:`<span class="badge b-pk">⚡ PK</span>`; }
+function pbadge(p){ return p==='Cardmarket'?`<span class="badge b-cm">CM</span>`:`<span class="badge b-vt">VT</span>`; }
+function cbadge(c){ return c==='Display'?`<span class="badge b-disp">${c}</span>`:`<span class="badge b-cat">${c}</span>`; }
+function sbadge(s){ const m={Stock:'b-stock',Vendu:'b-vendu',Retour:'b-retour'}; return `<span class="badge ${m[s]||'b-stock'}">${s}</span>`; }
+
+// ── RENDER ALL ────────────────────────────────────────
+function renderAll() {
+  renderDash();
+  renderStock();
+  renderAchats();
+  renderVentes();
+  const st=stats();
+  document.getElementById('stk-badge').textContent=st.stockCount;
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDash() {
+  const s=stats();
+  const plC=s.plNet>=0?'pos':'neg';
+  const roiC=s.roi>=0?'pos':'neg';
+  document.getElementById('sgrid').innerHTML=`
+    <div class="sc invest"><div class="sl">Total investi</div><div class="sv mono">${fmt(s.investTotal)}</div><div class="ssub">${D.p.filter(p=>p.statut!=='Retour').length} achats</div></div>
+    <div class="sc rev"><div class="sl">Revenus nets</div><div class="sv teal mono">${fmt(s.revNet)}</div><div class="ssub">${s.all.length} ventes · brut ${fmt(s.revBrut)}</div></div>
+    <div class="sc pl"><div class="sl">P&L net <small style="opacity:.5">(partiel)</small></div><div class="sv ${plC} mono">${s.plNet>=0?'+':''}<span class="mono">${fmt(s.plNet)}</span></div><div class="ssub">${s.miss} ventes sans achat connu</div></div>
+    <div class="sc roi"><div class="sl">ROI</div><div class="sv ${roiC} mono">${s.roi>=0?'+':''}<span class="mono">${s.roi.toFixed(1)}%</span></div><div class="ssub">Sur ${s.known.length} ventes connues</div></div>
+    <div class="sc stk"><div class="sl">Valeur stock</div><div class="sv teal mono">${fmt(s.stockVal)}</div><div class="ssub">${s.stockCount} articles · investi ${fmt(s.stockInv)}</div></div>
+    <div class="sc cnt"><div class="sl">Articles stock</div><div class="sv gold mono">${s.stockCount}</div><div class="ssub">One Piece + Pokémon</div></div>
+  `;
+  // Alert
+  document.getElementById('alertArea').innerHTML=s.miss>0?`<div class="alert"><span style="font-size:14px">⚠️</span><div class="alert-txt"><strong>${s.miss} ventes sans prix d'achat</strong> — Va dans l'onglet Ventes → ✏️ pour compléter le P&L.</div></div>`:'';
+  // Top sales
+  const ts=[...s.all].sort((a,b)=>(b.prixVente||0)-(a.prixVente||0)).slice(0,7);
+  const mxs=ts[0]?.prixVente||1;
+  document.getElementById('topSales').innerHTML=ts.map(v=>{
+    const c=v.jeu==='One Piece'?'var(--op)':'var(--pk)';
+    return `<div class="bar-row"><div class="bar-lbl" title="${v.nom}">${v.nom}</div><div class="bar-trk"><div class="bar-fill" style="width:${((v.prixVente||0)/mxs*100).toFixed(0)}%;background:${c}"></div></div><div class="bar-val">${fmt(v.prixVente)}</div></div>`;
+  }).join('')||'<div style="color:var(--txt3);font-size:12px">Aucune vente</div>';
+  // Donut
+  const opV=s.stock.filter(p=>p.jeu==='One Piece').reduce((a,p)=>a+(p.prixAchat||0),0);
+  const pkV=s.stock.filter(p=>p.jeu==='Pokémon').reduce((a,p)=>a+(p.prixAchat||0),0);
+  drawDonut([{v:opV,c:'#ef4444'},{v:pkV,c:'#f59e0b'}]);
+  document.getElementById('dlegend').innerHTML=`
+    <div class="dleg-item"><div class="dleg-dot" style="background:#ef4444"></div><div class="dleg-lbl">One Piece</div><div class="dleg-val" style="margin-left:12px">${fmt(opV)}</div></div>
+    <div class="dleg-item"><div class="dleg-dot" style="background:#f59e0b"></div><div class="dleg-lbl">Pokémon</div><div class="dleg-val" style="margin-left:12px">${fmt(pkV)}</div></div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bord);display:flex;justify-content:space-between"><span style="font-size:12px;font-weight:700;color:var(--txt)">Total</span><span class="mono" style="font-size:12px;color:var(--teal)">${fmt(opV+pkV)}</span></div>
+  `;
+  // Recent
+  const evts=[
+    ...s.all.map(v=>{return {date:v.dateVente,type:'sale',nom:v.nom,price:v.prixVente,jeu:v.jeu}}),
+    ...D.p.filter(p=>p.statut!=='Retour').map(p=>{return {date:p.dateAchat,type:'buy',nom:p.nom,price:p.prixAchat,jeu:p.jeu}})
+  ].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,7);
+  document.getElementById('recentAct').innerHTML=evts.map(e=>{
+    const c=e.type==='sale'?'var(--green)':'var(--blue)';
+    return `<div class="tl-item"><div class="tl-dot ${e.type}"></div><div class="tl-content"><div class="tl-name">${e.nom}</div><div class="tl-meta">${e.type==='sale'?'Vendu':'Acheté'} · ${fdate(e.date)} · ${e.jeu}</div></div><div class="tl-price" style="color:${c}">${e.type==='sale'?'+':'-'}${fmt(e.price)}</div></div>`;
+  }).join('')||'<div style="color:var(--txt3);font-size:12px">Aucune activité</div>';
+  // Top stock
+  const tst=[...s.stock].sort((a,b)=>(b.prixAchat||0)-(a.prixAchat||0)).slice(0,7);
+  const mxst=tst[0]?.prixAchat||1;
+  document.getElementById('topStock').innerHTML=tst.map(p=>{
+    const c=p.jeu==='One Piece'?'var(--op)':'var(--pk)';
+    return `<div class="bar-row"><div class="bar-lbl" title="${p.nom}">${p.nom}</div><div class="bar-trk"><div class="bar-fill" style="width:${((p.prixAchat||0)/mxst*100).toFixed(0)}%;background:${c}"></div></div><div class="bar-val">${fmt(p.prixAchat)}</div></div>`;
+  }).join('')||'<div style="color:var(--txt3);font-size:12px">Stock vide</div>';
+}
+
+function drawDonut(items) {
+  const cv=document.getElementById('donut'); if(!cv) return;
+  const ctx=cv.getContext('2d'),cx=45,cy=45,r=38,ir=24;
+  const tot=items.reduce((s,i)=>s+i.v,0)||1;
+  ctx.clearRect(0,0,90,90);
+  let ang=-Math.PI/2;
+  for(const it of items){
+    const sw=(it.v/tot)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,ang,ang+sw);ctx.closePath();ctx.fillStyle=it.c;ctx.fill();
+    ang+=sw;
+  }
+  ctx.beginPath();ctx.arc(cx,cy,ir,0,Math.PI*2);ctx.fillStyle='#111827';ctx.fill();
+}
+
+// ── STOCK ─────────────────────────────────────────────
+function renderStock() {
+  let items = filtP(D.p.filter(p=>p.statut==='Stock'));
+  items = srtArr(items,'stock');
+  document.getElementById('stk-cnt').textContent=`${items.length} article${items.length>1?'s':''}`;
+  const tbody=document.getElementById('stk-tbody');
+  if(!items.length){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--txt3)">Aucun article en stock</td></tr>'; return; }
+  tbody.innerHTML=items.map(p=>{
+    const diff=p.prixMarche?p.prixMarche-p.prixAchat:null;
+    const dpct=diff!=null&&p.prixAchat?(diff/p.prixAchat*100).toFixed(1):null;
+    const dc=diff==null?'mut':diff>=0?'pos':'neg';
+    return `<tr>
+      <td class="td-nom"><strong>${p.nom}</strong><span>${p.expansion||''}</span></td>
+      <td>${jbadge(p.jeu)}</td><td>${cbadge(p.categorie)}</td><td>${pbadge(p.plateforme)}</td>
+      <td><span class="mono" style="color:var(--txt2);font-size:11px">${fdate(p.dateAchat)}</span></td>
+      <td><span class="price">${fmt(p.prixAchat)}</span></td>
+      <td><span class="price ${p.prixMarche?'gold':'mut'}">${p.prixMarche?fmt(p.prixMarche):'—'}</span></td>
+      <td>${diff!=null?`<span class="price ${dc}">${diff>=0?'+':''}${fmt(diff)} (${diff>=0?'+':''}${dpct}%)</span>`:'<span style="color:var(--txt3);font-size:11px">—</span>'}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="bico" onclick="editP('${p.id}')" title="Modifier">✏️</button>
+        <button class="bico" onclick="markSold('${p.id}')" title="Marquer vendu" style="font-size:11px">💰</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ACHATS ────────────────────────────────────────────
+function renderAchats() {
+  let items = filtP(D.p);
+  items = srtArr(items,'achats');
+  document.getElementById('ach-cnt').textContent=`${items.length} achat${items.length>1?'s':''}`;
+  const tbody=document.getElementById('ach-tbody');
+  if(!items.length){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--txt3)">Aucun achat</td></tr>'; return; }
+  tbody.innerHTML=items.map(p=>{
+    let plHtml='—';
+    if(p.statut==='Vendu'&&p.prixVente){
+      const net=p.prixVente*(p.plateformeVente==='Cardmarket'?1-CM_FEE:1);
+      const pl=net-p.prixAchat;
+      plHtml=`<span class="price ${pl>=0?'pos':'neg'}">${pl>=0?'+':''}${fmt(pl)}</span>`;
+    }
+    return `<tr>
+      <td class="td-nom"><strong>${p.nom}</strong><span>${p.expansion||''}</span></td>
+      <td>${jbadge(p.jeu)}</td><td>${cbadge(p.categorie)}</td><td>${pbadge(p.plateforme)}</td>
+      <td><span class="mono" style="color:var(--txt2);font-size:11px">${fdate(p.dateAchat)}</span></td>
+      <td><span class="price">${fmt(p.prixAchat)}</span></td>
+      <td>${sbadge(p.statut)}</td>
+      <td>${plHtml}</td>
+      <td><button class="bico" onclick="editP('${p.id}')">✏️</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── VENTES ────────────────────────────────────────────
+function renderVentes() {
+  let items = filtS(allSales());
+  items = srtArr(items,'ventes');
+  document.getElementById('ven-cnt').textContent=`${items.length} vente${items.length>1?'s':''}`;
+  const miss=items.filter(v=>v.prixAchat==null).length;
+  const valert=document.getElementById('venAlert');
+  valert.style.display=miss>0?'flex':'none';
+  document.getElementById('missingCnt').textContent=miss+' ventes';
+  const tbody=document.getElementById('ven-tbody');
+  if(!items.length){ tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--txt3)">Aucune vente</td></tr>'; return; }
+  tbody.innerHTML=items.map(v=>{
+    const fee=v.plateformeVente==='Cardmarket'?CM_FEE:0;
+    const comm=v.prixVente?v.prixVente*fee:0;
+    const net=netRev(v);
+    const pl=v.prixAchat!=null?net-v.prixAchat:null;
+    const plHtml=pl!=null?`<span class="price ${pl>=0?'pos':'neg'}">${pl>=0?'+':''}${fmt(pl)}</span>`:'<span style="color:var(--txt3);font-size:11px">—</span>';
+    const editFn=v._src==='s'?('editS(\''+v.id+'\')'):('editP(\''+v.id+'\')');
+    return `<tr>
+      <td class="td-nom"><strong>${v.nom}</strong><span>${v.expansion||''}</span></td>
+      <td>${jbadge(v.jeu)}</td>
+      <td>${pbadge(v.plateformeVente||v.plateforme)}</td>
+      <td><span class="mono" style="color:var(--txt2);font-size:11px">${fdate(v.dateVente)}</span></td>
+      <td><span class="price teal">${fmt(v.prixVente)}</span></td>
+      <td><span class="price mut" style="font-size:11px">${comm>0?fmt(comm):'—'}</span></td>
+      <td><span class="price">${fmt(net)}</span></td>
+      <td><span class="price mut">${v.prixAchat!=null?fmt(v.prixAchat):'<span style=\"color:var(--red);font-size:11px\">manquant</span>'}</span></td>
+      <td>${plHtml}</td>
+      <td><button class="bico" onclick="${editFn}">✏️</button></td>
+    </tr>`;
+  }).join('');
+  // Totals
+  const revBrut=items.reduce((s,v)=>s+(v.prixVente||0),0);
+  const revNet=items.reduce((s,v)=>s+netRev(v),0);
+  const kn=items.filter(v=>v.prixAchat!=null);
+  const plNet=kn.reduce((s,v)=>s+(netRev(v)-(v.prixAchat||0)),0);
+  const plC=plNet>=0?'var(--green)':'var(--red)';
+  document.getElementById('vtotals').innerHTML=`
+    <div class="vtot-item"><div class="vtot-lbl">Ventes brutes</div><div class="vtot-val mono" style="color:var(--teal)">${fmt(revBrut)}</div></div>
+    <div class="vtot-item"><div class="vtot-lbl">Revenus nets</div><div class="vtot-val mono" style="color:var(--teal)">${fmt(revNet)}</div></div>
+    <div class="vtot-item"><div class="vtot-lbl">P&L net (partiel)</div><div class="vtot-val mono" style="color:${plC}">${plNet>=0?'+':''}${fmt(plNet)}</div></div>
+    <div class="vtot-item"><div class="vtot-lbl">Ventes · dont connues</div><div class="vtot-val mono" style="color:var(--txt2)">${items.length} · ${kn.length}</div></div>
+  `;
+}
+
+// ── MODALS ────────────────────────────────────────────
+function om(id){ document.getElementById(id).classList.add('open'); }
+function cm(id){ document.getElementById(id).classList.remove('open'); }
+
+function openAdd() {
+  document.getElementById('mPTitle').textContent='Ajouter un article';
+  document.getElementById('mp-id').value='';
+  document.getElementById('mp-del').style.display='none';
+  ['mp-nom','mp-exp','mp-notes'].forEach(id=>document.getElementById(id).value='');
+  ['mp-pa','mp-pm','mp-pv'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mp-jeu').value='One Piece';
+  document.getElementById('mp-cat').value='Carte';
+  document.getElementById('mp-plat').value='Cardmarket';
+  document.getElementById('mp-stat').value='Stock';
+  document.getElementById('mp-date').value=new Date().toISOString().slice(0,10);
+  toggleSale();
+  om('mPurchase');
+}
+
+function editP(id) {
+  const p=D.p.find(x=>x.id===id); if(!p) return;
+  document.getElementById('mPTitle').textContent='Modifier l'article';
+  document.getElementById('mp-id').value=id;
+  document.getElementById('mp-del').style.display='';
+  document.getElementById('mp-nom').value=p.nom||'';
+  document.getElementById('mp-jeu').value=p.jeu||'One Piece';
+  document.getElementById('mp-cat').value=p.categorie||'Carte';
+  document.getElementById('mp-exp').value=p.expansion||'';
+  document.getElementById('mp-plat').value=p.plateforme||'Cardmarket';
+  document.getElementById('mp-date').value=p.dateAchat||'';
+  document.getElementById('mp-pa').value=p.prixAchat||'';
+  document.getElementById('mp-pm').value=p.prixMarche||'';
+  document.getElementById('mp-stat').value=p.statut||'Stock';
+  document.getElementById('mp-pv').value=p.prixVente||'';
+  document.getElementById('mp-platv').value=p.plateformeVente||'Cardmarket';
+  document.getElementById('mp-datev').value=p.dateVente||'';
+  document.getElementById('mp-notes').value=p.notes||'';
+  toggleSale();
+  om('mPurchase');
+}
+
+function toggleSale() {
+  const v=document.getElementById('mp-stat').value==='Vendu';
+  document.getElementById('mp-pv-wrap').style.display=v?'':' none';
+  document.getElementById('mp-sale-wrap').style.display=v?'':'none';
+}
+
+function savePurchase() {
+  const id=document.getElementById('mp-id').value;
+  const obj={
+    nom:document.getElementById('mp-nom').value.trim(),
+    jeu:document.getElementById('mp-jeu').value,
+    categorie:document.getElementById('mp-cat').value,
+    expansion:document.getElementById('mp-exp').value.trim(),
+    plateforme:document.getElementById('mp-plat').value,
+    dateAchat:document.getElementById('mp-date').value,
+    prixAchat:parseFloat(document.getElementById('mp-pa').value)||0,
+    prixMarche:parseFloat(document.getElementById('mp-pm').value)||null,
+    statut:document.getElementById('mp-stat').value,
+    prixVente:parseFloat(document.getElementById('mp-pv').value)||null,
+    plateformeVente:document.getElementById('mp-platv').value,
+    dateVente:document.getElementById('mp-datev').value||null,
+    notes:document.getElementById('mp-notes').value.trim(),
+  };
+  if(!obj.nom){ toast('⚠️ Nom requis'); return; }
+  if(id) { const i=D.p.findIndex(x=>x.id===id); if(i>=0) D.p[i]=Object.assign(D.p[i],obj); }
+  else { obj.id=gid('p'); D.p.unshift(obj); }
+  save(); cm('mPurchase'); renderAll(); toast('✅ Enregistré');
+}
+
+function delPurchase() {
+  const id=document.getElementById('mp-id').value;
+  if(!id||!confirm('Supprimer cet article ?')) return;
+  D.p=D.p.filter(x=>x.id!==id);
+  save(); cm('mPurchase'); renderAll(); toast('🗑️ Supprimé');
+}
+
+function markSold(id) {
+  const p=D.p.find(x=>x.id===id); if(!p) return;
+  editP(id);
+  document.getElementById('mp-stat').value='Vendu';
+  document.getElementById('mp-datev').value=new Date().toISOString().slice(0,10);
+  toggleSale();
+}
+
+function editS(id) {
+  const s=D.s.find(x=>x.id===id); if(!s) return;
+  document.getElementById('ms-id').value=id;
+  document.getElementById('ms-nom').value=s.nom||'';
+  document.getElementById('ms-jeu').value=s.jeu||'One Piece';
+  document.getElementById('ms-cat').value=s.categorie||'Carte';
+  document.getElementById('ms-platv').value=s.plateformeVente||'Cardmarket';
+  document.getElementById('ms-datev').value=s.dateVente||'';
+  document.getElementById('ms-pv').value=s.prixVente||'';
+  document.getElementById('ms-pa').value=s.prixAchat!=null?s.prixAchat:'';
+  document.getElementById('ms-notes').value=s.notes||'';
+  om('mSale');
+}
+
+function saveSale() {
+  const id=document.getElementById('ms-id').value;
+  const pa=document.getElementById('ms-pa').value;
+  const obj={
+    nom:document.getElementById('ms-nom').value.trim(),
+    jeu:document.getElementById('ms-jeu').value,
+    categorie:document.getElementById('ms-cat').value,
+    plateformeVente:document.getElementById('ms-platv').value,
+    dateVente:document.getElementById('ms-datev').value,
+    prixVente:parseFloat(document.getElementById('ms-pv').value)||0,
+    prixAchat:pa!==''?parseFloat(pa):null,
+    notes:document.getElementById('ms-notes').value.trim(),
+  };
+  const i=D.s.findIndex(x=>x.id===id);
+  if(i>=0) D.s[i]=Object.assign(D.s[i],obj);
+  save(); cm('mSale'); renderAll(); toast('✅ Enregistré');
+}
+
+function delSale() {
+  const id=document.getElementById('ms-id').value;
+  if(!confirm('Supprimer cette vente ?')) return;
+  D.s=D.s.filter(x=>x.id!==id);
+  save(); cm('mSale'); renderAll(); toast('🗑️ Supprimé');
+}
+
+// ── IMPORT ───────────────────────────────────────────
+function openImport(){ document.getElementById('csv-paste').value=''; om('mImport'); }
+
+function handleFile(e) {
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ document.getElementById('csv-paste').value=ev.target.result; };
+  r.readAsText(f,'utf-8');
+}
+
+function doImport() {
+  const type=document.getElementById('csv-type').value;
+  const raw=document.getElementById('csv-paste').value.trim();
+  if(!raw){ toast('⚠️ Aucune donnée'); return; }
+  const lines=raw.split('\n').filter(l=>l.trim());
+  if(lines.length<2){ toast('⚠️ Fichier trop court'); return; }
+  const sep=lines[0].includes(';')?';':',';
+  const headers=lines[0].split(sep).map(h=>h.trim().replace(/"/g,''));
+  let added=0, dupes=0;
+  const existIds=new Set([
+    ...D.p.map(p=>p._shipId).filter(Boolean),
+    ...D.s.map(s=>s._shipId).filter(Boolean)
+  ]);
+  for(let i=1;i<lines.length;i++) {
+    const cols=lines[i].split(sep).map(c=>c.trim().replace(/"/g,''));
+    const row={};
+    headers.forEach((h,j)=>row[h]=cols[j]||'');
+    const shipId=row['Shipment nr.'];
+    const nom=row['Localized Product Name']||row['Article']||'?';
+    const prixStr=(row['Total']||row['Article Value']||'0').replace(',','.');
+    const prix=parseFloat(prixStr)||0;
+    const date=(row['Date of purchase']||'').slice(0,10);
+    const jeu=(row['Category']||'').includes('Pokémon')?'Pokémon':(row['Category']||'').includes('One Piece')?'One Piece':'One Piece';
+    const cat=(row['Category']||'').includes('Display')?'Display':'Carte';
+    const expansion=row['Expansion']||'';
+    const key=shipId+'_'+nom;
+    if(existIds.has(key)){ dupes++; continue; }
+    existIds.add(key);
+    if(type==='purchase') {
+      D.p.unshift({id:gid('p'),_shipId:key,nom,jeu,expansion,categorie:cat,plateforme:'Cardmarket',dateAchat:date,prixAchat:prix,statut:'Stock',prixVente:null,plateformeVente:null,dateVente:null,prixMarche:null,notes:row['Comments']||''});
+      added++;
+    } else {
+      D.s.unshift({id:gid('s'),_shipId:key,nom,jeu,expansion,categorie:cat,plateformeVente:'Cardmarket',dateVente:date,prixVente:prix,prixAchat:null,notes:row['Comments']||''});
+      added++;
+    }
+  }
+  save(); cm('mImport'); renderAll();
+  toast(`✅ ${added} importé(s) · ${dupes} doublon(s) ignoré(s)`);
+}
+
+// ── EXPORT CSV ────────────────────────────────────────
+function exportCSV() {
+  const all=allSales();
+  const rows=[['Nom','Jeu','Catégorie','Plateforme achat','Date achat','Prix achat','Statut','Plateforme vente','Date vente','Prix vente','Net vente','P&L net','Notes']];
+  D.p.forEach(p=>{
+    const net=p.prixVente?(p.prixVente*(p.plateformeVente==='Cardmarket'?1-CM_FEE:1)).toFixed(2):'';
+    const pl=p.statut==='Vendu'&&p.prixVente&&p.prixAchat?(parseFloat(net)-p.prixAchat).toFixed(2):'';
+    rows.push([p.nom,p.jeu,p.categorie,p.plateforme,p.dateAchat,p.prixAchat,p.statut,p.plateformeVente||'',p.dateVente||'',p.prixVente||'',net,pl,p.notes]);
+  });
+  D.s.forEach(s=>{
+    const net=netRev(s).toFixed(2);
+    const pl=s.prixAchat!=null?(parseFloat(net)-s.prixAchat).toFixed(2):'';
+    rows.push([s.nom,s.jeu,s.categorie,'','',' ','Vendu',s.plateformeVente,s.dateVente,s.prixVente,net,pl,s.notes]);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+(String(v||'').replace(/"/g,'""'))+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='tcg_tracker_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('⬇ Export CSV téléchargé');
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ── INIT ──────────────────────────────────────────────
+document.getElementById('hdrDate').textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+
+// Close modal on overlay click
+document.querySelectorAll('.moverlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+// Drag & drop import
+const ia=document.getElementById('iarea');
+ia.addEventListener('dragover',e=>{e.preventDefault();ia.classList.add('drag');});
+ia.addEventListener('dragleave',()=>ia.classList.remove('drag'));
+ia.addEventListener('drop',e=>{
+  e.preventDefault();ia.classList.remove('drag');
+  const f=e.dataTransfer.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>document.getElementById('csv-paste').value=ev.target.result;
+  r.readAsText(f,'utf-8');
+});
+
+try { renderAll(); } catch(e) { 
+  console.error('Render error:', e); 
+  // Retry without localStorage
+  D = {p:JSON.parse(JSON.stringify(INIT_P)),s:JSON.parse(JSON.stringify(INIT_S))};
+  renderAll();
+}
+</script>
+</body>
+</html>
