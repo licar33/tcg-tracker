@@ -76,17 +76,75 @@ input:focus,select:focus{border-color:var(--accent)}
 .spinner{width:14px;height:14px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-top:1px solid var(--border);margin-top:24px}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  header{padding:0 14px}
+  .logo span:last-child{display:none}
+  main{padding:12px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .kpi{padding:12px 14px}
+  .kpi-value{font-size:20px}
+  .tabs{width:100%;overflow-x:auto}
+  .toolbar{gap:8px}
+  .search-input{width:100%}
+  /* Hide desktop table, show cards */
+  .table-wrap table{display:none}
+  .mobile-cards{display:flex;flex-direction:column;gap:8px;padding:10px}
+}
+@media(min-width:701px){
+  .mobile-cards{display:none}
+}
+.mcard{
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:12px 14px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:6px 12px;
+  align-items:start;
+  position:relative;
+}
+.mcard-left{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px}
+.mcard-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
+.mcard-set{font-size:11px;color:var(--muted);margin-top:1px}
+.mcard-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mcard-nums{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+.mnum{display:flex;flex-direction:column;align-items:center;gap:1px}
+.mnum-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2)}
+.mnum-val{font-family:monospace;font-size:13px;font-weight:500}
+.mcard-actions{position:absolute;bottom:10px;right:12px;display:flex;gap:6px;opacity:0;transition:opacity .2s}
+.mcard:active .mcard-actions{opacity:1}
 </style>
 </head>
 <body>
 <header>
   <div class="logo"><span class="logo-badge">TCG</span><span>Tracker</span><span style="color:var(--muted);font-size:13px;font-weight:400">— One Piece & Pokémon</span></div>
   <div class="header-actions">
-    <button class="btn btn-ghost" onclick="updatePrices()">⟳ Màj Prix <div class="spinner" id="spin"></div></button>
+    <button class="btn btn-ghost" onclick="togglePricePanel()">⟳ Màj Prix</button>
     <button class="btn btn-ghost" onclick="exportCSV()">⤓ CSV</button>
     <button class="btn btn-primary" onclick="openModal()">+ Ajouter</button>
   </div>
 </header>
+
+<div id="price-panel" style="display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:13px;font-weight:600;color:var(--text)">Mise à jour prix marché</span>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('OP')">
+      <span style="color:var(--op)">●</span> One Piece (<span id="op-count">0</span> cartes)
+    </button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('PK')">
+      <span style="color:var(--pk)">●</span> Pokémon (<span id="pk-count">0</span> cartes)
+    </button>
+    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('ALL')">⟳ Tout mettre à jour</button>
+    <div id="upd-progress" style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
+      <div id="upd-spin" style="display:none;width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div>
+      <span id="upd-msg"></span>
+    </div>
+    <div style="margin-left:auto;font-size:11px;color:var(--muted2)">Plan gratuit : 100 req/jour · Cartes seulement (pas les scellés)</div>
+  </div>
+</div>
 <main>
   <div class="kpi-grid">
     <div class="kpi blue"><div class="kpi-label">Total Investi (stock)</div><div class="kpi-value" id="k1">—</div><div class="kpi-sub" id="k1s">—</div></div>
@@ -113,9 +171,10 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Jeu</th><th>Article</th><th>Type</th><th>Qté</th><th>Date</th><th>Coût unit.</th><th>Vente unit.</th><th>P&L net</th><th>Source</th><th>Statut</th><th></th></tr></thead>
+      <thead><tr><th>Jeu</th><th>Article</th><th>Type</th><th>Qté</th><th>Date</th><th>Coût unit.</th><th>Vente unit.</th><th>P&L net</th><th>📈 Marché</th><th>Source</th><th>Statut</th><th></th></tr></thead>
       <tbody id="tb"></tbody>
     </table>
+    <div class="mobile-cards" id="mc"></div>
   </div>
 </main>
 <div class="modal-overlay" id="modal">
@@ -290,6 +349,17 @@ let items=[
 {id:249,g:'PK',n:'Energie Amorce',s:'Phantasmal Flames',t:'Carte',q:1,d:'2026-02-18',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
 {id:250,g:'PK',n:'Flamigator ex',s:'Paldea Evolved',t:'Carte',q:1,d:'2026-03-16',c:null,v:20,st:'Vendu',src:'Cardmarket'},
 {id:251,g:'PK',n:'Mentali ex',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2026-04-27',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
+// VINTED VENTES TCG (identifiees depuis export Vinted)
+{id:300,g:'PK',n:'ETB ME02 Flammes Fantasmagoriques',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-01-19',c:55.99,v:70,st:'Vendu',src:'Vinted'},
+{id:301,g:'PK',n:'Salameche rc3/rc32',s:'151',t:'Carte',q:1,d:'2026-02-16',c:5.99,v:6,st:'Vendu',src:'Vinted'},
+{id:302,g:'OP',n:'Carte OP12-0037',s:'OP12',t:'Carte',q:1,d:'2026-03-08',c:null,v:90,st:'Vendu',src:'Vinted'},
+{id:303,g:'OP',n:'Deck ST29 One Piece',s:'ST29',t:'Autre',q:1,d:'2026-03-13',c:null,v:3,st:'Vendu',src:'Vinted'},
+{id:304,g:'OP',n:'Monkey D. Garp (OP11-095)',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-03-18',c:null,v:10,st:'Vendu',src:'Vinted'},
+{id:305,g:'PK',n:'Simiabraz 173/167',s:'Couronnes Stellaires',t:'Carte',q:1,d:'2026-03-20',c:null,v:16,st:'Vendu',src:'Vinted'},
+{id:306,g:'OP',n:'Charlotte Katakuri (OP11-062)',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-03-27',c:null,v:15,st:'Vendu',src:'Vinted'},
+{id:307,g:'PK',n:'ETB Heros Transcendants',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-03-29',c:46.66,v:70,st:'Vendu',src:'Vinted'},
+{id:308,g:'OP',n:'Sabo (OP13-004) Leader',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-04-28',c:null,v:13,st:'Vendu',src:'Vinted'},
+{id:309,g:'PK',n:'Seleroc Stamp Mega Evolution',s:'Mega-Evolution Promos',t:'Carte',q:1,d:'2026-05-10',c:19.4,v:17,st:'Vendu',src:'Vinted'},
 ];
 let cTab='all',cStat='all',eId=null,nId=500;
 function fmt(v){if(v==null)return'—';return v.toFixed(2).replace('.',',')+' €'}
@@ -342,14 +412,15 @@ function render(){
   document.getElementById('k4').textContent=roi!=null?(roi>=0?'+':'')+roi.toFixed(1)+'%':'—';
   document.getElementById('k4s').textContent='Sur '+wb.length+' ventes completement tracees';
   const tb=document.getElementById('tb');
-  if(!rows.length){tb.innerHTML='<tr><td colspan="11"><div class="empty">Aucun item</div></td></tr>';return;}
+  if(!rows.length){tb.innerHTML='<tr><td colspan="12"><div class="empty">Aucun item</div></td></tr>';return;}
   const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
+  renderMobile(rows);
   tb.innerHTML=rows.map(i=>{
     const p=pnl(i);
     const gc=i.g==='OP'?'bg-op':'bg-pk';
     const ds=i.d?i.d.split('-').reverse().join('/'):'—';
     const col=sc[i.src]||'#6b7280';
-    const qb=i.q>1?`<span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:4px">x${i.q}</span>`:'<span style="color:var(--muted2)">1</span>';
+    const qb=i.q>1?`<span style="font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:4px">x${i.q}</span>`:'<span style="color:var(--muted2)">1</span>';
     return`<tr>
 <td><span class="bg ${gc}">${i.g}</span></td>
 <td><div class="in">${e(i.n)}</div><div class="is">${e(i.s||'')}</div></td>
@@ -359,6 +430,7 @@ function render(){
 <td>${i.c!=null?`<span class="price">${fmt(i.c)}</span>`:'<span class="price unk">—</span>'}</td>
 <td>${i.v!=null?`<span class="price">${fmt(i.v)}</span>`:'<span class="price unk">—</span>'}</td>
 <td>${p==null?'<span class="pu">?</span>':`<span class="${p>=0?'pp':'pn'}">${p>=0?'+':''}${fmt(p)}</span>`}</td>
+<td>${mkCell(i)}</td>
 <td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${col}22;color:${col}">${e(i.src)}</span></td>
 <td>${i.st==='Stock'?'<span class="bs bs-stock">● Stock</span>':'<span class="bs bs-vendu">✓ Vendu</span>'}</td>
 <td><div class="row-actions"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></td>
@@ -398,17 +470,133 @@ function exportCSV(){
   a.href=URL.createObjectURL(new Blob(['\ufeff'+[cols.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download='tcg-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
-async function updatePrices(){
-  const sp=document.getElementById('spin');sp.style.display='inline-block';
-  const K='661fa83e4cmshab8f0302f563eaep1fd5fejsn0d64df325baa';let n=0;
-  for(const i of items.filter(x=>x.g==='OP'&&x.st==='Stock').slice(0,5)){
-    try{const r=await fetch(`https://cardmarket-api.p.rapidapi.com/onepiece/cards?name=${encodeURIComponent(i.n)}`,{headers:{'x-rapidapi-key':K,'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
-    if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG;if(p){i.mp=parseFloat(p);n++;}}}}catch(e){}
-  }
-  sp.style.display='none';render();alert(n>0?`${n} prix mis a jour`:'Aucune donnee API disponible.');
+const API_KEY='661fa83e4cmshab8f0302f563eaep1fd5fejsn0d64df325baa';
+
+function togglePricePanel(){
+  const p=document.getElementById('price-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+  // Update counts
+  const opCards=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
+  const pkCards=items.filter(x=>x.g==='PK'&&x.st==='Stock'&&x.t==='Carte');
+  document.getElementById('op-count').textContent=opCards.length;
+  document.getElementById('pk-count').textContent=pkCards.length;
 }
+
+function mkCell(item){
+  if(item.st!=='Stock'||item.t!=='Carte')return'<span style="color:var(--muted2);font-size:12px">—</span>';
+  if(!item.mp)return'<span style="color:var(--muted2);font-size:12px;font-family:monospace">?</span>';
+  const mp=item.mp;
+  const diff=item.c!=null?mp-item.c:null;
+  let arrow='',col='var(--muted)';
+  if(diff!=null){
+    if(diff>1){arrow=' ↑';col='var(--green)';}
+    else if(diff<-1){arrow=' ↓';col='var(--red)';}
+    else{arrow=' =';col='var(--yellow)';}
+  }
+  const diffStr=diff!=null?(diff>=0?'+':'')+diff.toFixed(1)+'€':'';
+  return`<span style="font-family:monospace;font-size:12px;color:${col}">${mp.toFixed(2).replace('.',',')}€${arrow}<br><span style="font-size:10px;opacity:.7">${diffStr}</span></span>`;
+}
+
+async function fetchCardPrice(item){
+  const K=API_KEY;
+  try{
+    if(item.g==='OP'){
+      const r=await fetch(`https://cardmarket-api.p.rapidapi.com/onepiece/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':K,'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
+      if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
+    } else {
+      const r=await fetch(`https://cardmarket-api.p.rapidapi.com/pokemon/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':K,'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
+      if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
+    }
+  }catch(ex){}
+  return false;
+}
+
+async function runUpdate(game){
+  const spin=document.getElementById('upd-spin');
+  const msg=document.getElementById('upd-msg');
+  spin.style.display='inline-block';
+  
+  let targets;
+  if(game==='ALL') targets=items.filter(x=>x.st==='Stock'&&x.t==='Carte');
+  else targets=items.filter(x=>x.g===game&&x.st==='Stock'&&x.t==='Carte');
+  
+  const BATCH=20;
+  let done=0, success=0;
+  
+  for(let i=0;i<targets.length;i+=BATCH){
+    const lot=targets.slice(i,i+BATCH);
+    msg.textContent=`Lot ${Math.floor(i/BATCH)+1}/${Math.ceil(targets.length/BATCH)} — ${done}/${targets.length} cartes...`;
+    for(const card of lot){
+      const ok=await fetchCardPrice(card);
+      if(ok)success++;
+      done++;
+      msg.textContent=`Mise à jour ${done}/${targets.length}...`;
+      await new Promise(r=>setTimeout(r,300)); // délai entre requêtes
+    }
+    render();
+    if(i+BATCH<targets.length){
+      msg.textContent=`Pause entre lots... (${done}/${targets.length})`;
+      await new Promise(r=>setTimeout(r,1000));
+    }
+  }
+  
+  spin.style.display='none';
+  msg.textContent=`✓ ${success} prix mis à jour sur ${targets.length} cartes`;
+  render();
+}
+
+function renderMobile(rows){
+  const mc=document.getElementById('mc');
+  if(!mc)return;
+  const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
+  if(!rows.length){mc.innerHTML='<div class="empty" style="padding:40px 20px">Aucun item</div>';return;}
+  mc.innerHTML=rows.map(i=>{
+    const p=pnl(i);
+    const gc=i.g==='OP'?'bg-op':'bg-pk';
+    const col=sc[i.src]||'#6b7280';
+    const statCol=i.st==='Stock'?'var(--green)':'var(--muted)';
+    const statDot=i.st==='Stock'?'●':'✓';
+    const ds=i.d?i.d.split('-').reverse().join('/'):'—';
+    // cost
+    const costStr=i.c!=null?fmt(i.c):'—';
+    const saleStr=i.v!=null?fmt(i.v):'—';
+    // pnl
+    let pnlHtml;
+    if(p==null) pnlHtml=`<span style="color:var(--muted2)">?</span>`;
+    else pnlHtml=`<span style="color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fmt(p)}</span>`;
+    // market
+    const mpStr=i.mp&&i.t==='Carte'?fmt(i.mp):'—';
+    // qty
+    const qtyStr=i.q>1?` ×${i.q}`:'';
+    return`<div class="mcard">
+  <div class="mcard-left">
+    <span class="bg ${gc}">${i.g}</span>
+    <span style="font-size:9px;padding:2px 5px;border-radius:3px;background:${col}22;color:${col};margin-top:2px">${e(i.src)}</span>
+  </div>
+  <div>
+    <div class="mcard-name">${e(i.n)}${qtyStr}</div>
+    <div class="mcard-set">${e(i.s||'')} · ${e(i.t)} · ${ds}</div>
+    <div class="mcard-nums">
+      <div class="mnum"><span class="mnum-label">Achat</span><span class="mnum-val" style="color:var(--text)">${costStr}</span></div>
+      <div class="mnum"><span class="mnum-label">Vente</span><span class="mnum-val" style="color:var(--text)">${saleStr}</span></div>
+      <div class="mnum"><span class="mnum-label">P&L</span><span class="mnum-val">${pnlHtml}</span></div>
+      ${i.t==='Carte'&&i.st==='Stock'?`<div class="mnum"><span class="mnum-label">Marché</span><span class="mnum-val" style="color:var(--muted)">${mpStr}</span></div>`:''}
+    </div>
+  </div>
+  <div class="mcard-right">
+    <span style="font-size:11px;color:${statCol};font-weight:600">${statDot} ${i.st}</span>
+    <div style="display:flex;gap:5px;margin-top:6px">
+      <button class="ib" onclick="editItem(${i.id})">✎</button>
+      <button class="ib del" onclick="delItem(${i.id})">✕</button>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+}
+
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 render();
+
 </script>
 </body>
 </html>
