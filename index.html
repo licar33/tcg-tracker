@@ -77,7 +77,35 @@ input:focus,select:focus{border-color:var(--accent)}
 @keyframes spin{to{transform:rotate(360deg)}}
 footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-top:1px solid var(--border);margin-top:24px}
 
-/* ── MOBILE ── */
+/* ── VEILLE PANEL ── */
+.veille-panel{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.veille-panel.open{display:block;max-height:2000px;padding:16px 24px 20px}
+.veille-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.veille-toggle{display:inline-flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.veille-toggle button{border:none;background:transparent;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;color:var(--muted);transition:all .15s}
+.veille-toggle button.active{background:var(--accent);color:#fff}
+.veille-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-left:auto}
+.veille-spin{width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
+.veille-tabs{display:flex;gap:6px;margin-bottom:12px}
+.veille-tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
+.veille-tab.active{color:var(--text);background:var(--surface2);border-color:var(--muted2)}
+.veille-results{max-height:500px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
+.vr-row{display:grid;grid-template-columns:36px 1fr 90px 80px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;transition:background .1s}
+.vr-row:last-child{border-bottom:none}
+.vr-row:hover{background:rgba(255,255,255,.02)}
+.vr-row.highlight{background:rgba(232,93,4,.06)}
+.vr-rank{color:var(--muted);font-weight:600;text-align:center;font-family:'DM Mono',monospace;font-size:12px}
+.vr-name{font-weight:500;line-height:1.3}.vr-set{font-size:11px;color:var(--muted)}
+.vr-price{font-family:'DM Mono',monospace;font-weight:500;text-align:right}
+.vr-link{text-align:right}
+.vr-link a{color:var(--accent);font-size:11px;text-decoration:none}
+.vr-link a:hover{text-decoration:underline}
+.vr-head{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2);font-weight:500;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.veille-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+.veille-info{padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:12px}
+.veille-info.bargain{background:rgba(16,185,129,.06);color:var(--green)}
+.veille-info.warn{background:rgba(245,158,11,.08);color:var(--yellow)}
+.veille-matched{font-size:11px;color:var(--muted);padding:6px 12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 @media(max-width:700px){
   header{padding:0 14px}
   .logo span:last-child{display:none}
@@ -88,24 +116,14 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
   .tabs{width:100%;overflow-x:auto}
   .toolbar{gap:8px}
   .search-input{width:100%}
-  /* Hide desktop table, show cards */
   .table-wrap table{display:none}
   .mobile-cards{display:flex;flex-direction:column;gap:8px;padding:10px}
+  .veille-panel.open{padding:12px 14px 16px}
+  .veille-header{gap:8px}
+  .vr-row{grid-template-columns:28px 1fr 70px 60px;padding:6px 8px;font-size:12px}
 }
-@media(min-width:701px){
-  .mobile-cards{display:none}
-}
-.mcard{
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:10px;
-  padding:12px 14px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:6px 12px;
-  align-items:start;
-  position:relative;
-}
+@media(min-width:701px){.mobile-cards{display:none}}
+.mcard{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:start;position:relative}
 .mcard-left{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px}
 .mcard-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
 .mcard-set{font-size:11px;color:var(--muted);margin-top:1px}
@@ -122,11 +140,47 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
 <header>
   <div class="logo"><span class="logo-badge">TCG</span><span>Tracker</span><span style="color:var(--muted);font-size:13px;font-weight:400">— One Piece & Pokémon</span></div>
   <div class="header-actions">
+    <button class="btn btn-ghost" onclick="toggleVeillePanel()" title="Veille marché Cardmarket via Apify">🔍 Veille</button>
     <button class="btn btn-ghost" onclick="togglePricePanel()">⟳ Màj Prix</button>
+    <button class="btn btn-ghost" onclick="openKeys()" title="Configurer les clés API">⚙️</button>
     <button class="btn btn-ghost" onclick="exportCSV()">⤓ CSV</button>
     <button class="btn btn-primary" onclick="openModal()">+ Ajouter</button>
   </div>
 </header>
+
+<!-- VEILLE MARCHÉ PANEL -->
+<div id="veille-panel" class="veille-panel">
+  <div style="max-width:1400px;margin:0 auto;">
+    <div class="veille-header">
+      <span style="font-size:14px;font-weight:700;color:var(--text)">🏴‍☠️ Veille Marché</span>
+      <div class="veille-toggle">
+        <button class="active" id="vg-op" onclick="setVeilleGame('op')">One Piece</button>
+        <button id="vg-pk" onclick="setVeilleGame('pk')">Pokémon</button>
+      </div>
+      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('weekly-top-cards')">⚡ Top Cards</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('best-bargains')">🔍 Bargains</button>
+      <div class="veille-status">
+        <div class="veille-spin" id="v-spin"></div>
+        <span id="v-msg" style="font-size:11px">Prêt · ~0.10$/run</span>
+      </div>
+    </div>
+    <div class="veille-tabs">
+      <button class="veille-tab active" id="vt-top" onclick="setVeilleTab('top')">Top Cards <span style="opacity:.5" id="vt-top-n">0</span></button>
+      <button class="veille-tab" id="vt-bar" onclick="setVeilleTab('bargains')">Bargains <span style="opacity:.5" id="vt-bar-n">0</span></button>
+    </div>
+    <div id="veille-info-area"></div>
+    <div id="veille-matched-area"></div>
+    <div class="veille-results" id="veille-results">
+      <div class="veille-empty">
+        Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping Cardmarket.<br>
+        <span style="font-size:11px;margin-top:6px;display:inline-block">Powered by Apify · Données EN · ~2min par run</span>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--muted2);text-align:right">
+      Apify Trend Scraper · Cardmarket EN · Les cartes de ton portefeuille sont surlignées en orange
+    </div>
+  </div>
+</div>
 
 <div id="price-panel" style="display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;">
   <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -145,6 +199,7 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
     <div style="margin-left:auto;font-size:11px;color:var(--muted2)">Plan gratuit : 100 req/jour · Cartes seulement (pas les scellés)</div>
   </div>
 </div>
+
 <main>
   <div class="kpi-grid">
     <div class="kpi blue"><div class="kpi-label">Total Investi (stock)</div><div class="kpi-value" id="k1">—</div><div class="kpi-sub" id="k1s">—</div></div>
@@ -195,34 +250,46 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
     <div class="ma"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveItem()">Enregistrer</button></div>
   </div>
 </div>
-<footer>TCG Tracker · Màj <strong>18 mai 2026</strong> · Sources: Cardmarket CSV · Google Sheets · Amazon Order History</footer>
+<div class="modal-overlay" id="keys-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-title">⚙️ Clés API</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Tes clés sont stockées dans le localStorage de ton navigateur, jamais dans le code source.</p>
+    <div class="fg" style="grid-template-columns:1fr">
+      <div><label>RapidAPI Key (Màj Prix Cardmarket)</label><input type="text" id="key-rapid" placeholder="Ta clé RapidAPI..."></div>
+      <div><label>Apify Token (Veille Marché)</label><input type="text" id="key-apify" placeholder="apify_api_..."></div>
+    </div>
+    <div class="ma"><button class="btn btn-ghost" onclick="closeKeys()">Annuler</button><button class="btn btn-primary" onclick="saveKeys()">Enregistrer</button></div>
+  </div>
+</div>
+<footer>TCG Tracker · Màj <strong>21 mai 2026</strong> · Sources: Cardmarket CSV · Vinted · Amazon · Veille Apify</footer>
 <script>
+/* ══════════════════════════════════════════════
+   ITEMS DATA
+   ══════════════════════════════════════════════ */
 let items=[
-// OP STOCK
-{id:1,g:'OP',n:'Monkey D. Luffy (OP13-118) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-01-07',c:55,v:null,st:'Stock',src:'Cardmarket'},
-{id:2,g:'OP',n:'Monkey D. Luffy (ST21-014) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-01-07',c:99.99,v:null,st:'Stock',src:'Cardmarket'},
-{id:3,g:'OP',n:'Tashigi (OP06-050)',s:'Legacy of the Master',t:'Carte',q:1,d:'2026-01-13',c:45,v:null,st:'Stock',src:'Cardmarket'},
-{id:4,g:'OP',n:'Nami (OP09-050) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-13',c:9.9,v:null,st:'Stock',src:'Cardmarket'},
-{id:5,g:'OP',n:'Magellan (OP02-085)',s:'Kingdoms of Intrigue',t:'Carte',q:1,d:'2026-01-13',c:50,v:null,st:'Stock',src:'Cardmarket'},
-{id:6,g:'OP',n:'Crocodile (OP01-067) V.2',s:'Romance Dawn',t:'Carte',q:1,d:'2026-01-13',c:35,v:null,st:'Stock',src:'Cardmarket'},
-{id:7,g:'OP',n:'O-Nami (OP06-101) V.2',s:'Wings of the Captain',t:'Carte',q:1,d:'2026-01-16',c:25,v:null,st:'Stock',src:'Cardmarket'},
-{id:8,g:'OP',n:'Buggy (OP02-058) V.2',s:'Paramount War',t:'Carte',q:1,d:'2026-01-16',c:10,v:null,st:'Stock',src:'Cardmarket'},
-{id:9,g:'OP',n:'Sanji (OP11-051) V.2',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-01-16',c:8,v:null,st:'Stock',src:'Cardmarket'},
-{id:10,g:'OP',n:'Buggy (OP09-042) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-23',c:26.9,v:null,st:'Stock',src:'Cardmarket'},
-{id:11,g:'OP',n:'Monkey D. Luffy (OP07-073)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-02-04',c:110,v:null,st:'Stock',src:'Cardmarket'},
-{id:12,g:'OP',n:'Nami (ST29-008) V.2',s:'Starter Deck: Egghead',t:'Carte',q:1,d:'2026-02-19',c:12.99,v:null,st:'Stock',src:'Cardmarket'},
-{id:13,g:'OP',n:'Monkey D. Luffy (V.1)',s:'Promos',t:'Carte',q:1,d:'2026-03-04',c:10,v:null,st:'Stock',src:'Cardmarket'},
-{id:14,g:'OP',n:'Monkey D. Luffy (PRB02-005) V.2',s:'The Best Vol.2',t:'Carte',q:1,d:'2026-03-04',c:20,v:null,st:'Stock',src:'Cardmarket'},
-{id:15,g:'OP',n:'Makino (ST13-012) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:1.95,v:null,st:'Stock',src:'Cardmarket'},
-{id:16,g:'OP',n:'Nami (OP02-036)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:14.25,v:null,st:'Stock',src:'Cardmarket'},
-{id:17,g:'OP',n:'Buggy (OP09-051) Promos',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:34.9,v:null,st:'Stock',src:'Cardmarket'},
-{id:18,g:'OP',n:'Buggy (OP09-051) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-03-12',c:12,v:null,st:'Stock',src:'Cardmarket'},
-{id:19,g:'OP',n:'Ace & Sabo & Luffy (OP13-007) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-03-23',c:20,v:null,st:'Stock',src:'Cardmarket'},
-{id:20,g:'OP',n:'Buggy (P-084)',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-04-02',c:20,v:null,st:'Stock',src:'Cardmarket'},
-{id:21,g:'OP',n:'Portgas D. Ace (OP13-119) V.1',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-05-04',c:79.99,v:null,st:'Stock',src:'Cardmarket'},
-{id:22,g:'OP',n:'Nami (ST21-009) V.2',s:'Starter Deck: EX Gear 5',t:'Carte',q:1,d:'2026-05-06',c:7,v:null,st:'Stock',src:'Cardmarket'},
+{id:1,g:'OP',n:'Monkey D. Luffy (OP13-118) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-01-07',c:55,v:null,st:'Stock',src:'Cardmarket',pid:857338},
+{id:2,g:'OP',n:'Monkey D. Luffy (ST21-014) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-01-07',c:99.99,v:null,st:'Stock',src:'Cardmarket',pid:853300},
+{id:3,g:'OP',n:'Tashigi (OP06-050)',s:'Legacy of the Master',t:'Carte',q:1,d:'2026-01-13',c:45,v:null,st:'Stock',src:'Cardmarket',pid:843034},
+{id:4,g:'OP',n:'Nami (OP09-050) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-13',c:9.9,v:null,st:'Stock',src:'Cardmarket',pid:802921},
+{id:5,g:'OP',n:'Magellan (OP02-085)',s:'Kingdoms of Intrigue',t:'Carte',q:1,d:'2026-01-13',c:50,v:null,st:'Stock',src:'Cardmarket',pid:732815},
+{id:6,g:'OP',n:'Crocodile (OP01-067) V.2',s:'Romance Dawn',t:'Carte',q:1,d:'2026-01-13',c:35,v:null,st:'Stock',src:'Cardmarket',pid:690893},
+{id:7,g:'OP',n:'O-Nami (OP06-101) V.2',s:'Wings of the Captain',t:'Carte',q:1,d:'2026-01-16',c:25,v:null,st:'Stock',src:'Cardmarket',pid:760605},
+{id:8,g:'OP',n:'Buggy (OP02-058) V.2',s:'Paramount War',t:'Carte',q:1,d:'2026-01-16',c:10,v:null,st:'Stock',src:'Cardmarket',pid:699939},
+{id:9,g:'OP',n:'Sanji (OP11-051) V.2',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-01-16',c:8,v:null,st:'Stock',src:'Cardmarket',pid:827140},
+{id:10,g:'OP',n:'Buggy (OP09-042) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-23',c:26.9,v:null,st:'Stock',src:'Cardmarket',pid:802910},
+{id:11,g:'OP',n:'Monkey D. Luffy (OP07-073)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-02-04',c:110,v:null,st:'Stock',src:'Cardmarket',pid:837224},
+{id:12,g:'OP',n:'Nami (ST29-008) V.2',s:'Starter Deck: Egghead',t:'Carte',q:1,d:'2026-02-19',c:12.99,v:null,st:'Stock',src:'Cardmarket',pid:865576},
+{id:13,g:'OP',n:'Monkey D. Luffy (V.1)',s:'Promos',t:'Carte',q:1,d:'2026-03-04',c:10,v:null,st:'Stock',src:'Cardmarket',pid:746238},
+{id:14,g:'OP',n:'Monkey D. Luffy (PRB02-005) V.2',s:'The Best Vol.2',t:'Carte',q:1,d:'2026-03-04',c:20,v:null,st:'Stock',src:'Cardmarket',pid:852530},
+{id:15,g:'OP',n:'Makino (ST13-012) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:1.95,v:null,st:'Stock',src:'Cardmarket',pid:823247},
+{id:16,g:'OP',n:'Nami (OP02-036)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:14.25,v:null,st:'Stock',src:'Cardmarket',pid:768045},
+{id:17,g:'OP',n:'Buggy (OP09-051) Promos',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:34.9,v:null,st:'Stock',src:'Cardmarket',pid:830639},
+{id:18,g:'OP',n:'Buggy (OP09-051) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-03-12',c:12,v:null,st:'Stock',src:'Cardmarket',pid:802923},
+{id:19,g:'OP',n:'Ace & Sabo & Luffy (OP13-007) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-03-23',c:20,v:null,st:'Stock',src:'Cardmarket',pid:857198},
+{id:20,g:'OP',n:'Buggy (P-084)',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-04-02',c:20,v:null,st:'Stock',src:'Cardmarket',pid:817503},
+{id:21,g:'OP',n:'Portgas D. Ace (OP13-119) V.1',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-05-04',c:79.99,v:null,st:'Stock',src:'Cardmarket',pid:878022},
+{id:22,g:'OP',n:'Nami (ST21-009) V.2',s:'Starter Deck: EX Gear 5',t:'Carte',q:1,d:'2026-05-06',c:7,v:null,st:'Stock',src:'Cardmarket',pid:816830},
 {id:23,g:'OP',n:'EB03 Booster Heroines Edition',s:'EB03',t:'Booster',q:1,d:'2026-03-10',c:4.99,v:null,st:'Stock',src:'Amazon'},
-// OP VENDUS
 {id:30,g:'OP',n:'Victoria Cindry (OP06-091) V.3',s:'The Best',t:'Carte',q:1,d:'2026-01-12',c:null,v:10,st:'Vendu',src:'Cardmarket'},
 {id:31,g:'OP',n:'St. Marcus Mars (OP13-091) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-02-26',c:null,v:19,st:'Vendu',src:'Cardmarket'},
 {id:32,g:'OP',n:'St. Shepherd Ju Peter (OP13-084) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-02-26',c:null,v:19,st:'Vendu',src:'Cardmarket'},
@@ -236,7 +303,6 @@ let items=[
 {id:40,g:'OP',n:'Jewelry Bonney (EB04-001) V.2',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-11',c:null,v:39,st:'Vendu',src:'Cardmarket'},
 {id:41,g:'OP',n:'Sabo (PRB02-014) V.1',s:'The Best Vol.2',t:'Carte',q:1,d:'2026-04-12',c:null,v:1,st:'Vendu',src:'Cardmarket'},
 {id:42,g:'OP',n:'Nami (OP15-086) V.1 x2',s:"Adventure on Kami's Island",t:'Carte',q:2,d:'2026-04-12',c:null,v:1,st:'Vendu',src:'Cardmarket'},
-// PK STOCK - Google Sheets
 {id:100,g:'PK',n:'Booster style de combat EB',s:'Epée et Bouclier',t:'Booster',q:1,d:null,c:20,v:null,st:'Stock',src:'Vinted'},
 {id:101,g:'PK',n:'Salameche rc3/rc32',s:'151',t:'Carte',q:1,d:null,c:5.99,v:null,st:'Stock',src:'Vinted'},
 {id:102,g:'PK',n:'Blister EV8',s:'Foudre Noire',t:'Blister',q:3,d:null,c:10.96,v:null,st:'Stock',src:'Vinted'},
@@ -292,7 +358,7 @@ let items=[
 {id:152,g:'PK',n:'ETB ME02',s:'Mega-Evolution',t:'ETB',q:2,d:null,c:55.99,v:null,st:'Stock',src:'Amazon'},
 {id:153,g:'PK',n:'UPC Dracaufeu',s:'Mega-Evolution',t:'UPC',q:3,d:'2025-11-30',c:168.32,v:null,st:'Stock',src:'Amazon'},
 {id:154,g:'PK',n:'ETB ME01',s:'Mega-Evolution',t:'ETB',q:1,d:null,c:70,v:null,st:'Stock',src:'Amazon'},
-{id:155,g:'PK',n:'Mini-boite Unys (Lugulabre & Zorua)',s:'Unys',t:'Coffret',q:1,d:'2025-07-18',c:11.99,v:null,st:'Stock',src:'Amazon'},
+{id:155,g:'PK',n:'Mini-boite Unys',s:'Unys',t:'Coffret',q:1,d:'2025-07-18',c:11.99,v:null,st:'Stock',src:'Amazon'},
 {id:156,g:'PK',n:'Collection Poster Unys',s:'Unys',t:'Coffret',q:1,d:'2025-08-19',c:23.32,v:null,st:'Stock',src:'Amazon'},
 {id:157,g:'PK',n:'Presentoir 18 boosters ME',s:'Mega-Evolution',t:'Display',q:1,d:'2025-10-11',c:89.85,v:null,st:'Stock',src:'Amazon'},
 {id:158,g:'PK',n:'Blister ameliore 2 boosters',s:'Ecarlate & Violet',t:'Blister',q:1,d:'2025-10-10',c:9.99,v:null,st:'Stock',src:'Amazon'},
@@ -301,7 +367,6 @@ let items=[
 {id:161,g:'PK',n:'Lot 6 boosters ME HT',s:'Heros Transcendants',t:'Booster',q:3,d:'2026-04-24',c:29.95,v:null,st:'Stock',src:'Amazon'},
 {id:162,g:'PK',n:'Collect 151 Booster Box',s:'151',t:'Display',q:1,d:'2025-12-30',c:55,v:null,st:'Stock',src:'Cardmarket'},
 {id:163,g:'PK',n:'Gem Pack Vol.2 Booster Box',s:'Gem Pack Vol.2',t:'Display',q:1,d:'2025-12-30',c:50,v:null,st:'Stock',src:'Cardmarket'},
-// PK VENDUS - avec couts Google Sheets
 {id:200,g:'PK',n:'Feunard 199/197 PSA9',s:'Mascarade Crepusculaire',t:'Carte',q:1,d:null,c:44,v:43,st:'Vendu',src:'Vinted'},
 {id:201,g:'PK',n:'Regirock ex 214/182',s:'Destined Rivals',t:'Carte',q:1,d:'2025-11-27',c:7.99,v:2.5,st:'Vendu',src:'Cardmarket'},
 {id:202,g:'PK',n:'Terapagos ex 165',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-12-11',c:4.21,v:2.5,st:'Vendu',src:'Cardmarket'},
@@ -326,7 +391,6 @@ let items=[
 {id:221,g:'PK',n:'Zamazenta 201/182',s:'Destined Rivals',t:'Carte',q:1,d:'2026-01-17',c:13.14,v:7,st:'Vendu',src:'Cardmarket'},
 {id:222,g:'PK',n:'Hyporoi ex 131',s:'SV Black Star Promos',t:'Carte',q:1,d:'2026-01-31',c:33.09,v:28,st:'Vendu',src:'Cardmarket'},
 {id:223,g:'PK',n:'Oyacata 207/198',s:'Scarlet & Violet',t:'Carte',q:1,d:'2026-05-03',c:18.39,v:14,st:'Vendu',src:'Cardmarket'},
-// PK VENDUS - cout inconnu
 {id:230,g:'PK',n:'Dracaufeu ex SV Promos',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-11-21',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
 {id:231,g:'PK',n:'Mewtwo ex Team Rocket',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-11-29',c:null,v:1,st:'Vendu',src:'Cardmarket'},
 {id:232,g:'PK',n:'Cage de Combat',s:'Phantasmal Flames',t:'Carte',q:1,d:'2025-12-01',c:null,v:2.6,st:'Vendu',src:'Cardmarket'},
@@ -349,7 +413,6 @@ let items=[
 {id:249,g:'PK',n:'Energie Amorce',s:'Phantasmal Flames',t:'Carte',q:1,d:'2026-02-18',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
 {id:250,g:'PK',n:'Flamigator ex',s:'Paldea Evolved',t:'Carte',q:1,d:'2026-03-16',c:null,v:20,st:'Vendu',src:'Cardmarket'},
 {id:251,g:'PK',n:'Mentali ex',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2026-04-27',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
-// VINTED VENTES TCG (identifiees depuis export Vinted)
 {id:300,g:'PK',n:'ETB ME02 Flammes Fantasmagoriques',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-01-19',c:55.99,v:70,st:'Vendu',src:'Vinted'},
 {id:301,g:'PK',n:'Salameche rc3/rc32',s:'151',t:'Carte',q:1,d:'2026-02-16',c:5.99,v:6,st:'Vendu',src:'Vinted'},
 {id:302,g:'OP',n:'Carte OP12-0037',s:'OP12',t:'Carte',q:1,d:'2026-03-08',c:null,v:90,st:'Vendu',src:'Vinted'},
@@ -361,6 +424,10 @@ let items=[
 {id:308,g:'OP',n:'Sabo (OP13-004) Leader',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-04-28',c:null,v:13,st:'Vendu',src:'Vinted'},
 {id:309,g:'PK',n:'Seleroc Stamp Mega Evolution',s:'Mega-Evolution Promos',t:'Carte',q:1,d:'2026-05-10',c:19.4,v:17,st:'Vendu',src:'Vinted'},
 ];
+
+/* ══════════════════════════════════════════════
+   CORE TRACKER LOGIC
+   ══════════════════════════════════════════════ */
 let cTab='all',cStat='all',eId=null,nId=500;
 function fmt(v){if(v==null)return'—';return v.toFixed(2).replace('.',',')+' €'}
 function e(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
@@ -382,9 +449,7 @@ function filtered(){
     else if(col==='pnl'){va=pnl(a)??-1e9;vb=pnl(b)??-1e9;}
     else if(col==='name'){va=a.n.toLowerCase();vb=b.n.toLowerCase();}
     else{va=a[col];vb=b[col];}
-    if(va<vb)return dir==='asc'?-1:1;
-    if(va>vb)return dir==='asc'?1:-1;
-    return 0;
+    if(va<vb)return dir==='asc'?-1:1;if(va>vb)return dir==='asc'?1:-1;return 0;
   });
   return r;
 }
@@ -405,9 +470,7 @@ function render(){
   document.getElementById('k1s').textContent=stk.length+' lignes en portefeuille';
   document.getElementById('k2').textContent=fmt(rev);
   document.getElementById('k2s').textContent=sold.length+' vendus · net 5%';
-  const pe=document.getElementById('k3');
-  pe.textContent=(rp>=0?'+':'')+fmt(rp);
-  pe.className='kpi-value '+(rp>=0?'positive':'negative');
+  const pe=document.getElementById('k3');pe.textContent=(rp>=0?'+':'')+fmt(rp);pe.className='kpi-value '+(rp>=0?'positive':'negative');
   document.getElementById('k3s').textContent=(sold.length-wb.length)+' ventes sans cout';
   document.getElementById('k4').textContent=roi!=null?(roi>=0?'+':'')+roi.toFixed(1)+'%':'—';
   document.getElementById('k4s').textContent='Sur '+wb.length+' ventes completement tracees';
@@ -416,42 +479,16 @@ function render(){
   const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
   renderMobile(rows);
   tb.innerHTML=rows.map(i=>{
-    const p=pnl(i);
-    const gc=i.g==='OP'?'bg-op':'bg-pk';
-    const ds=i.d?i.d.split('-').reverse().join('/'):'—';
-    const col=sc[i.src]||'#6b7280';
+    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const ds=i.d?i.d.split('-').reverse().join('/'):'—';const col=sc[i.src]||'#6b7280';
     const qb=i.q>1?`<span style="font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:4px">x${i.q}</span>`:'<span style="color:var(--muted2)">1</span>';
-    return`<tr>
-<td><span class="bg ${gc}">${i.g}</span></td>
-<td><div class="in">${e(i.n)}</div><div class="is">${e(i.s||'')}</div></td>
-<td><span class="bt">${e(i.t)}</span></td>
-<td>${qb}</td>
-<td class="dc">${ds}</td>
-<td>${i.c!=null?`<span class="price">${fmt(i.c)}</span>`:'<span class="price unk">—</span>'}</td>
-<td>${i.v!=null?`<span class="price">${fmt(i.v)}</span>`:'<span class="price unk">—</span>'}</td>
-<td>${p==null?'<span class="pu">?</span>':`<span class="${p>=0?'pp':'pn'}">${p>=0?'+':''}${fmt(p)}</span>`}</td>
-<td>${mkCell(i)}</td>
-<td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${col}22;color:${col}">${e(i.src)}</span></td>
-<td>${i.st==='Stock'?'<span class="bs bs-stock">● Stock</span>':'<span class="bs bs-vendu">✓ Vendu</span>'}</td>
-<td><div class="row-actions"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></td>
-</tr>`;}).join('');
+    return`<tr><td><span class="bg ${gc}">${i.g}</span></td><td><div class="in">${e(i.n)}</div><div class="is">${e(i.s||'')}</div></td><td><span class="bt">${e(i.t)}</span></td><td>${qb}</td><td class="dc">${ds}</td><td>${i.c!=null?`<span class="price">${fmt(i.c)}</span>`:'<span class="price unk">—</span>'}</td><td>${i.v!=null?`<span class="price">${fmt(i.v)}</span>`:'<span class="price unk">—</span>'}</td><td>${p==null?'<span class="pu">?</span>':`<span class="${p>=0?'pp':'pn'}">${p>=0?'+':''}${fmt(p)}</span>`}</td><td>${mkCell(i)}</td><td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${col}22;color:${col}">${e(i.src)}</span></td><td>${i.st==='Stock'?'<span class="bs bs-stock">● Stock</span>':'<span class="bs bs-vendu">✓ Vendu</span>'}</td><td><div class="row-actions"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></td></tr>`;}).join('');
 }
 function setTab(t){cTab=t;['all','OP','PK'].forEach(k=>document.getElementById('tab-'+k).className='tab'+(k===t?' active':''));render();}
 function setStatus(s){cStat=s;document.getElementById('f-all').className='filter-btn'+(s==='all'?' active':'');document.getElementById('f-stock').className='filter-btn stock'+(s==='Stock'?' active':'');document.getElementById('f-vendu').className='filter-btn'+(s==='Vendu'?' active':'');render();}
 function openModal(id){
-  eId=id||null;
-  document.getElementById('mt').textContent=id?'Modifier':'Ajouter';
+  eId=id||null;document.getElementById('mt').textContent=id?'Modifier':'Ajouter';
   const i=id?items.find(x=>x.id===id):null;
-  document.getElementById('fg').value=i?.g||'PK';
-  document.getElementById('ft').value=i?.t||'Carte';
-  document.getElementById('fn').value=i?.n||'';
-  document.getElementById('fse').value=i?.s||'';
-  document.getElementById('fd').value=i?.d||new Date().toISOString().split('T')[0];
-  document.getElementById('fq').value=i?.q||1;
-  document.getElementById('fst').value=i?.st||'Stock';
-  document.getElementById('fp').value=i?.src||'Cardmarket';
-  document.getElementById('fc').value=i?.c??'';
-  document.getElementById('fv').value=i?.v??'';
+  document.getElementById('fg').value=i?.g||'PK';document.getElementById('ft').value=i?.t||'Carte';document.getElementById('fn').value=i?.n||'';document.getElementById('fse').value=i?.s||'';document.getElementById('fd').value=i?.d||new Date().toISOString().split('T')[0];document.getElementById('fq').value=i?.q||1;document.getElementById('fst').value=i?.st||'Stock';document.getElementById('fp').value=i?.src||'Cardmarket';document.getElementById('fc').value=i?.c??'';document.getElementById('fv').value=i?.v??'';
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');}
@@ -466,137 +503,198 @@ function delItem(id){if(confirm('Supprimer ?')){items=items.filter(x=>x.id!==id)
 function exportCSV(){
   const cols=['Jeu','Nom','Set','Type','Qte','Date','Cout','Vente','PnL','Source','Statut'];
   const rows=items.map(i=>[i.g,i.n,i.s,i.t,i.q,i.d||'',i.c??'',i.v??'',pnl(i)!=null?pnl(i).toFixed(2):'',i.src,i.st].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+[cols.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download='tcg-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+[cols.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8'}));a.download='tcg-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
-const API_KEY='661fa83e4cmshab8f0302f563eaep1fd5fejsn0d64df325baa';
 
+/* ══════════════════════════════════════════════
+   PRICE UPDATE (RapidAPI)
+   ══════════════════════════════════════════════ */
+function getApiKey(){return localStorage.getItem('tcg_rapidapi_key')||'';}
+function setApiKey(k){localStorage.setItem('tcg_rapidapi_key',k);}
+function getApifyToken(){return localStorage.getItem('tcg_apify_token')||'';}
+function setApifyToken(k){localStorage.setItem('tcg_apify_token',k);}
+function openKeys(){
+  document.getElementById('key-rapid').value=getApiKey();
+  document.getElementById('key-apify').value=getApifyToken();
+  document.getElementById('keys-modal').classList.add('open');
+}
+function closeKeys(){document.getElementById('keys-modal').classList.remove('open');}
+function saveKeys(){
+  const r=document.getElementById('key-rapid').value.trim();
+  const a=document.getElementById('key-apify').value.trim();
+  if(r)setApiKey(r);if(a)setApifyToken(a);closeKeys();
+  alert('✓ Clés enregistrées dans le navigateur');
+}
 function togglePricePanel(){
-  const p=document.getElementById('price-panel');
-  p.style.display=p.style.display==='none'?'block':'none';
-  // Update counts
+  const p=document.getElementById('price-panel');p.style.display=p.style.display==='none'?'block':'none';
+  document.getElementById('veille-panel').classList.remove('open');
   const opCards=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
   const pkCards=items.filter(x=>x.g==='PK'&&x.st==='Stock'&&x.t==='Carte');
   document.getElementById('op-count').textContent=opCards.length;
   document.getElementById('pk-count').textContent=pkCards.length;
 }
-
 function mkCell(item){
   if(item.st!=='Stock'||item.t!=='Carte')return'<span style="color:var(--muted2);font-size:12px">—</span>';
   if(!item.mp)return'<span style="color:var(--muted2);font-size:12px;font-family:monospace">?</span>';
-  const mp=item.mp;
-  const diff=item.c!=null?mp-item.c:null;
+  const mp=item.mp;const diff=item.c!=null?mp-item.c:null;
   let arrow='',col='var(--muted)';
-  if(diff!=null){
-    if(diff>1){arrow=' ↑';col='var(--green)';}
-    else if(diff<-1){arrow=' ↓';col='var(--red)';}
-    else{arrow=' =';col='var(--yellow)';}
-  }
+  if(diff!=null){if(diff>1){arrow=' ↑';col='var(--green)';}else if(diff<-1){arrow=' ↓';col='var(--red)';}else{arrow=' =';col='var(--yellow)';}}
   const diffStr=diff!=null?(diff>=0?'+':'')+diff.toFixed(1)+'€':'';
   return`<span style="font-family:monospace;font-size:12px;color:${col}">${mp.toFixed(2).replace('.',',')}€${arrow}<br><span style="font-size:10px;opacity:.7">${diffStr}</span></span>`;
 }
-
 async function fetchCardPrice(item){
-  const K=API_KEY;
   try{
-    if(item.g==='OP'){
-      const r=await fetch(`https://cardmarket-api.p.rapidapi.com/onepiece/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':K,'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
-      if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
-    } else {
-      const r=await fetch(`https://cardmarket-api.p.rapidapi.com/pokemon/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':K,'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
-      if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
-    }
+    const g=item.g==='OP'?'onepiece':'pokemon';
+    const r=await fetch(`https://cardmarket-api.p.rapidapi.com/${g}/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':getApiKey(),'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
+    if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
   }catch(ex){}
   return false;
 }
-
 async function runUpdate(game){
-  const spin=document.getElementById('upd-spin');
-  const msg=document.getElementById('upd-msg');
-  spin.style.display='inline-block';
-  
+  if(!getApiKey()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ta clé RapidAPI');return;}
+  const spin=document.getElementById('upd-spin'),msg=document.getElementById('upd-msg');spin.style.display='inline-block';
   let targets;
-  if(game==='ALL') targets=items.filter(x=>x.st==='Stock'&&x.t==='Carte');
+  if(game==='ALL')targets=items.filter(x=>x.st==='Stock'&&x.t==='Carte');
   else targets=items.filter(x=>x.g===game&&x.st==='Stock'&&x.t==='Carte');
-  
-  const BATCH=20;
-  let done=0, success=0;
-  
-  for(let i=0;i<targets.length;i+=BATCH){
-    const lot=targets.slice(i,i+BATCH);
-    msg.textContent=`Lot ${Math.floor(i/BATCH)+1}/${Math.ceil(targets.length/BATCH)} — ${done}/${targets.length} cartes...`;
-    for(const card of lot){
-      const ok=await fetchCardPrice(card);
-      if(ok)success++;
-      done++;
-      msg.textContent=`Mise à jour ${done}/${targets.length}...`;
-      await new Promise(r=>setTimeout(r,300)); // délai entre requêtes
-    }
-    render();
-    if(i+BATCH<targets.length){
-      msg.textContent=`Pause entre lots... (${done}/${targets.length})`;
-      await new Promise(r=>setTimeout(r,1000));
-    }
+  let done=0,success=0;
+  for(const card of targets){
+    msg.textContent=`Mise à jour ${done+1}/${targets.length}...`;
+    const ok=await fetchCardPrice(card);if(ok)success++;done++;
+    await new Promise(r=>setTimeout(r,300));
+    if(done%20===0)render();
   }
-  
-  spin.style.display='none';
-  msg.textContent=`✓ ${success} prix mis à jour sur ${targets.length} cartes`;
-  render();
+  spin.style.display='none';msg.textContent=`✓ ${success} prix mis à jour sur ${targets.length} cartes`;render();
 }
 
+/* ══════════════════════════════════════════════
+   VEILLE MARCHÉ (Apify Trend Scraper)
+   ══════════════════════════════════════════════ */
+const APIFY_ACTORS={op:'scrap_them_all~cardmarket-onepiece-trend-scraper',pk:'scrap_them_all~cardmarket-pokemon-trend-scraper'};
+let veilleGame='op',veilleTab='top';
+let veilleData={top:[],bargains:[]};
+
+function toggleVeillePanel(){
+  const p=document.getElementById('veille-panel');
+  p.classList.toggle('open');
+  document.getElementById('price-panel').style.display='none';
+}
+function setVeilleGame(g){
+  veilleGame=g;
+  document.getElementById('vg-op').className=g==='op'?'active':'';
+  document.getElementById('vg-pk').className=g==='pk'?'active':'';
+  veilleData={top:[],bargains:[]};
+  renderVeille();
+}
+function setVeilleTab(t){
+  veilleTab=t;
+  document.getElementById('vt-top').className='veille-tab'+(t==='top'?' active':'');
+  document.getElementById('vt-bar').className='veille-tab'+(t==='bargains'?' active':'');
+  renderVeille();
+}
+
+async function runVeille(mode){
+  if(!getApifyToken()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ton token Apify');return;}
+  const spin=document.getElementById('v-spin'),msg=document.getElementById('v-msg');
+  spin.style.display='inline-block';
+  msg.textContent='Lancement du scraper...';
+  const actorId=APIFY_ACTORS[veilleGame];
+  try{
+    const runRes=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${getApifyToken()}&waitForFinish=180`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({mode:mode,language:'en',maxResults:100})
+    });
+    if(!runRes.ok)throw new Error('Run failed: '+runRes.status);
+    const runData=await runRes.json();
+    const dsId=runData?.data?.defaultDatasetId;
+    let runStatus=runData?.data?.status,runId=runData?.data?.id;
+    if(runStatus==='RUNNING'||runStatus==='READY'){
+      for(let i=0;i<45;i++){
+        await new Promise(r=>setTimeout(r,4000));
+        msg.textContent=`Scraping en cours... (${i*4}s)`;
+        const poll=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${getApifyToken()}`);
+        const pd=await poll.json();runStatus=pd?.data?.status;
+        if(runStatus==='SUCCEEDED')break;
+        if(runStatus==='FAILED'||runStatus==='ABORTED')throw new Error('Run '+runStatus);
+      }
+    }
+    const dataRes=await fetch(`https://api.apify.com/v2/datasets/${dsId}/items?token=${getApifyToken()}&format=json`);
+    const cards=await dataRes.json();
+    if(mode==='weekly-top-cards'){
+      veilleData.top=cards;
+      // Match portfolio prices
+      const pids=new Set(items.filter(x=>x.pid).map(x=>x.pid));
+      let matched=0;
+      cards.forEach(c=>{
+        if(c.productId&&pids.has(c.productId)){
+          const it=items.find(x=>x.pid===c.productId);
+          if(it){it.mp=c.currentPriceEur;matched++;}
+        }
+      });
+      if(matched>0)render();
+    }else{
+      veilleData.bargains=cards;
+    }
+    spin.style.display='none';
+    msg.textContent=`✓ ${cards.length} cartes récupérées · ${new Date().toLocaleTimeString('fr-FR')}`;
+    if(mode==='weekly-top-cards')setVeilleTab('top');else setVeilleTab('bargains');
+    renderVeille();
+  }catch(err){
+    spin.style.display='none';
+    msg.textContent='❌ '+err.message;
+  }
+}
+
+function renderVeille(){
+  const area=document.getElementById('veille-results');
+  const info=document.getElementById('veille-info-area');
+  const matched=document.getElementById('veille-matched-area');
+  document.getElementById('vt-top-n').textContent=veilleData.top.length;
+  document.getElementById('vt-bar-n').textContent=veilleData.bargains.length;
+  const data=veilleTab==='top'?veilleData.top:veilleData.bargains;
+  const pids=new Set(items.filter(x=>x.pid&&x.st==='Stock').map(x=>x.pid));
+  // Info bar
+  if(veilleTab==='bargains'&&data.length>0){
+    info.innerHTML='<div class="veille-info bargain">💡 Ces cartes sont actuellement sous leur tendance historique — opportunités d\'achat potentielles.</div>';
+  }else{info.innerHTML='';}
+  // Matched count
+  if(veilleTab==='top'&&veilleData.top.length>0){
+    const mc=veilleData.top.filter(c=>c.productId&&pids.has(c.productId)).length;
+    if(mc>0)matched.innerHTML=`<div class="veille-matched">🎯 ${mc} carte(s) de ton portefeuille apparaissent dans le Top — prix mis à jour automatiquement</div>`;
+    else matched.innerHTML='';
+  }else{matched.innerHTML='';}
+  if(!data.length){
+    area.innerHTML=`<div class="veille-empty">Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping.<br><span style="font-size:11px;margin-top:6px;display:inline-block">~2min · ~0.10$ par run · Données Cardmarket EN</span></div>`;
+    return;
+  }
+  let html='<div class="vr-head" style="display:grid;grid-template-columns:36px 1fr 90px 80px;gap:8px"><span style="text-align:center">#</span><span>Carte</span><span style="text-align:right">Prix EUR</span><span style="text-align:right">Lien</span></div>';
+  data.forEach((c,i)=>{
+    const hl=c.productId&&pids.has(c.productId);
+    html+=`<div class="vr-row${hl?' highlight':''}"><span class="vr-rank">${c.rank||i+1}</span><div><div class="vr-name">${e(c.cardName||'')}</div><div class="vr-set">${e(c.expansion||'')}</div></div><div class="vr-price">${c.currentPriceEur!=null?c.currentPriceEur.toFixed(2)+'€':'—'}</div><div class="vr-link">${c.url?`<a href="${c.url}" target="_blank" rel="noopener">Voir ↗</a>`:''}</div></div>`;
+  });
+  area.innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE RENDERING
+   ══════════════════════════════════════════════ */
 function renderMobile(rows){
-  const mc=document.getElementById('mc');
-  if(!mc)return;
+  const mc=document.getElementById('mc');if(!mc)return;
   const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
   if(!rows.length){mc.innerHTML='<div class="empty" style="padding:40px 20px">Aucun item</div>';return;}
   mc.innerHTML=rows.map(i=>{
-    const p=pnl(i);
-    const gc=i.g==='OP'?'bg-op':'bg-pk';
-    const col=sc[i.src]||'#6b7280';
-    const statCol=i.st==='Stock'?'var(--green)':'var(--muted)';
-    const statDot=i.st==='Stock'?'●':'✓';
-    const ds=i.d?i.d.split('-').reverse().join('/'):'—';
-    // cost
-    const costStr=i.c!=null?fmt(i.c):'—';
-    const saleStr=i.v!=null?fmt(i.v):'—';
-    // pnl
-    let pnlHtml;
-    if(p==null) pnlHtml=`<span style="color:var(--muted2)">?</span>`;
-    else pnlHtml=`<span style="color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fmt(p)}</span>`;
-    // market
-    const mpStr=i.mp&&i.t==='Carte'?fmt(i.mp):'—';
-    // qty
-    const qtyStr=i.q>1?` ×${i.q}`:'';
-    return`<div class="mcard">
-  <div class="mcard-left">
-    <span class="bg ${gc}">${i.g}</span>
-    <span style="font-size:9px;padding:2px 5px;border-radius:3px;background:${col}22;color:${col};margin-top:2px">${e(i.src)}</span>
-  </div>
-  <div>
-    <div class="mcard-name">${e(i.n)}${qtyStr}</div>
-    <div class="mcard-set">${e(i.s||'')} · ${e(i.t)} · ${ds}</div>
-    <div class="mcard-nums">
-      <div class="mnum"><span class="mnum-label">Achat</span><span class="mnum-val" style="color:var(--text)">${costStr}</span></div>
-      <div class="mnum"><span class="mnum-label">Vente</span><span class="mnum-val" style="color:var(--text)">${saleStr}</span></div>
-      <div class="mnum"><span class="mnum-label">P&L</span><span class="mnum-val">${pnlHtml}</span></div>
-      ${i.t==='Carte'&&i.st==='Stock'?`<div class="mnum"><span class="mnum-label">Marché</span><span class="mnum-val" style="color:var(--muted)">${mpStr}</span></div>`:''}
-    </div>
-  </div>
-  <div class="mcard-right">
-    <span style="font-size:11px;color:${statCol};font-weight:600">${statDot} ${i.st}</span>
-    <div style="display:flex;gap:5px;margin-top:6px">
-      <button class="ib" onclick="editItem(${i.id})">✎</button>
-      <button class="ib del" onclick="delItem(${i.id})">✕</button>
-    </div>
-  </div>
-</div>`;
+    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const col=sc[i.src]||'#6b7280';const ds=i.d?i.d.split('-').reverse().join('/'):'—';
+    const costStr=i.c!=null?fmt(i.c):'—';const saleStr=i.v!=null?fmt(i.v):'—';
+    let pnlHtml;if(p==null)pnlHtml='<span style="color:var(--muted2)">?</span>';else pnlHtml=`<span style="color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fmt(p)}</span>`;
+    const mpStr=i.mp&&i.t==='Carte'?fmt(i.mp):'—';const qtyStr=i.q>1?` ×${i.q}`:'';
+    return`<div class="mcard"><div class="mcard-left"><span class="bg ${gc}">${i.g}</span><span style="font-size:9px;padding:2px 5px;border-radius:3px;background:${col}22;color:${col};margin-top:2px">${e(i.src)}</span></div><div><div class="mcard-name">${e(i.n)}${qtyStr}</div><div class="mcard-set">${e(i.s||'')} · ${e(i.t)} · ${ds}</div><div class="mcard-nums"><div class="mnum"><span class="mnum-label">Achat</span><span class="mnum-val" style="color:var(--text)">${costStr}</span></div><div class="mnum"><span class="mnum-label">Vente</span><span class="mnum-val" style="color:var(--text)">${saleStr}</span></div><div class="mnum"><span class="mnum-label">P&L</span><span class="mnum-val">${pnlHtml}</span></div>${i.t==='Carte'&&i.st==='Stock'?`<div class="mnum"><span class="mnum-label">Marché</span><span class="mnum-val" style="color:var(--muted)">${mpStr}</span></div>`:''}</div></div><div class="mcard-right"><span style="font-size:11px;color:${i.st==='Stock'?'var(--green)':'var(--muted)'};font-weight:600">${i.st==='Stock'?'●':'✓'} ${i.st}</span><div style="display:flex;gap:5px;margin-top:6px"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></div></div>`;
   }).join('');
 }
 
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+document.getElementById('modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeModal();});
+document.getElementById('keys-modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeKeys();});
+// First visit: auto-open settings if no keys configured
+if(!getApiKey()&&!getApifyToken()){setTimeout(()=>openKeys(),500);}
 render();
-
 </script>
 </body>
 </html>
