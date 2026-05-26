@@ -3,698 +3,709 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TCG Tracker — One Piece & Pokémon</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<title>TCG Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0c0f;--surface:#111318;--surface2:#181c24;--border:#1e2330;--border2:#252b3a;--text:#e8eaf0;--muted:#6b7280;--muted2:#4b5563;--accent:#3b82f6;--accent2:#1d4ed8;--green:#10b981;--green-bg:rgba(16,185,129,.08);--red:#ef4444;--red-bg:rgba(239,68,68,.08);--yellow:#f59e0b;--op:#e85d04;--op-bg:rgba(232,93,4,.12);--pk:#3b82f6;--pk-bg:rgba(59,130,246,.12)}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px}
-.logo-badge{background:linear-gradient(135deg,var(--op),var(--pk));padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;color:#fff}
-.header-actions{display:flex;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}.btn-ghost:hover{color:var(--text);border-color:var(--muted2)}
-.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
-main{max-width:1400px;margin:0 auto;padding:24px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.kpi.blue::before{background:var(--accent)}.kpi.green::before{background:var(--green)}.kpi.orange::before{background:var(--op)}.kpi.purple::before{background:#8b5cf6}
-.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin-bottom:8px}
-.kpi-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;line-height:1}
-.kpi-value.positive{color:var(--green)}.kpi-value.negative{color:var(--red)}
-.kpi-sub{font-size:12px;color:var(--muted);margin-top:6px}
-.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;width:fit-content}
-.tab{padding:7px 18px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:'Inter',sans-serif}
-.tab.active{background:var(--surface2);color:var(--text)}
-.tab .count{font-size:11px;background:var(--border);padding:1px 6px;border-radius:4px;margin-left:4px}
-.tab.active .count{background:var(--border2)}
-.toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
-.filter-btn{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
-.filter-btn.active{color:var(--text);background:var(--surface2);border-color:var(--muted2)}
-.filter-btn.stock.active{color:var(--green);border-color:rgba(16,185,129,.4);background:var(--green-bg)}
-.search-input{padding:7px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;width:240px}
-.search-input:focus{border-color:var(--accent)}.search-input::placeholder{color:var(--muted2)}
-select.sort-sel{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;outline:none}
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-table{width:100%;border-collapse:collapse}
-thead th{padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-td{padding:9px 14px;vertical-align:middle}
-.bg{display:inline-flex;align-items:center;justify-content:center;width:28px;height:20px;border-radius:5px;font-size:10px;font-weight:700}
-.bg-op{background:var(--op-bg);color:var(--op)}.bg-pk{background:var(--pk-bg);color:var(--pk)}
-.bs{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.bs-stock{background:var(--green-bg);color:var(--green)}.bs-vendu{background:rgba(107,114,128,.1);color:var(--muted)}
-.bt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface2);color:var(--muted)}
-.in{font-weight:500;color:var(--text);max-width:260px}
-.is{font-size:11px;color:var(--muted);margin-top:2px}
-.price{font-family:'DM Mono',monospace;font-size:13px}
-.price.unk{color:var(--muted2);font-style:italic}
-.pp{font-family:'DM Mono',monospace;color:var(--green);font-size:13px;font-weight:500}
-.pn{font-family:'DM Mono',monospace;color:var(--red);font-size:13px;font-weight:500}
-.pu{font-family:'DM Mono',monospace;color:var(--muted2);font-size:13px}
-.dc{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);white-space:nowrap}
-.row-actions{display:flex;gap:6px;opacity:0;transition:opacity .15s}
-tbody tr:hover .row-actions{opacity:1}
-.ib{width:26px;height:26px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
-.ib:hover{background:var(--surface2);color:var(--text)}.ib.del:hover{color:var(--red);background:var(--red-bg)}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:28px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg div{display:flex;flex-direction:column;gap:6px}
-.fg .full{grid-column:1/-1}
-label{font-size:12px;color:var(--muted);font-weight:500}
-input,select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;width:100%}
-input:focus,select:focus{border-color:var(--accent)}
-.ma{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-.spinner{width:14px;height:14px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-top:1px solid var(--border);margin-top:24px}
-
-/* ── VEILLE PANEL ── */
-.veille-panel{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
-.veille-panel.open{display:block;max-height:2000px;padding:16px 24px 20px}
-.veille-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-.veille-toggle{display:inline-flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-.veille-toggle button{border:none;background:transparent;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;color:var(--muted);transition:all .15s}
-.veille-toggle button.active{background:var(--accent);color:#fff}
-.veille-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-left:auto}
-.veille-spin{width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
-.veille-tabs{display:flex;gap:6px;margin-bottom:12px}
-.veille-tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
-.veille-tab.active{color:var(--text);background:var(--surface2);border-color:var(--muted2)}
-.veille-results{max-height:500px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
-.vr-row{display:grid;grid-template-columns:36px 1fr 90px 80px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;transition:background .1s}
-.vr-row:last-child{border-bottom:none}
-.vr-row:hover{background:rgba(255,255,255,.02)}
-.vr-row.highlight{background:rgba(232,93,4,.06)}
-.vr-rank{color:var(--muted);font-weight:600;text-align:center;font-family:'DM Mono',monospace;font-size:12px}
-.vr-name{font-weight:500;line-height:1.3}.vr-set{font-size:11px;color:var(--muted)}
-.vr-price{font-family:'DM Mono',monospace;font-weight:500;text-align:right}
-.vr-link{text-align:right}
-.vr-link a{color:var(--accent);font-size:11px;text-decoration:none}
-.vr-link a:hover{text-decoration:underline}
-.vr-head{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2);font-weight:500;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border)}
-.veille-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
-.veille-info{padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:12px}
-.veille-info.bargain{background:rgba(16,185,129,.06);color:var(--green)}
-.veille-info.warn{background:rgba(245,158,11,.08);color:var(--yellow)}
-.veille-matched{font-size:11px;color:var(--muted);padding:6px 12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-@media(max-width:700px){
-  header{padding:0 14px}
-  .logo span:last-child{display:none}
-  main{padding:12px}
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .kpi{padding:12px 14px}
-  .kpi-value{font-size:20px}
-  .tabs{width:100%;overflow-x:auto}
-  .toolbar{gap:8px}
-  .search-input{width:100%}
-  .table-wrap table{display:none}
-  .mobile-cards{display:flex;flex-direction:column;gap:8px;padding:10px}
-  .veille-panel.open{padding:12px 14px 16px}
-  .veille-header{gap:8px}
-  .vr-row{grid-template-columns:28px 1fr 70px 60px;padding:6px 8px;font-size:12px}
+:root {
+  --bg: #0a0b0e;
+  --surface: #12141a;
+  --surface2: #1a1d26;
+  --border: #2a2d38;
+  --text: #e8eaf0;
+  --text2: #8b90a0;
+  --accent: #00c9a7;
+  --accent2: #00a88a;
+  --red: #ff4d6a;
+  --green: #00c9a7;
+  --orange: #ffaa33;
+  --blue: #4d9fff;
+  --purple: #a855f7;
+  --radius: 10px;
 }
-@media(min-width:701px){.mobile-cards{display:none}}
-.mcard{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:start;position:relative}
-.mcard-left{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px}
-.mcard-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
-.mcard-set{font-size:11px;color:var(--muted);margin-top:1px}
-.mcard-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.mcard-nums{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
-.mnum{display:flex;flex-direction:column;align-items:center;gap:1px}
-.mnum-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2)}
-.mnum-val{font-family:monospace;font-size:13px;font-weight:500}
-.mcard-actions{position:absolute;bottom:10px;right:12px;display:flex;gap:6px;opacity:0;transition:opacity .2s}
-.mcard:active .mcard-actions{opacity:1}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.logo span { color: var(--accent); }
+.header-actions { display: flex; gap: 8px; }
+.btn {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text); cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-accent { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.btn-accent:hover { background: var(--accent2); }
+
+.stats {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
+  padding: 20px 24px;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 700; font-family:'JetBrains Mono',monospace; }
+.stat-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.stat-green { color: var(--green); }
+.stat-red { color: var(--red); }
+
+.filters {
+  padding: 0 24px 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.tab {
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+  background: transparent; color: var(--text2); cursor: pointer;
+  font-family: inherit; font-size: 13px; transition: all 0.2s;
+}
+.tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.tab:hover:not(.active) { border-color: var(--text2); color: var(--text); }
+
+select.filter-select {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text); font-family: inherit; font-size: 13px;
+  cursor: pointer; outline: none;
+}
+
+.table-wrap {
+  padding: 0 24px 24px; overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 10px 12px; text-align: left; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--text2);
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  user-select: none; white-space: nowrap;
+}
+th:hover { color: var(--text); }
+td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  font-size: 14px; white-space: nowrap;
+}
+tr:hover td { background: var(--surface2); }
+.jeu-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+}
+.jeu-OP { background: #1a1040; color: #a855f7; }
+.jeu-PK { background: #0f2a1a; color: #4ade80; }
+.status-stock { color: var(--blue); }
+.status-vendu { color: var(--orange); }
+.prix-up { color: var(--green); }
+.prix-down { color: var(--red); }
+.mono { font-family:'JetBrains Mono',monospace; font-size: 13px; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: none; justify-content: center; align-items: center; z-index: 200;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; width: 420px; max-width: 90vw;
+}
+.modal h3 { margin-bottom: 16px; font-size: 18px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text); font-family: inherit; font-size: 14px;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+/* Progress bar */
+.progress-bar {
+  display: none; padding: 12px 24px;
+}
+.progress-bar.show { display: block; }
+.progress-inner {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 16px;
+}
+.progress-text { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+.progress-track {
+  height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--accent); border-radius: 3px;
+  transition: width 0.3s;
+}
+.progress-log {
+  margin-top: 8px; max-height: 120px; overflow-y: auto;
+  font-family:'JetBrains Mono',monospace; font-size: 11px; color: var(--text2);
+}
+.progress-log div { padding: 2px 0; }
+.log-ok { color: var(--green); }
+.log-err { color: var(--red); }
+.log-skip { color: var(--orange); }
+
+/* Delete button */
+.btn-del {
+  background: none; border: none; color: var(--text2); cursor: pointer;
+  font-size: 14px; padding: 4px; opacity: 0; transition: all 0.2s;
+}
+tr:hover .btn-del { opacity: 1; }
+.btn-del:hover { color: var(--red); }
+
+/* Edit inline */
+td.editable { cursor: pointer; }
+td.editable:hover { background: var(--surface); outline: 1px dashed var(--border); }
+
+@media (max-width: 768px) {
+  .stats { grid-template-columns: repeat(2,1fr); gap: 10px; padding: 12px; }
+  .stat-value { font-size: 22px; }
+  .header { padding: 12px; }
+  .filters { padding: 0 12px 12px; }
+  .table-wrap { padding: 0 12px 12px; }
+  td, th { padding: 8px 6px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo"><span class="logo-badge">TCG</span><span>Tracker</span><span style="color:var(--muted);font-size:13px;font-weight:400">— One Piece & Pokémon</span></div>
+
+<div class="header">
+  <div class="logo">🃏 TCG <span>Tracker</span></div>
   <div class="header-actions">
-    <button class="btn btn-ghost" onclick="toggleVeillePanel()" title="Veille marché Cardmarket via Apify">🔍 Veille</button>
-    <button class="btn btn-ghost" onclick="togglePricePanel()">⟳ Màj Prix</button>
-    <button class="btn btn-ghost" onclick="openKeys()" title="Configurer les clés API">⚙️</button>
-    <button class="btn btn-ghost" onclick="exportCSV()">⤓ CSV</button>
-    <button class="btn btn-primary" onclick="openModal()">+ Ajouter</button>
-  </div>
-</header>
-
-<!-- VEILLE MARCHÉ PANEL -->
-<div id="veille-panel" class="veille-panel">
-  <div style="max-width:1400px;margin:0 auto;">
-    <div class="veille-header">
-      <span style="font-size:14px;font-weight:700;color:var(--text)">🏴‍☠️ Veille Marché</span>
-      <div class="veille-toggle">
-        <button class="active" id="vg-op" onclick="setVeilleGame('op')">One Piece</button>
-        <button id="vg-pk" onclick="setVeilleGame('pk')">Pokémon</button>
-      </div>
-      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('weekly-top-cards')">⚡ Top Cards</button>
-      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('best-bargains')">🔍 Bargains</button>
-      <div class="veille-status">
-        <div class="veille-spin" id="v-spin"></div>
-        <span id="v-msg" style="font-size:11px">Prêt · ~0.10$/run</span>
-      </div>
-    </div>
-    <div class="veille-tabs">
-      <button class="veille-tab active" id="vt-top" onclick="setVeilleTab('top')">Top Cards <span style="opacity:.5" id="vt-top-n">0</span></button>
-      <button class="veille-tab" id="vt-bar" onclick="setVeilleTab('bargains')">Bargains <span style="opacity:.5" id="vt-bar-n">0</span></button>
-    </div>
-    <div id="veille-info-area"></div>
-    <div id="veille-matched-area"></div>
-    <div class="veille-results" id="veille-results">
-      <div class="veille-empty">
-        Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping Cardmarket.<br>
-        <span style="font-size:11px;margin-top:6px;display:inline-block">Powered by Apify · Données EN · ~2min par run</span>
-      </div>
-    </div>
-    <div style="margin-top:8px;font-size:10px;color:var(--muted2);text-align:right">
-      Apify Trend Scraper · Cardmarket EN · Les cartes de ton portefeuille sont surlignées en orange
-    </div>
+    <button class="btn" onclick="updatePrices()" id="btnMaj">🔄 Màj Prix</button>
+    <button class="btn" onclick="exportCSV()">📥 CSV</button>
+    <button class="btn btn-accent" onclick="showAddModal()">+ Ajouter</button>
   </div>
 </div>
 
-<div id="price-panel" style="display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;">
-  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-    <span style="font-size:13px;font-weight:600;color:var(--text)">Mise à jour prix marché</span>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('OP')">
-      <span style="color:var(--op)">●</span> One Piece (<span id="op-count">0</span> cartes)
-    </button>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('PK')">
-      <span style="color:var(--pk)">●</span> Pokémon (<span id="pk-count">0</span> cartes)
-    </button>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('ALL')">⟳ Tout mettre à jour</button>
-    <div id="upd-progress" style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
-      <div id="upd-spin" style="display:none;width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div>
-      <span id="upd-msg"></span>
-    </div>
-    <div style="margin-left:auto;font-size:11px;color:var(--muted2)">Plan gratuit : 100 req/jour · Cartes seulement (pas les scellés)</div>
+<div class="stats" id="stats"></div>
+
+<div class="progress-bar" id="progressBar">
+  <div class="progress-inner">
+    <div class="progress-text" id="progressText">Mise à jour des prix...</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-log" id="progressLog"></div>
   </div>
 </div>
 
-<main>
-  <div class="kpi-grid">
-    <div class="kpi blue"><div class="kpi-label">Total Investi (stock)</div><div class="kpi-value" id="k1">—</div><div class="kpi-sub" id="k1s">—</div></div>
-    <div class="kpi orange"><div class="kpi-label">Revenus Ventes</div><div class="kpi-value" id="k2">—</div><div class="kpi-sub" id="k2s">net frais 5% CM</div></div>
-    <div class="kpi green"><div class="kpi-label">P&L Réalisé</div><div class="kpi-value" id="k3">—</div><div class="kpi-sub" id="k3s">—</div></div>
-    <div class="kpi purple"><div class="kpi-label">ROI</div><div class="kpi-value" id="k4">—</div><div class="kpi-sub" id="k4s">—</div></div>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('all')" id="tab-all">Tous <span class="count" id="ca">0</span></button>
-    <button class="tab" onclick="setTab('OP')" id="tab-OP">One Piece <span class="count" id="co">0</span></button>
-    <button class="tab" onclick="setTab('PK')" id="tab-PK">Pokémon <span class="count" id="cp">0</span></button>
-  </div>
-  <div class="toolbar">
-    <div style="display:flex;gap:6px">
-      <button class="filter-btn active" onclick="setStatus('all')" id="f-all">Tous</button>
-      <button class="filter-btn stock" onclick="setStatus('Stock')" id="f-stock">📦 Stock</button>
-      <button class="filter-btn" onclick="setStatus('Vendu')" id="f-vendu">✓ Vendus</button>
-    </div>
-    <input class="search-input" type="text" placeholder="🔍 Rechercher..." id="search" oninput="render()">
-    <select class="sort-sel" id="ss" onchange="render()">
-      <option value="date-desc">Date ↓</option><option value="date-asc">Date ↑</option>
-      <option value="cost-desc">Coût ↓</option><option value="pnl-desc">P&L ↓</option><option value="name-asc">Nom A→Z</option>
-    </select>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Jeu</th><th>Article</th><th>Type</th><th>Qté</th><th>Date</th><th>Coût unit.</th><th>Vente unit.</th><th>P&L net</th><th>📈 Marché</th><th>Source</th><th>Statut</th><th></th></tr></thead>
-      <tbody id="tb"></tbody>
-    </table>
-    <div class="mobile-cards" id="mc"></div>
-  </div>
-</main>
-<div class="modal-overlay" id="modal">
+<div class="filters">
+  <button class="tab active" data-filter="all" onclick="setGameFilter('all',this)">Tous</button>
+  <button class="tab" data-filter="OP" onclick="setGameFilter('OP',this)">One Piece</button>
+  <button class="tab" data-filter="PK" onclick="setGameFilter('PK',this)">Pokémon</button>
+  <select class="filter-select" onchange="setStatusFilter(this.value)">
+    <option value="all">Tous statuts</option>
+    <option value="Stock">En stock</option>
+    <option value="Vendu">Vendus</option>
+  </select>
+  <select class="filter-select" onchange="setTypeFilter(this.value)">
+    <option value="all">Tous types</option>
+    <option value="Carte">Cartes</option>
+    <option value="Booster">Boosters</option>
+    <option value="Scellé">Scellés</option>
+    <option value="Display">Displays</option>
+    <option value="Gradée">Gradées</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortBy('jeu')">Jeu</th>
+        <th onclick="sortBy('nom')">Nom</th>
+        <th onclick="sortBy('type')">Type</th>
+        <th onclick="sortBy('qte')" class="text-center">Qté</th>
+        <th onclick="sortBy('statut')">Statut</th>
+        <th onclick="sortBy('cout_total')" class="text-right">Coût</th>
+        <th onclick="sortBy('prix_marche')" class="text-right">Marché</th>
+        <th onclick="sortBy('vente')" class="text-right">Vente</th>
+        <th onclick="sortBy('pl')" class="text-right">P&L</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" id="addModal">
   <div class="modal">
-    <div class="modal-title" id="mt">Ajouter</div>
-    <div class="fg">
-      <div><label>Jeu</label><select id="fg"><option value="OP">One Piece</option><option value="PK">Pokémon</option></select></div>
-      <div><label>Type</label><select id="ft"><option>Carte</option><option>Booster</option><option>Display</option><option>ETB</option><option>Bundle</option><option>Coffret</option><option>UPC</option><option>Blister</option><option>Autre</option></select></div>
-      <div class="full"><label>Nom</label><input type="text" id="fn"></div>
-      <div class="full"><label>Set</label><input type="text" id="fse"></div>
-      <div><label>Date</label><input type="date" id="fd"></div>
-      <div><label>Quantité</label><input type="number" id="fq" value="1" min="1"></div>
-      <div><label>Statut</label><select id="fst"><option value="Stock">Stock</option><option value="Vendu">Vendu</option></select></div>
-      <div><label>Source</label><select id="fp"><option>Cardmarket</option><option>Vinted</option><option>Amazon</option><option>Discord</option><option>Autre</option></select></div>
-      <div><label>Prix achat unit. €</label><input type="number" id="fc" step="0.01"></div>
-      <div><label>Prix vente unit. €</label><input type="number" id="fv" step="0.01"></div>
+    <h3>Ajouter un item</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Jeu</label>
+        <select id="fJeu"><option value="OP">One Piece</option><option value="PK">Pokémon</option></select>
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="fType"><option>Carte</option><option>Booster</option><option>Scellé</option><option>Display</option><option>Gradée</option></select>
+      </div>
     </div>
-    <div class="ma"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveItem()">Enregistrer</button></div>
+    <div class="form-group"><label>Nom</label><input id="fNom" placeholder="Ex: Monkey D. Luffy (OP13-118)"></div>
+    <div class="form-group"><label>Expansion</label><input id="fExp" placeholder="Ex: Carrying on his Will"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Quantité</label><input id="fQte" type="number" value="1" min="1"></div>
+      <div class="form-group"><label>Prix unitaire (€)</label><input id="fPrix" type="number" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date d'achat</label><input id="fDate" type="date"></div>
+      <div class="form-group"><label>Source</label><select id="fSource"><option>Cardmarket</option><option>Vinted</option><option>Autre</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-accent" onclick="addItem()">Ajouter</button>
+    </div>
   </div>
 </div>
-<div class="modal-overlay" id="keys-modal">
-  <div class="modal" style="width:440px">
-    <div class="modal-title">⚙️ Clés API</div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Tes clés sont stockées dans le localStorage de ton navigateur, jamais dans le code source.</p>
-    <div class="fg" style="grid-template-columns:1fr">
-      <div><label>RapidAPI Key (Màj Prix Cardmarket)</label><input type="text" id="key-rapid" placeholder="Ta clé RapidAPI..."></div>
-      <div><label>Apify Token (Veille Marché)</label><input type="text" id="key-apify" placeholder="apify_api_..."></div>
-    </div>
-    <div class="ma"><button class="btn btn-ghost" onclick="closeKeys()">Annuler</button><button class="btn btn-primary" onclick="saveKeys()">Enregistrer</button></div>
-  </div>
-</div>
-<footer>TCG Tracker · Màj <strong>21 mai 2026</strong> · Sources: Cardmarket CSV · Vinted · Amazon · Veille Apify</footer>
-<script>
-/* ══════════════════════════════════════════════
-   ITEMS DATA
-   ══════════════════════════════════════════════ */
-let items=[
-{id:1,g:'OP',n:'Monkey D. Luffy (OP13-118) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-01-07',c:55,v:null,st:'Stock',src:'Cardmarket',pid:857338},
-{id:2,g:'OP',n:'Monkey D. Luffy (ST21-014) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-01-07',c:99.99,v:null,st:'Stock',src:'Cardmarket',pid:853300},
-{id:3,g:'OP',n:'Tashigi (OP06-050)',s:'Legacy of the Master',t:'Carte',q:1,d:'2026-01-13',c:45,v:null,st:'Stock',src:'Cardmarket',pid:843034},
-{id:4,g:'OP',n:'Nami (OP09-050) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-13',c:9.9,v:null,st:'Stock',src:'Cardmarket',pid:802921},
-{id:5,g:'OP',n:'Magellan (OP02-085)',s:'Kingdoms of Intrigue',t:'Carte',q:1,d:'2026-01-13',c:50,v:null,st:'Stock',src:'Cardmarket',pid:732815},
-{id:6,g:'OP',n:'Crocodile (OP01-067) V.2',s:'Romance Dawn',t:'Carte',q:1,d:'2026-01-13',c:35,v:null,st:'Stock',src:'Cardmarket',pid:690893},
-{id:7,g:'OP',n:'O-Nami (OP06-101) V.2',s:'Wings of the Captain',t:'Carte',q:1,d:'2026-01-16',c:25,v:null,st:'Stock',src:'Cardmarket',pid:760605},
-{id:8,g:'OP',n:'Buggy (OP02-058) V.2',s:'Paramount War',t:'Carte',q:1,d:'2026-01-16',c:10,v:null,st:'Stock',src:'Cardmarket',pid:699939},
-{id:9,g:'OP',n:'Sanji (OP11-051) V.2',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-01-16',c:8,v:null,st:'Stock',src:'Cardmarket',pid:827140},
-{id:10,g:'OP',n:'Buggy (OP09-042) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-01-23',c:26.9,v:null,st:'Stock',src:'Cardmarket',pid:802910},
-{id:11,g:'OP',n:'Monkey D. Luffy (OP07-073)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-02-04',c:110,v:null,st:'Stock',src:'Cardmarket',pid:837224},
-{id:12,g:'OP',n:'Nami (ST29-008) V.2',s:'Starter Deck: Egghead',t:'Carte',q:1,d:'2026-02-19',c:12.99,v:null,st:'Stock',src:'Cardmarket',pid:865576},
-{id:13,g:'OP',n:'Monkey D. Luffy (V.1)',s:'Promos',t:'Carte',q:1,d:'2026-03-04',c:10,v:null,st:'Stock',src:'Cardmarket',pid:746238},
-{id:14,g:'OP',n:'Monkey D. Luffy (PRB02-005) V.2',s:'The Best Vol.2',t:'Carte',q:1,d:'2026-03-04',c:20,v:null,st:'Stock',src:'Cardmarket',pid:852530},
-{id:15,g:'OP',n:'Makino (ST13-012) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:1.95,v:null,st:'Stock',src:'Cardmarket',pid:823247},
-{id:16,g:'OP',n:'Nami (OP02-036)',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:14.25,v:null,st:'Stock',src:'Cardmarket',pid:768045},
-{id:17,g:'OP',n:'Buggy (OP09-051) Promos',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-03-04',c:34.9,v:null,st:'Stock',src:'Cardmarket',pid:830639},
-{id:18,g:'OP',n:'Buggy (OP09-051) V.2',s:'Emperors in the New World',t:'Carte',q:1,d:'2026-03-12',c:12,v:null,st:'Stock',src:'Cardmarket',pid:802923},
-{id:19,g:'OP',n:'Ace & Sabo & Luffy (OP13-007) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-03-23',c:20,v:null,st:'Stock',src:'Cardmarket',pid:857198},
-{id:20,g:'OP',n:'Buggy (P-084)',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-04-02',c:20,v:null,st:'Stock',src:'Cardmarket',pid:817503},
-{id:21,g:'OP',n:'Portgas D. Ace (OP13-119) V.1',s:'Special Tournament Promos',t:'Carte',q:1,d:'2026-05-04',c:79.99,v:null,st:'Stock',src:'Cardmarket',pid:878022},
-{id:22,g:'OP',n:'Nami (ST21-009) V.2',s:'Starter Deck: EX Gear 5',t:'Carte',q:1,d:'2026-05-06',c:7,v:null,st:'Stock',src:'Cardmarket',pid:816830},
-{id:23,g:'OP',n:'EB03 Booster Heroines Edition',s:'EB03',t:'Booster',q:1,d:'2026-03-10',c:4.99,v:null,st:'Stock',src:'Amazon'},
-{id:30,g:'OP',n:'Victoria Cindry (OP06-091) V.3',s:'The Best',t:'Carte',q:1,d:'2026-01-12',c:null,v:10,st:'Vendu',src:'Cardmarket'},
-{id:31,g:'OP',n:'St. Marcus Mars (OP13-091) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-02-26',c:null,v:19,st:'Vendu',src:'Cardmarket'},
-{id:32,g:'OP',n:'St. Shepherd Ju Peter (OP13-084) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-02-26',c:null,v:19,st:'Vendu',src:'Cardmarket'},
-{id:33,g:'OP',n:'Eustass Captain Kid (OP10-099) V.2',s:'Royal Blood',t:'Carte',q:1,d:'2026-02-26',c:null,v:17,st:'Vendu',src:'Cardmarket'},
-{id:34,g:'OP',n:'Boa Hancock (OP14-112) V.1',s:"The Azure Sea's Seven",t:'Carte',q:1,d:'2026-03-24',c:null,v:6,st:'Vendu',src:'Cardmarket'},
-{id:35,g:'OP',n:'Roronoa Zoro (EB04-007) V.1',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-09',c:4,v:10,st:'Vendu',src:'Cardmarket'},
-{id:36,g:'OP',n:'Enel (OP15-060) V.2',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-10',c:4,v:23,st:'Vendu',src:'Cardmarket'},
-{id:37,g:'OP',n:'Sabo (OP15-046) V.1',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-10',c:4,v:3,st:'Vendu',src:'Cardmarket'},
-{id:38,g:'OP',n:'Nami (OP15-086) V.1',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-10',c:4,v:1,st:'Vendu',src:'Cardmarket'},
-{id:39,g:'OP',n:'Enel (OP15-058) V.2',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-11',c:4,v:55,st:'Vendu',src:'Cardmarket'},
-{id:40,g:'OP',n:'Jewelry Bonney (EB04-001) V.2',s:"Adventure on Kami's Island",t:'Carte',q:1,d:'2026-04-11',c:4,v:39,st:'Vendu',src:'Cardmarket'},
-{id:41,g:'OP',n:'Sabo (PRB02-014) V.1',s:'The Best Vol.2',t:'Carte',q:1,d:'2026-04-12',c:4,v:1,st:'Vendu',src:'Cardmarket'},
-{id:42,g:'OP',n:'Nami (OP15-086) V.1 x2',s:"Adventure on Kami's Island",t:'Carte',q:2,d:'2026-04-12',c:4,v:1,st:'Vendu',src:'Cardmarket'},
-{id:100,g:'PK',n:'Booster style de combat EB',s:'Epée et Bouclier',t:'Booster',q:1,d:null,c:20,v:null,st:'Stock',src:'Vinted'},
-{id:101,g:'PK',n:'Salameche rc3/rc32',s:'151',t:'Carte',q:1,d:null,c:5.99,v:null,st:'Stock',src:'Vinted'},
-{id:102,g:'PK',n:'Blister EV8',s:'Foudre Noire',t:'Blister',q:3,d:null,c:10.96,v:null,st:'Stock',src:'Vinted'},
-{id:103,g:'PK',n:'Lokhlass ex 164',s:'Ecarlate & Violet',t:'Carte',q:1,d:null,c:5.71,v:null,st:'Stock',src:'Cardmarket'},
-{id:104,g:'PK',n:'Drattak 177/159',s:'Aventure ensemble',t:'Carte',q:1,d:null,c:6.71,v:null,st:'Stock',src:'Cardmarket'},
-{id:105,g:'PK',n:'Zoroark 147/196',s:'Flamme Obsidienne',t:'Carte',q:1,d:null,c:2.21,v:null,st:'Stock',src:'Cardmarket'},
-{id:106,g:'PK',n:'Mentali 034/131',s:'Evolutions Prismatiques',t:'Carte',q:1,d:null,c:4.21,v:null,st:'Stock',src:'Cardmarket'},
-{id:107,g:'PK',n:'Dracaufeu 161',s:'Mascarade Crepusculaire',t:'Carte',q:1,d:null,c:4.71,v:null,st:'Stock',src:'Cardmarket'},
-{id:108,g:'PK',n:'Ampibidou 053/159',s:'Aventure ensemble',t:'Carte',q:1,d:null,c:1.9,v:null,st:'Stock',src:'Cardmarket'},
-{id:109,g:'PK',n:'Tortank ex 009/165',s:'EV 151',t:'Carte',q:1,d:null,c:3.96,v:null,st:'Stock',src:'Cardmarket'},
-{id:110,g:'PK',n:'Artikodin 161/159',s:'Aventure ensemble',t:'Carte',q:1,d:null,c:26.79,v:null,st:'Stock',src:'Cardmarket'},
-{id:111,g:'PK',n:'Ampibidou 172/159',s:'Aventure ensemble',t:'Carte',q:1,d:null,c:6.29,v:null,st:'Stock',src:'Cardmarket'},
-{id:112,g:'PK',n:'Bundle 151',s:'151',t:'Bundle',q:1,d:null,c:66.68,v:null,st:'Stock',src:'Vinted'},
-{id:113,g:'PK',n:'Drogrino ex 235/182',s:'Destined Rivals',t:'Carte',q:1,d:null,c:26.95,v:null,st:'Stock',src:'Cardmarket'},
-{id:114,g:'PK',n:'Booster blister EV6',s:'Fables Nebuleuses',t:'Blister',q:4,d:null,c:9,v:null,st:'Stock',src:'Vinted'},
-{id:115,g:'PK',n:'Booster blister EV3',s:'Evolutions a Paldea',t:'Blister',q:2,d:null,c:9,v:null,st:'Stock',src:'Vinted'},
-{id:116,g:'PK',n:'ETB EV10.5 Flamme Blanche',s:'Flamme Blanche',t:'ETB',q:1,d:'2025-07-19',c:55.99,v:null,st:'Stock',src:'Amazon'},
-{id:117,g:'PK',n:'ETB EV10.5 Foudre Noire',s:'Foudre Noire',t:'ETB',q:1,d:'2025-07-19',c:55.99,v:null,st:'Stock',src:'Amazon'},
-{id:118,g:'PK',n:'ETB EV9 Aventure ensemble',s:'Aventure ensemble',t:'ETB',q:1,d:null,c:55.99,v:null,st:'Stock',src:'Amazon'},
-{id:119,g:'PK',n:'Mini tins Pouvoir de Kanto',s:'Kanto',t:'Coffret',q:2,d:null,c:11.99,v:null,st:'Stock',src:'Vinted'},
-{id:120,g:'PK',n:'Coffret premium Carchacrok ex',s:'Ecarlate & Violet',t:'Coffret',q:1,d:null,c:49.99,v:null,st:'Stock',src:'Amazon'},
-{id:121,g:'PK',n:'Coffret collection Dracaufeu ex',s:'Ecarlate & Violet',t:'Coffret',q:1,d:null,c:37.99,v:null,st:'Stock',src:'Amazon'},
-{id:122,g:'PK',n:'Bundle EV 8.5 #1',s:'Evolutions Prismatiques',t:'Bundle',q:1,d:null,c:57.35,v:null,st:'Stock',src:'Vinted'},
-{id:123,g:'PK',n:'Bundle EV 8.5 #2',s:'Evolutions Prismatiques',t:'Bundle',q:1,d:null,c:52.5,v:null,st:'Stock',src:'Vinted'},
-{id:124,g:'PK',n:'Booster blister EV8',s:'Foudre Noire',t:'Blister',q:4,d:null,c:5.99,v:null,st:'Stock',src:'Vinted'},
-{id:125,g:'PK',n:'Booster EB11',s:'Origines Perdues',t:'Booster',q:7,d:null,c:6.79,v:null,st:'Stock',src:'Vinted'},
-{id:126,g:'PK',n:'Booster EV8',s:'Foudre Noire',t:'Booster',q:3,d:null,c:7,v:null,st:'Stock',src:'Vinted'},
-{id:127,g:'PK',n:'Lucario VStar SWSH291 Promo',s:'SWSH Promos',t:'Carte',q:7,d:null,c:15.66,v:null,st:'Stock',src:'Vinted'},
-{id:128,g:'PK',n:'Mimiqui 075 scelle promo',s:'Promos',t:'Carte',q:1,d:null,c:4.8,v:null,st:'Stock',src:'Vinted'},
-{id:129,g:'PK',n:'Coffret Pikachu VMAX',s:'SWSH',t:'Coffret',q:1,d:null,c:67.5,v:null,st:'Stock',src:'Vinted'},
-{id:130,g:'PK',n:'Mewtwo promo 052',s:'Promos',t:'Carte',q:1,d:null,c:56.19,v:null,st:'Stock',src:'Vinted'},
-{id:131,g:'PK',n:'Yvelta 205/182',s:'Destined Rivals',t:'Carte',q:1,d:null,c:24.49,v:null,st:'Stock',src:'Cardmarket'},
-{id:132,g:'PK',n:'ETB Fables Nebuleuses',s:'Fables Nebuleuses',t:'ETB',q:1,d:null,c:75,v:null,st:'Stock',src:'Amazon'},
-{id:133,g:'PK',n:'Booster carton EV8',s:'Foudre Noire',t:'Booster',q:12,d:null,c:6.99,v:null,st:'Stock',src:'Vinted'},
-{id:134,g:'PK',n:'Torsade 211',s:'Ecarlate & Violet',t:'Carte',q:1,d:null,c:30.95,v:null,st:'Stock',src:'Cardmarket'},
-{id:135,g:'PK',n:'Poulpaf 207/191',s:'Couronnes Stellaires',t:'Carte',q:1,d:null,c:26.9,v:null,st:'Stock',src:'Cardmarket'},
-{id:136,g:'PK',n:'Blister plastique EV9',s:'Aventure ensemble',t:'Blister',q:8,d:null,c:9.78,v:null,st:'Stock',src:'Vinted'},
-{id:137,g:'PK',n:'Blister plastique EV10',s:'Mega-Evolution',t:'Blister',q:12,d:null,c:9.06,v:null,st:'Stock',src:'Vinted'},
-{id:138,g:'PK',n:'Seleroc Stamp 004',s:'Stamp',t:'Carte',q:2,d:null,c:19.4,v:null,st:'Stock',src:'Vinted'},
-{id:139,g:'PK',n:'Bundle ME 10.5',s:'Mega-Evolution',t:'Bundle',q:1,d:null,c:35.94,v:null,st:'Stock',src:'Amazon'},
-{id:140,g:'PK',n:'Demi display ME01',s:'Mega-Evolution',t:'Display',q:1,d:null,c:107.82,v:null,st:'Stock',src:'Vinted'},
-{id:141,g:'PK',n:'Mini tin Mega-Lucario',s:'Mega-Heroisme',t:'Coffret',q:1,d:'2025-10-11',c:11.99,v:null,st:'Stock',src:'Amazon'},
-{id:142,g:'PK',n:'Pokebox Nidoking',s:'Team Rocket',t:'Coffret',q:1,d:'2025-09-05',c:24.99,v:null,st:'Stock',src:'Amazon'},
-{id:143,g:'PK',n:'Bundle 10.5 Flamme Blanche',s:'Mega-Evolution',t:'Bundle',q:2,d:null,c:35.94,v:null,st:'Stock',src:'Amazon'},
-{id:144,g:'PK',n:'Bundle 10.5 Foudre Noire',s:'Mega-Evolution',t:'Bundle',q:1,d:null,c:35.94,v:null,st:'Stock',src:'Amazon'},
-{id:145,g:'PK',n:'Mini tin Mega-Florizarre',s:'Mega-Heroisme',t:'Coffret',q:1,d:'2025-10-18',c:11.99,v:null,st:'Stock',src:'Amazon'},
-{id:146,g:'PK',n:'Pokebox Mewtwo ex',s:'Team Rocket',t:'Coffret',q:1,d:null,c:25.99,v:null,st:'Stock',src:'Amazon'},
-{id:147,g:'PK',n:'Promo Alakazam 009',s:'Promos',t:'Carte',q:3,d:null,c:11.77,v:null,st:'Stock',src:'Vinted'},
-{id:148,g:'PK',n:'Argouste 153/132',s:'Ecarlate & Violet',t:'Carte',q:3,d:null,c:8.74,v:null,st:'Stock',src:'Cardmarket'},
-{id:149,g:'PK',n:'Sulfura PSA10',s:'Base Set',t:'Carte',q:1,d:null,c:60,v:null,st:'Stock',src:'Vinted'},
-{id:150,g:'PK',n:'Reshiram de N CCC 9.5',s:'Noir & Blanc',t:'Carte',q:1,d:null,c:55,v:null,st:'Stock',src:'Vinted'},
-{id:151,g:'PK',n:'Sulfura+Elekthor+Artikodin CCC 9.5',s:'Noir & Blanc',t:'Carte',q:1,d:null,c:85,v:null,st:'Stock',src:'Vinted'},
-{id:152,g:'PK',n:'ETB ME02',s:'Mega-Evolution',t:'ETB',q:2,d:null,c:55.99,v:null,st:'Stock',src:'Amazon'},
-{id:153,g:'PK',n:'UPC Dracaufeu',s:'Mega-Evolution',t:'UPC',q:3,d:'2025-11-30',c:168.32,v:null,st:'Stock',src:'Amazon'},
-{id:154,g:'PK',n:'ETB ME01',s:'Mega-Evolution',t:'ETB',q:1,d:null,c:70,v:null,st:'Stock',src:'Amazon'},
-{id:155,g:'PK',n:'Mini-boite Unys',s:'Unys',t:'Coffret',q:1,d:'2025-07-18',c:11.99,v:null,st:'Stock',src:'Amazon'},
-{id:156,g:'PK',n:'Collection Poster Unys',s:'Unys',t:'Coffret',q:1,d:'2025-08-19',c:23.32,v:null,st:'Stock',src:'Amazon'},
-{id:157,g:'PK',n:'Presentoir 18 boosters ME',s:'Mega-Evolution',t:'Display',q:1,d:'2025-10-11',c:89.85,v:null,st:'Stock',src:'Amazon'},
-{id:158,g:'PK',n:'Blister ameliore 2 boosters',s:'Ecarlate & Violet',t:'Blister',q:1,d:'2025-10-10',c:9.99,v:null,st:'Stock',src:'Amazon'},
-{id:159,g:'PK',n:'Collection Autocollant ME HT',s:'Heros Transcendants',t:'Coffret',q:1,d:'2026-02-04',c:16.66,v:null,st:'Stock',src:'Amazon'},
-{id:160,g:'PK',n:'ETB ME Heros Transcendants',s:'Heros Transcendants',t:'ETB',q:5,d:'2026-03-07',c:46.66,v:null,st:'Stock',src:'Amazon'},
-{id:161,g:'PK',n:'Lot 6 boosters ME HT',s:'Heros Transcendants',t:'Booster',q:3,d:'2026-04-24',c:29.95,v:null,st:'Stock',src:'Amazon'},
-{id:162,g:'PK',n:'Collect 151 Booster Box',s:'151',t:'Display',q:1,d:'2025-12-30',c:55,v:null,st:'Stock',src:'Cardmarket'},
-{id:163,g:'PK',n:'Gem Pack Vol.2 Booster Box',s:'Gem Pack Vol.2',t:'Display',q:1,d:'2025-12-30',c:50,v:null,st:'Stock',src:'Cardmarket'},
-{id:200,g:'PK',n:'Feunard 199/197 PSA9',s:'Mascarade Crepusculaire',t:'Carte',q:1,d:null,c:44,v:43,st:'Vendu',src:'Vinted'},
-{id:201,g:'PK',n:'Regirock ex 214/182',s:'Destined Rivals',t:'Carte',q:1,d:'2025-11-27',c:7.99,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:202,g:'PK',n:'Terapagos ex 165',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-12-11',c:4.21,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:203,g:'PK',n:'Phyllali ex 006/131',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2025-11-29',c:4.71,v:2.9,st:'Vendu',src:'Cardmarket'},
-{id:204,g:'PK',n:'Givrali ex 026/131',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2025-11-29',c:3.71,v:2,st:'Vendu',src:'Cardmarket'},
-{id:205,g:'PK',n:'Aquali ex 023/131',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2025-11-29',c:4.21,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:206,g:'PK',n:'Mewtwo ex 205',s:'Mascarade Crepusculaire',t:'Carte',q:1,d:null,c:1.9,v:1,st:'Vendu',src:'Vinted'},
-{id:207,g:'PK',n:'Fouinar 168/159',s:'Aventure ensemble',t:'Carte',q:1,d:'2026-01-15',c:5.9,v:4.5,st:'Vendu',src:'Cardmarket'},
-{id:208,g:'PK',n:'Maracachi 160/159',s:'Aventure ensemble',t:'Carte',q:1,d:'2025-12-01',c:5.29,v:2,st:'Vendu',src:'Cardmarket'},
-{id:209,g:'PK',n:'Nostenfer ex (Team Rocket)',s:'Destined Rivals',t:'Carte',q:1,d:'2026-01-09',c:36.04,v:39,st:'Vendu',src:'Cardmarket'},
-{id:210,g:'PK',n:'Coffret Mewtwo ex',s:'Ecarlate & Violet',t:'Coffret',q:2,d:null,c:25.99,v:27.5,st:'Vendu',src:'Vinted'},
-{id:211,g:'PK',n:'Psykokwak de Ondine 193/182',s:'Destined Rivals',t:'Carte',q:1,d:'2025-12-07',c:41.38,v:50,st:'Vendu',src:'Cardmarket'},
-{id:212,g:'PK',n:'Boite surprise EV8.5',s:'Evolutions Prismatiques',t:'Coffret',q:1,d:null,c:31.99,v:37,st:'Vendu',src:'Vinted'},
-{id:213,g:'PK',n:'Fort Ivoire ex 246/198',s:'Scarlet & Violet',t:'Carte',q:1,d:'2025-12-07',c:19.44,v:11,st:'Vendu',src:'Cardmarket'},
-{id:214,g:'PK',n:'Reshiram de N 167/159',s:'Aventure ensemble',t:'Carte',q:1,d:null,c:23.8,v:24,st:'Vendu',src:'Vinted'},
-{id:215,g:'PK',n:'Dracaufeu 161',s:'Mascarade Crepusculaire',t:'Carte',q:1,d:null,c:4.71,v:4.19,st:'Vendu',src:'Vinted'},
-{id:216,g:'PK',n:'Drogrino ex 235/182',s:'Destined Rivals',t:'Carte',q:1,d:null,c:26.95,v:35,st:'Vendu',src:'Vinted'},
-{id:217,g:'PK',n:'Motisma 197/182',s:'Destined Rivals',t:'Carte',q:1,d:null,c:null,v:1.48,st:'Vendu',src:'Vinted'},
-{id:218,g:'PK',n:'Roucarnage 225/197',s:'Couronnes Stellaires',t:'Carte',q:1,d:null,c:null,v:18,st:'Vendu',src:'Vinted'},
-{id:219,g:'PK',n:'Bombydou 172/162',s:'Temporal Forces',t:'Carte',q:1,d:'2026-02-09',c:5.9,v:6,st:'Vendu',src:'Cardmarket'},
-{id:220,g:'PK',n:'Lithia 209/167',s:'Twilight Masquerade',t:'Carte',q:1,d:'2026-02-09',c:4.96,v:4,st:'Vendu',src:'Cardmarket'},
-{id:221,g:'PK',n:'Zamazenta 201/182',s:'Destined Rivals',t:'Carte',q:1,d:'2026-01-17',c:13.14,v:7,st:'Vendu',src:'Cardmarket'},
-{id:222,g:'PK',n:'Hyporoi ex 131',s:'SV Black Star Promos',t:'Carte',q:1,d:'2026-01-31',c:33.09,v:28,st:'Vendu',src:'Cardmarket'},
-{id:223,g:'PK',n:'Oyacata 207/198',s:'Scarlet & Violet',t:'Carte',q:1,d:'2026-05-03',c:18.39,v:14,st:'Vendu',src:'Cardmarket'},
-{id:230,g:'PK',n:'Dracaufeu ex SV Promos',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-11-21',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:231,g:'PK',n:'Mewtwo ex Team Rocket',s:'SV Black Star Promos',t:'Carte',q:1,d:'2025-11-29',c:null,v:1,st:'Vendu',src:'Cardmarket'},
-{id:232,g:'PK',n:'Cage de Combat',s:'Phantasmal Flames',t:'Carte',q:1,d:'2025-12-01',c:null,v:2.6,st:'Vendu',src:'Cardmarket'},
-{id:233,g:'PK',n:'Mega Lockpin ex',s:'Phantasmal Flames',t:'Carte',q:1,d:'2025-12-01',c:null,v:1,st:'Vendu',src:'Cardmarket'},
-{id:234,g:'PK',n:'Zacian',s:'Phantasmal Flames',t:'Carte',q:1,d:'2025-12-01',c:null,v:4,st:'Vendu',src:'Cardmarket'},
-{id:235,g:'PK',n:'Mega Dracaufeu X ex',s:'Phantasmal Flames',t:'Carte',q:1,d:'2025-12-07',c:null,v:5,st:'Vendu',src:'Cardmarket'},
-{id:236,g:'PK',n:'Amphinobi ex',s:'Twilight Masquerade',t:'Carte',q:1,d:'2025-12-13',c:null,v:6,st:'Vendu',src:'Cardmarket'},
-{id:237,g:'PK',n:'Balbaleze',s:'Surging Sparks',t:'Carte',q:1,d:'2025-12-20',c:null,v:3.7,st:'Vendu',src:'Cardmarket'},
-{id:238,g:'PK',n:'Shifours Mille Poings VMAX',s:'Brilliant Stars',t:'Carte',q:1,d:'2025-12-20',c:null,v:13,st:'Vendu',src:'Cardmarket'},
-{id:239,g:'PK',n:'Pikachu V',s:'SWSH Black Star Promos',t:'Carte',q:1,d:'2026-01-01',c:null,v:2,st:'Vendu',src:'Cardmarket'},
-{id:240,g:'PK',n:'Pikachu VMAX',s:'SWSH Black Star Promos',t:'Carte',q:1,d:'2026-01-01',c:null,v:2,st:'Vendu',src:'Cardmarket'},
-{id:241,g:'PK',n:'Drattak ex',s:'Journey Together',t:'Carte',q:1,d:'2026-01-01',c:null,v:3,st:'Vendu',src:'Cardmarket'},
-{id:242,g:'PK',n:'Mega Mysdibule ex',s:'Mega Evolution',t:'Carte',q:1,d:'2026-01-01',c:null,v:6,st:'Vendu',src:'Cardmarket'},
-{id:243,g:'PK',n:'Mega Kangourex ex',s:'Mega Evolution',t:'Carte',q:1,d:'2026-01-01',c:null,v:1,st:'Vendu',src:'Cardmarket'},
-{id:244,g:'PK',n:'Evolutions Prismatiques Surprise Box',s:'Prismatic Evolutions',t:'Coffret',q:1,d:'2026-01-02',c:null,v:37,st:'Vendu',src:'Cardmarket'},
-{id:245,g:'PK',n:'Ampibidou ex de Mashynn',s:'Journey Together',t:'Carte',q:1,d:'2026-01-15',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:246,g:'PK',n:'Amos de la Team Rocket',s:'Destined Rivals',t:'Carte',q:1,d:'2026-01-15',c:null,v:5,st:'Vendu',src:'Cardmarket'},
-{id:247,g:'PK',n:'Mesmerella',s:'Paldea Evolved',t:'Carte',q:1,d:'2026-02-09',c:null,v:5,st:'Vendu',src:'Cardmarket'},
-{id:248,g:'PK',n:'Surfeur',s:'Surging Sparks',t:'Carte',q:1,d:'2026-02-09',c:null,v:2,st:'Vendu',src:'Cardmarket'},
-{id:249,g:'PK',n:'Energie Amorce',s:'Phantasmal Flames',t:'Carte',q:1,d:'2026-02-18',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:250,g:'PK',n:'Flamigator ex',s:'Paldea Evolved',t:'Carte',q:1,d:'2026-03-16',c:null,v:20,st:'Vendu',src:'Cardmarket'},
-{id:251,g:'PK',n:'Mentali ex',s:'Evolutions Prismatiques',t:'Carte',q:1,d:'2026-04-27',c:null,v:2.5,st:'Vendu',src:'Cardmarket'},
-{id:300,g:'PK',n:'ETB ME02 Flammes Fantasmagoriques',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-01-19',c:55.99,v:70,st:'Vendu',src:'Vinted'},
-{id:301,g:'PK',n:'Salameche rc3/rc32',s:'151',t:'Carte',q:1,d:'2026-02-16',c:5.99,v:6,st:'Vendu',src:'Vinted'},
-{id:302,g:'OP',n:'Carte OP12-0037',s:'OP12',t:'Carte',q:1,d:'2026-03-08',c:null,v:90,st:'Vendu',src:'Vinted'},
-{id:303,g:'OP',n:'Deck ST29 One Piece',s:'ST29',t:'Autre',q:1,d:'2026-03-13',c:null,v:3,st:'Vendu',src:'Vinted'},
-{id:304,g:'OP',n:'Monkey D. Garp (OP11-095)',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-03-18',c:null,v:10,st:'Vendu',src:'Vinted'},
-{id:305,g:'PK',n:'Simiabraz 173/167',s:'Couronnes Stellaires',t:'Carte',q:1,d:'2026-03-20',c:null,v:16,st:'Vendu',src:'Vinted'},
-{id:306,g:'OP',n:'Charlotte Katakuri (OP11-062)',s:'A Fist of Divine Speed',t:'Carte',q:1,d:'2026-03-27',c:null,v:15,st:'Vendu',src:'Vinted'},
-{id:307,g:'PK',n:'ETB Heros Transcendants',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-03-29',c:46.66,v:70,st:'Vendu',src:'Vinted'},
-{id:308,g:'OP',n:'Sabo (OP13-004) Leader',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-04-28',c:null,v:13,st:'Vendu',src:'Vinted'},
-{id:309,g:'PK',n:'Seleroc Stamp Mega Evolution',s:'Mega-Evolution Promos',t:'Carte',q:1,d:'2026-05-10',c:19.4,v:17,st:'Vendu',src:'Vinted'},
-];
 
-/* ══════════════════════════════════════════════
-   CORE TRACKER LOGIC
-   ══════════════════════════════════════════════ */
-let cTab='all',cStat='all',eId=null,nId=500;
-function fmt(v){if(v==null)return'—';return v.toFixed(2).replace('.',',')+' €'}
-function e(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function pnl(i){if(!i.v)return null;const n=i.v*i.q*0.95;if(i.c==null)return null;return n-i.c*i.q}
-function filtered(){
-  const q=(document.getElementById('search').value||'').toLowerCase();
-  const sv=document.getElementById('ss').value;
-  let r=items.filter(i=>{
-    if(cTab!=='all'&&i.g!==cTab)return false;
-    if(cStat!=='all'&&i.st!==cStat)return false;
-    if(q&&!i.n.toLowerCase().includes(q)&&!(i.s||'').toLowerCase().includes(q))return false;
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const SEED_DATA = [{"id": 1, "jeu": "PK", "nom": "Feunard 199/197 gradée PCA9", "type": "Gradée", "qte": 1, "statut": "Vendu", "cout": 44.0, "cout_total": 44.0, "vente": 43.0, "vente_total": 43.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 2, "jeu": "PK", "nom": "Booster style de combat EB", "type": "Booster", "qte": 1, "statut": "Stock", "cout": 20.0, "cout_total": 20.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 3, "jeu": "PK", "nom": "Salameche rc3/rc32", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 5.99, "cout_total": 5.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 4, "jeu": "PK", "nom": "Regirock ex 214/182", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 7.99, "cout_total": 7.99, "vente": 2.5, "vente_total": 2.5, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 5, "jeu": "PK", "nom": "Blister EV8", "type": "Booster", "qte": 3, "statut": "Stock", "cout": 10.96, "cout_total": 32.88, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 6, "jeu": "PK", "nom": "Lokhlass ex 164", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 5.71, "cout_total": 5.71, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 7, "jeu": "PK", "nom": "Drattak 177/159", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 6.71, "cout_total": 6.71, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 8, "jeu": "PK", "nom": "Terapagos 165", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 4.21, "cout_total": 4.21, "vente": 2.5, "vente_total": 2.5, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 9, "jeu": "PK", "nom": "Phyllali 006/131", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 4.71, "cout_total": 4.71, "vente": 2.9, "vente_total": 2.9, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 10, "jeu": "PK", "nom": "Zoroark 147/196", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 2.21, "cout_total": 2.21, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 11, "jeu": "PK", "nom": "Givrali 026/131", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 3.71, "cout_total": 3.71, "vente": 2.0, "vente_total": 2.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 12, "jeu": "PK", "nom": "Aquali 023/131", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 4.21, "cout_total": 4.21, "vente": 2.5, "vente_total": 2.5, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 13, "jeu": "PK", "nom": "Mentali 034/131", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 4.21, "cout_total": 4.21, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 14, "jeu": "PK", "nom": "Dracaufeu 161", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 4.71, "cout_total": 4.71, "vente": 4.19, "vente_total": 4.19, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 15, "jeu": "PK", "nom": "Mewtwo ex 205", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 1.9, "cout_total": 1.9, "vente": 1.0, "vente_total": 1.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 16, "jeu": "PK", "nom": "Bombydou 172/162", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 5.9, "cout_total": 5.9, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 17, "jeu": "PK", "nom": "Fouinar 168/159", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 5.9, "cout_total": 5.9, "vente": 4.5, "vente_total": 4.5, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 18, "jeu": "PK", "nom": "Ampibidou 053/159", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 1.9, "cout_total": 1.9, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 19, "jeu": "PK", "nom": "Lithia 209/167", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 4.96, "cout_total": 4.96, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 20, "jeu": "PK", "nom": "Tortank ex009/165", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 3.96, "cout_total": 3.96, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 21, "jeu": "PK", "nom": "Artikodin 161/159", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 26.79, "cout_total": 26.79, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 22, "jeu": "PK", "nom": "Maracachi 160/159", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 5.29, "cout_total": 5.29, "vente": 2.0, "vente_total": 2.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 23, "jeu": "PK", "nom": "Ampibidou 172/159", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 6.29, "cout_total": 6.29, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 24, "jeu": "PK", "nom": "Bundle 151", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 66.68, "cout_total": 66.68, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 25, "jeu": "PK", "nom": "Nostenfer ex 242/182", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 36.04, "cout_total": 36.04, "vente": 39.0, "vente_total": 39.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 26, "jeu": "PK", "nom": "Drogrino ex 235/182", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 26.95, "cout_total": 26.95, "vente": 35.0, "vente_total": 35.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 27, "jeu": "PK", "nom": "Booster blister EV6", "type": "Booster", "qte": 4, "statut": "Stock", "cout": 9.0, "cout_total": 36.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 28, "jeu": "PK", "nom": "Booster blister EV3", "type": "Booster", "qte": 2, "statut": "Stock", "cout": 9.0, "cout_total": 18.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 29, "jeu": "PK", "nom": "ETB EV10.5 Flamme Blanche", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 55.99, "cout_total": 55.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 30, "jeu": "PK", "nom": "ETB EV10.5 Foudre Noire", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 55.99, "cout_total": 55.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 31, "jeu": "PK", "nom": "ETB EV9 Aventure ensemble", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 55.99, "cout_total": 55.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 32, "jeu": "PK", "nom": "Mini tins pouvoir de kanto", "type": "Scellé", "qte": 2, "statut": "Stock", "cout": 11.99, "cout_total": 23.98, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 33, "jeu": "PK", "nom": "Coffret premium Carchacrok ex", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 49.99, "cout_total": 49.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 34, "jeu": "PK", "nom": "Coffret collection Dracaufeu ex", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 37.99, "cout_total": 37.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 35, "jeu": "PK", "nom": "Coffret Mewtwo ex", "type": "Scellé", "qte": 2, "statut": "Vendu", "cout": 25.99, "cout_total": 51.98, "vente": 27.5, "vente_total": 55.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 36, "jeu": "PK", "nom": "Bundle EV 8.5", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 57.35, "cout_total": 57.35, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 37, "jeu": "PK", "nom": "Psykokwak d’Ondine  193/182", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 41.38, "cout_total": 41.38, "vente": 38.8, "vente_total": 38.8, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 38, "jeu": "PK", "nom": "Boîte surprise EV8.5", "type": "Scellé", "qte": 1, "statut": "Vendu", "cout": 31.99, "cout_total": 31.99, "vente": 37.0, "vente_total": 37.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 39, "jeu": "PK", "nom": "Booster blister EV8", "type": "Booster", "qte": 4, "statut": "Stock", "cout": 5.99, "cout_total": 23.96, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 40, "jeu": "PK", "nom": "Booster EB11", "type": "Booster", "qte": 6, "statut": "Stock", "cout": 6.99, "cout_total": 41.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 41, "jeu": "PK", "nom": "Booster EV8", "type": "Booster", "qte": 3, "statut": "Stock", "cout": 7.0, "cout_total": 21.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 42, "jeu": "PK", "nom": "Booster EB11", "type": "Booster", "qte": 1, "statut": "Stock", "cout": 5.99, "cout_total": 5.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 43, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 13.99, "cout_total": 13.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 44, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 17.3, "cout_total": 17.3, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 45, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 15.13, "cout_total": 15.13, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 46, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 17.4, "cout_total": 17.4, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 47, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 14.89, "cout_total": 14.89, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 48, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 15.5, "cout_total": 15.5, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 49, "jeu": "PK", "nom": "Lucario VStar swsh 291 promo", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 15.5, "cout_total": 15.5, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 50, "jeu": "PK", "nom": "Mimiqui 075 scellée promo", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 4.8, "cout_total": 4.8, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 51, "jeu": "PK", "nom": "Coffret pikachu Vmax", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 67.5, "cout_total": 67.5, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 52, "jeu": "PK", "nom": "Bundle EV 8.5", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 52.5, "cout_total": 52.5, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 53, "jeu": "PK", "nom": "Fort Ivoire 246/198", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 19.44, "cout_total": 19.44, "vente": 11.0, "vente_total": 11.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 54, "jeu": "PK", "nom": "Mewtwo promo 052", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 56.19, "cout_total": 56.19, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 55, "jeu": "PK", "nom": "Zamazenta 201/182", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 13.14, "cout_total": 13.14, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 56, "jeu": "PK", "nom": "Yvelta 205/182", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 24.49, "cout_total": 24.49, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 57, "jeu": "PK", "nom": "Oyacata 207/198", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 18.39, "cout_total": 18.39, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 58, "jeu": "PK", "nom": "ETB fables nébuleuses", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 75.0, "cout_total": 75.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 59, "jeu": "PK", "nom": "Hyporoi ex 131", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 33.09, "cout_total": 33.09, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 60, "jeu": "PK", "nom": "Booster carton ev8", "type": "Booster", "qte": 6, "statut": "Stock", "cout": 6.99, "cout_total": 41.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 61, "jeu": "PK", "nom": "Torsade 211", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 30.95, "cout_total": 30.95, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 62, "jeu": "PK", "nom": "Poulpaf 207/191", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 26.9, "cout_total": 26.9, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 63, "jeu": "PK", "nom": "Reshiram de N 167/159", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 23.8, "cout_total": 23.8, "vente": 24.0, "vente_total": 24.0, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 64, "jeu": "PK", "nom": "Blister plastique Ev9", "type": "Booster", "qte": 4, "statut": "Stock", "cout": 10.5, "cout_total": 42.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 65, "jeu": "PK", "nom": "Blister plastique Ev10", "type": "Booster", "qte": 4, "statut": "Stock", "cout": 7.5, "cout_total": 30.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 66, "jeu": "PK", "nom": "Seleroc Stamp 004", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 18.35, "cout_total": 18.35, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 67, "jeu": "PK", "nom": "Seleroc Stamp 004", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 20.45, "cout_total": 20.45, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 68, "jeu": "PK", "nom": "Blister plastique Ev10", "type": "Booster", "qte": 8, "statut": "Stock", "cout": 9.64, "cout_total": 77.12, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 69, "jeu": "PK", "nom": "Blister plastique Ev9", "type": "Booster", "qte": 4, "statut": "Stock", "cout": 9.06, "cout_total": 36.24, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 70, "jeu": "PK", "nom": "Bundle 10.5", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 35.94, "cout_total": 35.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 71, "jeu": "PK", "nom": "Demi display me01", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 107.82, "cout_total": 107.82, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 72, "jeu": "PK", "nom": "Mini tin mega lucario", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 11.99, "cout_total": 11.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 73, "jeu": "PK", "nom": "Pokebox nidokin", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 24.99, "cout_total": 24.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 74, "jeu": "PK", "nom": "Bundle 10.5 flammes blanche", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 35.94, "cout_total": 35.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 75, "jeu": "PK", "nom": "Bundle 10.5 foudre noire", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 35.94, "cout_total": 35.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 76, "jeu": "PK", "nom": "Mini tin mega florizarre", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 11.99, "cout_total": 11.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 77, "jeu": "PK", "nom": "Bundle 10.5 flammes blanche", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 35.94, "cout_total": 35.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 78, "jeu": "PK", "nom": "Pokebox nmewtwo ex", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 25.99, "cout_total": 25.99, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 79, "jeu": "PK", "nom": "Booster carton ev8", "type": "Booster", "qte": 6, "statut": "Stock", "cout": 6.99, "cout_total": 41.94, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 80, "jeu": "PK", "nom": "Promo alakazam 009", "type": "Carte", "qte": 3, "statut": "Stock", "cout": 11.77, "cout_total": 35.31, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 81, "jeu": "PK", "nom": "Argouste 153/132", "type": "Carte", "qte": 3, "statut": "Stock", "cout": 8.74, "cout_total": 26.22, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 82, "jeu": "PK", "nom": "Sulfura PSA10", "type": "Gradée", "qte": 1, "statut": "Stock", "cout": 60.0, "cout_total": 60.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 83, "jeu": "PK", "nom": "Reshiram de N CCC 9.5", "type": "Gradée", "qte": 1, "statut": "Stock", "cout": 55.0, "cout_total": 55.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 84, "jeu": "PK", "nom": "Sulfura, Elekthor et Artikodin CCC 9.5", "type": "Gradée", "qte": 1, "statut": "Stock", "cout": 85.0, "cout_total": 85.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 85, "jeu": "PK", "nom": "ETB me02", "type": "Scellé", "qte": 2, "statut": "Stock", "cout": 55.99, "cout_total": 111.98, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 86, "jeu": "PK", "nom": "UPC dracaufeu", "type": "Scellé", "qte": 3, "statut": "Stock", "cout": 168.32, "cout_total": 504.96, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 87, "jeu": "PK", "nom": "ETB me01", "type": "Scellé", "qte": 1, "statut": "Stock", "cout": 70.0, "cout_total": 70.0, "vente": null, "vente_total": null, "source": "Vinted/Autre", "date_achat": null, "expansion": null, "product_id": null, "prix_marche": null}, {"id": 88, "jeu": "PK", "nom": "151C: Collect 151 Gathering Booster Box", "nom_en": "151C: Collect 151 Gathering Booster Box", "type": "Display", "qte": 1, "statut": "Stock", "cout": 55.0, "cout_total": 55.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2025-12-30", "expansion": "Collect 151", "product_id": "829957", "prix_marche": null}, {"id": 89, "jeu": "PK", "nom": "CBB2C: Gem Pack Vol. 2 Booster Box", "nom_en": "CBB2C: Gem Pack Vol. 2 Booster Box", "type": "Display", "qte": 1, "statut": "Stock", "cout": 50.0, "cout_total": 50.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2025-12-30", "expansion": "Gem Pack Vol. 2", "product_id": "821700", "prix_marche": null}, {"id": 90, "jeu": "OP", "nom": "Monkey.D.Luffy (OP13-118) (V.2)", "nom_en": "Monkey.D.Luffy (OP13-118) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 55.0, "cout_total": 55.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-07", "expansion": "Carrying on his Will", "product_id": "857338", "prix_marche": null}, {"id": 91, "jeu": "OP", "nom": "Monkey.D.Luffy (ST21-014) (V.1)", "nom_en": "Monkey.D.Luffy (ST21-014) (V.1)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 99.99, "cout_total": 99.99, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-07", "expansion": "Unnumbered Promos (Non-English)", "product_id": "853300", "prix_marche": null}, {"id": 92, "jeu": "OP", "nom": "Tashigi (OP06-050)", "nom_en": "Tashigi (OP06-050)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 45.0, "cout_total": 45.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-13", "expansion": "Legacy of the Master", "product_id": "843034", "prix_marche": null}, {"id": 93, "jeu": "OP", "nom": "Nami (OP09-050) (V.2)", "nom_en": "Nami (OP09-050) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 9.9, "cout_total": 9.9, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-13", "expansion": "Emperors in the New World", "product_id": "802921", "prix_marche": null}, {"id": 94, "jeu": "OP", "nom": "Magellan (OP02-085)", "nom_en": "Magellan (OP02-085)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 50.0, "cout_total": 50.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-13", "expansion": "Kingdoms of Intrigue", "product_id": "732815", "prix_marche": null}, {"id": 95, "jeu": "OP", "nom": "Crocodile (OP01-067) (V.2)", "nom_en": "Crocodile (OP01-067) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 35.0, "cout_total": 35.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-13", "expansion": "Romance Dawn", "product_id": "690893", "prix_marche": null}, {"id": 96, "jeu": "OP", "nom": "O-Nami (OP06-101) (V.2)", "nom_en": "O-Nami (OP06-101) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 25.0, "cout_total": 25.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-16", "expansion": "Wings of the Captain", "product_id": "760605", "prix_marche": null}, {"id": 97, "jeu": "OP", "nom": "Buggy (OP02-058) (V.2)", "nom_en": "Buggy (OP02-058) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 10.0, "cout_total": 10.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-16", "expansion": "Paramount War", "product_id": "699939", "prix_marche": null}, {"id": 98, "jeu": "OP", "nom": "Sanji (OP11-051) (V.2)", "nom_en": "Sanji (OP11-051) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 8.0, "cout_total": 8.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-16", "expansion": "A Fist of Divine Speed", "product_id": "827140", "prix_marche": null}, {"id": 99, "jeu": "OP", "nom": "Buggy (OP09-042) (V.2)", "nom_en": "Buggy (OP09-042) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 26.9, "cout_total": 26.9, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-01-23", "expansion": "Emperors in the New World", "product_id": "802910", "prix_marche": null}, {"id": 100, "jeu": "OP", "nom": "Monkey.D.Luffy (OP07-073)", "nom_en": "Monkey.D.Luffy (OP07-073)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 110.0, "cout_total": 110.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-02-04", "expansion": "Unnumbered Promos", "product_id": "837224", "prix_marche": null}, {"id": 101, "jeu": "OP", "nom": "Nami (ST29-008) (V.2)", "nom_en": "Nami (ST29-008) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 12.99, "cout_total": 12.99, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-02-19", "expansion": "Starter Deck: Egghead", "product_id": "865576", "prix_marche": null}, {"id": 102, "jeu": "OP", "nom": "Monkey.D.Luffy (V.1)", "nom_en": "Monkey.D.Luffy (V.1)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 10.0, "cout_total": 10.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-04", "expansion": "Promos", "product_id": "746238", "prix_marche": null}, {"id": 103, "jeu": "OP", "nom": "Monkey.D.Luffy (PRB02-005) (V.2)", "nom_en": "Monkey.D.Luffy (PRB02-005) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 20.0, "cout_total": 20.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-04", "expansion": "The Best Vol.2", "product_id": "852530", "prix_marche": null}, {"id": 104, "jeu": "OP", "nom": "Makino (ST13-012) (V.1)", "nom_en": "Makino (ST13-012) (V.1)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 1.95, "cout_total": 1.95, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-04", "expansion": "Unnumbered Promos", "product_id": "823247", "prix_marche": null}, {"id": 105, "jeu": "OP", "nom": "Nami (OP02-036)", "nom_en": "Nami (OP02-036)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 14.25, "cout_total": 14.25, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-04", "expansion": "Unnumbered Promos", "product_id": "768045", "prix_marche": null}, {"id": 106, "jeu": "OP", "nom": "Buggy (OP09-051)", "nom_en": "Buggy (OP09-051)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 34.9, "cout_total": 34.9, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-04", "expansion": "Unnumbered Promos", "product_id": "830639", "prix_marche": null}, {"id": 107, "jeu": "OP", "nom": "Buggy (OP09-051) (V.2)", "nom_en": "Buggy (OP09-051) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 12.0, "cout_total": 12.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-12", "expansion": "Emperors in the New World", "product_id": "802923", "prix_marche": null}, {"id": 108, "jeu": "OP", "nom": "Ace & Sabo & Luffy (OP13-007) (V.2)", "nom_en": "Ace & Sabo & Luffy (OP13-007) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 20.0, "cout_total": 20.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-03-23", "expansion": "Carrying on his Will", "product_id": "857198", "prix_marche": null}, {"id": 109, "jeu": "OP", "nom": "Buggy (P-084)", "nom_en": "Buggy (P-084)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 20.0, "cout_total": 20.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-04-02", "expansion": "Special Tournament Promos", "product_id": "817503", "prix_marche": null}, {"id": 110, "jeu": "OP", "nom": "Portgas.D.Ace (OP13-119) (V.1)", "nom_en": "Portgas.D.Ace (OP13-119) (V.1)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 79.99, "cout_total": 79.99, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-05-04", "expansion": "Special Tournament Promos", "product_id": "878022", "prix_marche": null}, {"id": 111, "jeu": "OP", "nom": "Nami (ST21-009) (V.2)", "nom_en": "Nami (ST21-009) (V.2)", "type": "Carte", "qte": 1, "statut": "Stock", "cout": 7.0, "cout_total": 7.0, "vente": null, "vente_total": null, "source": "Cardmarket", "date_achat": "2026-05-06", "expansion": "Starter Deck: EX Gear 5", "product_id": "816830", "prix_marche": null}, {"id": 112, "jeu": "PK", "nom": "Cage de Combat", "nom_en": "Battle Cage", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.6, "vente_total": 2.6, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Phantasmal Flames", "product_id": "857691", "prix_marche": null}, {"id": 113, "jeu": "PK", "nom": "Mega Lockpin ex", "nom_en": "Mega Lopunny ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 1.0, "vente_total": 1.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Phantasmal Flames", "product_id": "857659", "prix_marche": null}, {"id": 114, "jeu": "PK", "nom": "Zacian", "nom_en": "Zacian", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 4.0, "vente_total": 4.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Phantasmal Flames", "product_id": "857675", "prix_marche": null}, {"id": 115, "jeu": "PK", "nom": "Mega Dracaufeu X ex", "nom_en": "Mega Charizard X ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 5.0, "vente_total": 5.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Phantasmal Flames", "product_id": "857588", "prix_marche": null}, {"id": 116, "jeu": "PK", "nom": "Amphinobi ex", "nom_en": "Greninja ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 6.0, "vente_total": 6.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Twilight Masquerade", "product_id": "769372", "prix_marche": null}, {"id": 117, "jeu": "PK", "nom": "Balbalèze", "nom_en": "Cetitan", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 3.7, "vente_total": 3.7, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Surging Sparks", "product_id": "794574", "prix_marche": null}, {"id": 118, "jeu": "PK", "nom": "Shifours Mille Poings VMAX", "nom_en": "Rapid Strike Urshifu VMAX", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 13.0, "vente_total": 13.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Brilliant Stars", "product_id": "608753", "prix_marche": null}, {"id": 119, "jeu": "PK", "nom": "Pikachu V", "nom_en": "Pikachu V", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.0, "vente_total": 2.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "SWSH Black Star Promos", "product_id": "692429", "prix_marche": null}, {"id": 120, "jeu": "PK", "nom": "Pikachu VMAX", "nom_en": "Pikachu VMAX", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.0, "vente_total": 2.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "SWSH Black Star Promos", "product_id": "692432", "prix_marche": null}, {"id": 121, "jeu": "PK", "nom": "Drattak ex", "nom_en": "Salamence ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 3.0, "vente_total": 3.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Journey Together", "product_id": "817330", "prix_marche": null}, {"id": 122, "jeu": "PK", "nom": "Mega Mysdibule ex", "nom_en": "Mega Mawile ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 6.0, "vente_total": 6.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Mega Evolution", "product_id": "851233", "prix_marche": null}, {"id": 123, "jeu": "PK", "nom": "Mega Kangourex ex", "nom_en": "Mega Kangaskhan ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 1.0, "vente_total": 1.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Mega Evolution", "product_id": "851175", "prix_marche": null}, {"id": 124, "jeu": "PK", "nom": "Évolutions Prismatiques Surprise Box", "nom_en": "Prismatic Evolutions Surprise Box", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 37.0, "vente_total": 37.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Prismatic Evolutions", "product_id": "798947", "prix_marche": null}, {"id": 125, "jeu": "OP", "nom": "Victoria Cindry (OP06-091) (V.3)", "nom_en": "Victoria Cindry (OP06-091) (V.3)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 10.0, "vente_total": 10.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "The Best", "product_id": "799385", "prix_marche": null}, {"id": 126, "jeu": "PK", "nom": "Ampibidou ex de Mashynn", "nom_en": "Iono's Bellibolt ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.5, "vente_total": 2.5, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Journey Together", "product_id": "817325", "prix_marche": null}, {"id": 127, "jeu": "PK", "nom": "Amos de la Team Rocket", "nom_en": "Team Rocket's Archer", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 5.0, "vente_total": 5.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Destined Rivals", "product_id": "826097", "prix_marche": null}, {"id": 128, "jeu": "PK", "nom": "Mesmérella", "nom_en": "Gothorita", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 5.0, "vente_total": 5.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Paldea Evolved", "product_id": "715688", "prix_marche": null}, {"id": 129, "jeu": "PK", "nom": "Surfeur", "nom_en": "Surfer", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.0, "vente_total": 2.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Surging Sparks", "product_id": "794608", "prix_marche": null}, {"id": 130, "jeu": "PK", "nom": "Énergie Amorce", "nom_en": "Ignition Energy", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 2.5, "vente_total": 2.5, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Phantasmal Flames", "product_id": "857699", "prix_marche": null}, {"id": 131, "jeu": "OP", "nom": "St. Marcus Mars (OP13-091) (V.2)", "nom_en": "St. Marcus Mars (OP13-091) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 19.0, "vente_total": 19.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Carrying on his Will", "product_id": "857304", "prix_marche": null}, {"id": 132, "jeu": "OP", "nom": "St. Shepherd Ju Peter (OP13-084) (V.2)", "nom_en": "St. Shepherd Ju Peter (OP13-084) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 19.0, "vente_total": 19.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Carrying on his Will", "product_id": "857293", "prix_marche": null}, {"id": 133, "jeu": "OP", "nom": "Eustass\"Captain\"Kid (OP10-099) (V.2)", "nom_en": "Eustass\"Captain\"Kid (OP10-099) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 17.0, "vente_total": 17.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Royal Blood", "product_id": "817121", "prix_marche": null}, {"id": 134, "jeu": "PK", "nom": "Flâmigator ex", "nom_en": "Skeledirge ex", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 20.0, "vente_total": 20.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Paldea Evolved", "product_id": "715733", "prix_marche": null}, {"id": 135, "jeu": "OP", "nom": "Boa Hancock (OP14-112) (V.1)", "nom_en": "Boa Hancock (OP14-112) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 6.0, "vente_total": 6.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "The Azure Sea's Seven", "product_id": "865536", "prix_marche": null}, {"id": 136, "jeu": "OP", "nom": "Roronoa Zoro (EB04-007) (V.1)", "nom_en": "Roronoa Zoro (EB04-007) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 10.0, "vente_total": 10.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "879511", "prix_marche": null}, {"id": 137, "jeu": "OP", "nom": "Enel (OP15-060) (V.2)", "nom_en": "Enel (OP15-060) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 23.0, "vente_total": 23.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "879981", "prix_marche": null}, {"id": 138, "jeu": "OP", "nom": "Sabo (OP15-046) (V.1)", "nom_en": "Sabo (OP15-046) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 3.0, "vente_total": 3.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "879962", "prix_marche": null}, {"id": 139, "jeu": "OP", "nom": "Nami (OP15-086) (V.1)", "nom_en": "Nami (OP15-086) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 1.0, "vente_total": 1.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "880010", "prix_marche": null}, {"id": 140, "jeu": "OP", "nom": "Enel (OP15-058) (V.2)", "nom_en": "Enel (OP15-058) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 55.0, "vente_total": 55.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "879978", "prix_marche": null}, {"id": 141, "jeu": "OP", "nom": "Jewelry Bonney (EB04-001) (V.2)", "nom_en": "Jewelry Bonney (EB04-001) (V.2)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 39.0, "vente_total": 39.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "879503", "prix_marche": null}, {"id": 142, "jeu": "OP", "nom": "Sabo (PRB02-014) (V.1)", "nom_en": "Sabo (PRB02-014) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 1.0, "vente_total": 1.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "The Best Vol.2", "product_id": "852547", "prix_marche": null}, {"id": 143, "jeu": "OP", "nom": "Nami (OP15-086) (V.1)", "nom_en": "Nami (OP15-086) (V.1)", "type": "Carte", "qte": 1, "statut": "Vendu", "cout": 0, "cout_total": 0, "vente": 1.0, "vente_total": 1.0, "source": "Cardmarket (achat inconnu)", "date_achat": null, "expansion": "Adventure on Kami’s Island", "product_id": "880010", "prix_marche": null}];
+const API_KEY = "661fa83e4cmshab8f0302f563eaep1fd5fejsn0d64df325baa";
+const API_HOST = "cardmarket-api.p.rapidapi.com";
+const COMMISSION = 0.05; // Cardmarket 5%
+
+let items = [];
+let gameFilter = 'all';
+let statusFilter = 'all';
+let typeFilter = 'all';
+let sortCol = 'nom';
+let sortDir = 1;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function init() {
+  const stored = localStorage.getItem('tcg_tracker_items');
+  if (stored) {
+    try {
+      items = JSON.parse(stored);
+      // Check if we need to merge seed data (new items from CSV)
+      if (items.length < SEED_DATA.length) {
+        mergeSeedData();
+      }
+    } catch(e) {
+      items = JSON.parse(JSON.stringify(SEED_DATA));
+    }
+  } else {
+    items = JSON.parse(JSON.stringify(SEED_DATA));
+  }
+  save();
+  render();
+}
+
+function mergeSeedData() {
+  const existingNames = new Set(items.map(i => i.nom + '|' + i.jeu + '|' + i.statut));
+  for (const seed of SEED_DATA) {
+    const key = seed.nom + '|' + seed.jeu + '|' + seed.statut;
+    if (!existingNames.has(key)) {
+      seed.id = Math.max(...items.map(i=>i.id), 0) + 1;
+      items.push(seed);
+      existingNames.add(key);
+    }
+  }
+}
+
+function save() {
+  localStorage.setItem('tcg_tracker_items', JSON.stringify(items));
+}
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function render() {
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  const stock = items.filter(i => i.statut === 'Stock');
+  const sold = items.filter(i => i.statut === 'Vendu');
+  
+  const totalInvested = items.reduce((s,i) => s + (i.cout_total || 0), 0);
+  const stockValue = stock.reduce((s,i) => {
+    const mkt = i.prix_marche;
+    return s + (mkt ? mkt * i.qte : 0);
+  }, 0);
+  
+  // Net revenue = vente - 5% commission (for Cardmarket sales)
+  const totalSoldGross = sold.reduce((s,i) => s + (i.vente_total || 0), 0);
+  const totalSoldNet = sold.reduce((s,i) => {
+    const v = i.vente_total || 0;
+    const src = i.source || '';
+    const comm = src.includes('Vinted') ? 0 : v * COMMISSION;
+    return s + (v - comm);
+  }, 0);
+  
+  const costOfSold = sold.reduce((s,i) => s + (i.cout_total || 0), 0);
+  const realizedPL = totalSoldNet - costOfSold;
+  const roi = totalInvested > 0 ? (realizedPL / totalInvested * 100) : 0;
+  
+  const opCount = items.filter(i => i.jeu === 'OP').length;
+  const pkCount = items.filter(i => i.jeu === 'PK').length;
+  
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Total Investi</div>
+      <div class="stat-value">${fmt(totalInvested)}</div>
+      <div class="stat-sub">${items.length} items · OP ${opCount} · PK ${pkCount}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Valeur Stock (Marché)</div>
+      <div class="stat-value">${stockValue > 0 ? fmt(stockValue) : '—'}</div>
+      <div class="stat-sub">${stock.length} en portefeuille</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenus Ventes</div>
+      <div class="stat-value">${fmt(totalSoldNet)}</div>
+      <div class="stat-sub">${sold.length} vendus · net frais</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">P&L Réalisé</div>
+      <div class="stat-value ${realizedPL >= 0 ? 'stat-green' : 'stat-red'}">${realizedPL >= 0 ? '+' : ''}${fmt(realizedPL)}</div>
+      <div class="stat-sub">ROI ${roi.toFixed(1)}%</div>
+    </div>
+  `;
+}
+
+function renderTable() {
+  let filtered = items.filter(i => {
+    if (gameFilter !== 'all' && i.jeu !== gameFilter) return false;
+    if (statusFilter !== 'all' && i.statut !== statusFilter) return false;
+    if (typeFilter !== 'all' && i.type !== typeFilter) return false;
     return true;
   });
-  const[col,dir]=sv.split('-');
-  r.sort((a,b)=>{
-    let va,vb;
-    if(col==='date'){va=a.d||'';vb=b.d||'';}
-    else if(col==='cost'){va=a.c??-1e9;vb=b.c??-1e9;}
-    else if(col==='pnl'){va=pnl(a)??-1e9;vb=pnl(b)??-1e9;}
-    else if(col==='name'){va=a.n.toLowerCase();vb=b.n.toLowerCase();}
-    else{va=a[col];vb=b[col];}
-    if(va<vb)return dir==='asc'?-1:1;if(va>vb)return dir==='asc'?1:-1;return 0;
-  });
-  return r;
-}
-function render(){
-  const rows=filtered();
-  document.getElementById('ca').textContent=items.length;
-  document.getElementById('co').textContent=items.filter(i=>i.g==='OP').length;
-  document.getElementById('cp').textContent=items.filter(i=>i.g==='PK').length;
-  const stk=items.filter(i=>i.st==='Stock'&&i.c!=null);
-  const inv=stk.reduce((s,i)=>s+i.c*i.q,0);
-  const sold=items.filter(i=>i.st==='Vendu');
-  const rev=sold.reduce((s,i)=>s+(i.v||0)*i.q,0)*0.95;
-  const wb=sold.filter(i=>i.c!=null&&i.v!=null);
-  const rp=wb.reduce((s,i)=>s+pnl(i),0);
-  const cs=wb.reduce((s,i)=>s+i.c*i.q,0);
-  const roi=cs>0?rp/cs*100:null;
-  document.getElementById('k1').textContent=fmt(inv);
-  document.getElementById('k1s').textContent=stk.length+' lignes en portefeuille';
-  document.getElementById('k2').textContent=fmt(rev);
-  document.getElementById('k2s').textContent=sold.length+' vendus · net 5%';
-  const pe=document.getElementById('k3');pe.textContent=(rp>=0?'+':'')+fmt(rp);pe.className='kpi-value '+(rp>=0?'positive':'negative');
-  document.getElementById('k3s').textContent=(sold.length-wb.length)+' ventes sans cout';
-  document.getElementById('k4').textContent=roi!=null?(roi>=0?'+':'')+roi.toFixed(1)+'%':'—';
-  document.getElementById('k4s').textContent='Sur '+wb.length+' ventes completement tracees';
-  const tb=document.getElementById('tb');
-  if(!rows.length){tb.innerHTML='<tr><td colspan="12"><div class="empty">Aucun item</div></td></tr>';return;}
-  const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
-  renderMobile(rows);
-  tb.innerHTML=rows.map(i=>{
-    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const ds=i.d?i.d.split('-').reverse().join('/'):'—';const col=sc[i.src]||'#6b7280';
-    const qb=i.q>1?`<span style="font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:4px">x${i.q}</span>`:'<span style="color:var(--muted2)">1</span>';
-    return`<tr><td><span class="bg ${gc}">${i.g}</span></td><td><div class="in">${e(i.n)}</div><div class="is">${e(i.s||'')}</div></td><td><span class="bt">${e(i.t)}</span></td><td>${qb}</td><td class="dc">${ds}</td><td>${i.c!=null?`<span class="price">${fmt(i.c)}</span>`:'<span class="price unk">—</span>'}</td><td>${i.v!=null?`<span class="price">${fmt(i.v)}</span>`:'<span class="price unk">—</span>'}</td><td>${p==null?'<span class="pu">?</span>':`<span class="${p>=0?'pp':'pn'}">${p>=0?'+':''}${fmt(p)}</span>`}</td><td>${mkCell(i)}</td><td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${col}22;color:${col}">${e(i.src)}</span></td><td>${i.st==='Stock'?'<span class="bs bs-stock">● Stock</span>':'<span class="bs bs-vendu">✓ Vendu</span>'}</td><td><div class="row-actions"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></td></tr>`;}).join('');
-}
-function setTab(t){cTab=t;['all','OP','PK'].forEach(k=>document.getElementById('tab-'+k).className='tab'+(k===t?' active':''));render();}
-function setStatus(s){cStat=s;document.getElementById('f-all').className='filter-btn'+(s==='all'?' active':'');document.getElementById('f-stock').className='filter-btn stock'+(s==='Stock'?' active':'');document.getElementById('f-vendu').className='filter-btn'+(s==='Vendu'?' active':'');render();}
-function openModal(id){
-  eId=id||null;document.getElementById('mt').textContent=id?'Modifier':'Ajouter';
-  const i=id?items.find(x=>x.id===id):null;
-  document.getElementById('fg').value=i?.g||'PK';document.getElementById('ft').value=i?.t||'Carte';document.getElementById('fn').value=i?.n||'';document.getElementById('fse').value=i?.s||'';document.getElementById('fd').value=i?.d||new Date().toISOString().split('T')[0];document.getElementById('fq').value=i?.q||1;document.getElementById('fst').value=i?.st||'Stock';document.getElementById('fp').value=i?.src||'Cardmarket';document.getElementById('fc').value=i?.c??'';document.getElementById('fv').value=i?.v??'';
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-function saveItem(){
-  const it={id:eId||nId++,g:document.getElementById('fg').value,t:document.getElementById('ft').value,n:document.getElementById('fn').value.trim(),s:document.getElementById('fse').value.trim(),d:document.getElementById('fd').value||null,q:parseInt(document.getElementById('fq').value)||1,st:document.getElementById('fst').value,src:document.getElementById('fp').value,c:parseFloat(document.getElementById('fc').value)||null,v:parseFloat(document.getElementById('fv').value)||null};
-  if(!it.n){alert('Nom requis');return;}
-  if(eId){const idx=items.findIndex(x=>x.id===eId);if(idx>=0)items[idx]=it;}else items.push(it);
-  closeModal();render();
-}
-function editItem(id){openModal(id);}
-function delItem(id){if(confirm('Supprimer ?')){items=items.filter(x=>x.id!==id);render();}}
-function exportCSV(){
-  const cols=['Jeu','Nom','Set','Type','Qte','Date','Cout','Vente','PnL','Source','Statut'];
-  const rows=items.map(i=>[i.g,i.n,i.s,i.t,i.q,i.d||'',i.c??'',i.v??'',pnl(i)!=null?pnl(i).toFixed(2):'',i.src,i.st].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+[cols.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8'}));a.download='tcg-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
-}
-
-/* ══════════════════════════════════════════════
-   PRICE UPDATE (RapidAPI)
-   ══════════════════════════════════════════════ */
-function getApiKey(){return localStorage.getItem('tcg_rapidapi_key')||'';}
-function setApiKey(k){localStorage.setItem('tcg_rapidapi_key',k);}
-function getApifyToken(){return localStorage.getItem('tcg_apify_token')||'';}
-function setApifyToken(k){localStorage.setItem('tcg_apify_token',k);}
-function openKeys(){
-  document.getElementById('key-rapid').value=getApiKey();
-  document.getElementById('key-apify').value=getApifyToken();
-  document.getElementById('keys-modal').classList.add('open');
-}
-function closeKeys(){document.getElementById('keys-modal').classList.remove('open');}
-function saveKeys(){
-  const r=document.getElementById('key-rapid').value.trim();
-  const a=document.getElementById('key-apify').value.trim();
-  if(r)setApiKey(r);if(a)setApifyToken(a);closeKeys();
-  alert('✓ Clés enregistrées dans le navigateur');
-}
-function togglePricePanel(){
-  const p=document.getElementById('price-panel');p.style.display=p.style.display==='none'?'block':'none';
-  document.getElementById('veille-panel').classList.remove('open');
-  const opCards=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
-  const pkCards=items.filter(x=>x.g==='PK'&&x.st==='Stock'&&x.t==='Carte');
-  document.getElementById('op-count').textContent=opCards.length;
-  document.getElementById('pk-count').textContent=pkCards.length;
-}
-function mkCell(item){
-  if(item.st!=='Stock'||item.t!=='Carte')return'<span style="color:var(--muted2);font-size:12px">—</span>';
-  if(!item.mp)return'<span style="color:var(--muted2);font-size:12px;font-family:monospace">?</span>';
-  const mp=item.mp;const diff=item.c!=null?mp-item.c:null;
-  let arrow='',col='var(--muted)';
-  if(diff!=null){if(diff>1){arrow=' ↑';col='var(--green)';}else if(diff<-1){arrow=' ↓';col='var(--red)';}else{arrow=' =';col='var(--yellow)';}}
-  const diffStr=diff!=null?(diff>=0?'+':'')+diff.toFixed(1)+'€':'';
-  return`<span style="font-family:monospace;font-size:12px;color:${col}">${mp.toFixed(2).replace('.',',')}€${arrow}<br><span style="font-size:10px;opacity:.7">${diffStr}</span></span>`;
-}
-async function fetchCardPrice(item){
-  try{
-    const g=item.g==='OP'?'onepiece':'pokemon';
-    const r=await fetch(`https://cardmarket-api.p.rapidapi.com/${g}/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':getApiKey(),'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
-    if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
-  }catch(ex){}
-  return false;
-}
-async function runUpdate(game){
-  if(!getApiKey()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ta clé RapidAPI');return;}
-  const spin=document.getElementById('upd-spin'),msg=document.getElementById('upd-msg');spin.style.display='inline-block';
-  let targets;
-  if(game==='ALL')targets=items.filter(x=>x.st==='Stock'&&x.t==='Carte');
-  else targets=items.filter(x=>x.g===game&&x.st==='Stock'&&x.t==='Carte');
-  let done=0,success=0;
-  for(const card of targets){
-    msg.textContent=`Mise à jour ${done+1}/${targets.length}...`;
-    const ok=await fetchCardPrice(card);if(ok)success++;done++;
-    await new Promise(r=>setTimeout(r,300));
-    if(done%20===0)render();
-  }
-  spin.style.display='none';msg.textContent=`✓ ${success} prix mis à jour sur ${targets.length} cartes`;render();
-}
-
-/* ══════════════════════════════════════════════
-   VEILLE MARCHÉ (Apify Trend Scraper)
-   ══════════════════════════════════════════════ */
-const APIFY_ACTORS={op:'scrap_them_all~cardmarket-onepiece-trend-scraper',pk:'scrap_them_all~cardmarket-pokemon-trend-scraper'};
-let veilleGame='op',veilleTab='top';
-let veilleData={top:[],bargains:[]};
-
-function toggleVeillePanel(){
-  const p=document.getElementById('veille-panel');
-  p.classList.toggle('open');
-  document.getElementById('price-panel').style.display='none';
-}
-function setVeilleGame(g){
-  veilleGame=g;
-  document.getElementById('vg-op').className=g==='op'?'active':'';
-  document.getElementById('vg-pk').className=g==='pk'?'active':'';
-  veilleData={top:[],bargains:[]};
-  renderVeille();
-}
-function setVeilleTab(t){
-  veilleTab=t;
-  document.getElementById('vt-top').className='veille-tab'+(t==='top'?' active':'');
-  document.getElementById('vt-bar').className='veille-tab'+(t==='bargains'?' active':'');
-  renderVeille();
-}
-
-async function runVeille(mode){
-  if(!getApifyToken()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ton token Apify');return;}
-  const spin=document.getElementById('v-spin'),msg=document.getElementById('v-msg');
-  spin.style.display='inline-block';
-  msg.textContent='Lancement du scraper...';
-  const actorId=APIFY_ACTORS[veilleGame];
-  try{
-    const runRes=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${getApifyToken()}&waitForFinish=180`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({mode:mode,language:'en',maxResults:100})
-    });
-    if(!runRes.ok)throw new Error('Run failed: '+runRes.status);
-    const runData=await runRes.json();
-    const dsId=runData?.data?.defaultDatasetId;
-    let runStatus=runData?.data?.status,runId=runData?.data?.id;
-    if(runStatus==='RUNNING'||runStatus==='READY'){
-      for(let i=0;i<45;i++){
-        await new Promise(r=>setTimeout(r,4000));
-        msg.textContent=`Scraping en cours... (${i*4}s)`;
-        const poll=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${getApifyToken()}`);
-        const pd=await poll.json();runStatus=pd?.data?.status;
-        if(runStatus==='SUCCEEDED')break;
-        if(runStatus==='FAILED'||runStatus==='ABORTED')throw new Error('Run '+runStatus);
-      }
+  
+  filtered.sort((a,b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (sortCol === 'pl') {
+      va = calcPL(a); vb = calcPL(b);
     }
-    const dataRes=await fetch(`https://api.apify.com/v2/datasets/${dsId}/items?token=${getApifyToken()}&format=json`);
-    const cards=await dataRes.json();
-    if(mode==='weekly-top-cards'){
-      veilleData.top=cards;
-      // Match portfolio prices
-      const pids=new Set(items.filter(x=>x.pid).map(x=>x.pid));
-      let matched=0;
-      cards.forEach(c=>{
-        if(c.productId&&pids.has(c.productId)){
-          const it=items.find(x=>x.pid===c.productId);
-          if(it){it.mp=c.currentPriceEur;matched++;}
-        }
-      });
-      if(matched>0)render();
-    }else{
-      veilleData.bargains=cards;
-    }
-    spin.style.display='none';
-    msg.textContent=`✓ ${cards.length} cartes récupérées · ${new Date().toLocaleTimeString('fr-FR')}`;
-    if(mode==='weekly-top-cards')setVeilleTab('top');else setVeilleTab('bargains');
-    renderVeille();
-  }catch(err){
-    spin.style.display='none';
-    msg.textContent='❌ '+err.message;
-  }
-}
-
-function renderVeille(){
-  const area=document.getElementById('veille-results');
-  const info=document.getElementById('veille-info-area');
-  const matched=document.getElementById('veille-matched-area');
-  document.getElementById('vt-top-n').textContent=veilleData.top.length;
-  document.getElementById('vt-bar-n').textContent=veilleData.bargains.length;
-  const data=veilleTab==='top'?veilleData.top:veilleData.bargains;
-  const pids=new Set(items.filter(x=>x.pid&&x.st==='Stock').map(x=>x.pid));
-  // Info bar
-  if(veilleTab==='bargains'&&data.length>0){
-    info.innerHTML='<div class="veille-info bargain">💡 Ces cartes sont actuellement sous leur tendance historique — opportunités d\'achat potentielles.</div>';
-  }else{info.innerHTML='';}
-  // Matched count
-  if(veilleTab==='top'&&veilleData.top.length>0){
-    const mc=veilleData.top.filter(c=>c.productId&&pids.has(c.productId)).length;
-    if(mc>0)matched.innerHTML=`<div class="veille-matched">🎯 ${mc} carte(s) de ton portefeuille apparaissent dans le Top — prix mis à jour automatiquement</div>`;
-    else matched.innerHTML='';
-  }else{matched.innerHTML='';}
-  if(!data.length){
-    area.innerHTML=`<div class="veille-empty">Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping.<br><span style="font-size:11px;margin-top:6px;display:inline-block">~2min · ~0.10$ par run · Données Cardmarket EN</span></div>`;
-    return;
-  }
-  let html='<div class="vr-head" style="display:grid;grid-template-columns:36px 1fr 90px 80px;gap:8px"><span style="text-align:center">#</span><span>Carte</span><span style="text-align:right">Prix EUR</span><span style="text-align:right">Lien</span></div>';
-  data.forEach((c,i)=>{
-    const hl=c.productId&&pids.has(c.productId);
-    html+=`<div class="vr-row${hl?' highlight':''}"><span class="vr-rank">${c.rank||i+1}</span><div><div class="vr-name">${e(c.cardName||'')}</div><div class="vr-set">${e(c.expansion||'')}</div></div><div class="vr-price">${c.currentPriceEur!=null?c.currentPriceEur.toFixed(2)+'€':'—'}</div><div class="vr-link">${c.url?`<a href="${c.url}" target="_blank" rel="noopener">Voir ↗</a>`:''}</div></div>`;
+    if (va == null) va = sortDir > 0 ? Infinity : -Infinity;
+    if (vb == null) vb = sortDir > 0 ? Infinity : -Infinity;
+    if (typeof va === 'string') return va.localeCompare(vb) * sortDir;
+    return (va - vb) * sortDir;
   });
-  area.innerHTML=html;
-}
-
-/* ══════════════════════════════════════════════
-   MOBILE RENDERING
-   ══════════════════════════════════════════════ */
-function renderMobile(rows){
-  const mc=document.getElementById('mc');if(!mc)return;
-  const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
-  if(!rows.length){mc.innerHTML='<div class="empty" style="padding:40px 20px">Aucun item</div>';return;}
-  mc.innerHTML=rows.map(i=>{
-    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const col=sc[i.src]||'#6b7280';const ds=i.d?i.d.split('-').reverse().join('/'):'—';
-    const costStr=i.c!=null?fmt(i.c):'—';const saleStr=i.v!=null?fmt(i.v):'—';
-    let pnlHtml;if(p==null)pnlHtml='<span style="color:var(--muted2)">?</span>';else pnlHtml=`<span style="color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fmt(p)}</span>`;
-    const mpStr=i.mp&&i.t==='Carte'?fmt(i.mp):'—';const qtyStr=i.q>1?` ×${i.q}`:'';
-    return`<div class="mcard"><div class="mcard-left"><span class="bg ${gc}">${i.g}</span><span style="font-size:9px;padding:2px 5px;border-radius:3px;background:${col}22;color:${col};margin-top:2px">${e(i.src)}</span></div><div><div class="mcard-name">${e(i.n)}${qtyStr}</div><div class="mcard-set">${e(i.s||'')} · ${e(i.t)} · ${ds}</div><div class="mcard-nums"><div class="mnum"><span class="mnum-label">Achat</span><span class="mnum-val" style="color:var(--text)">${costStr}</span></div><div class="mnum"><span class="mnum-label">Vente</span><span class="mnum-val" style="color:var(--text)">${saleStr}</span></div><div class="mnum"><span class="mnum-label">P&L</span><span class="mnum-val">${pnlHtml}</span></div>${i.t==='Carte'&&i.st==='Stock'?`<div class="mnum"><span class="mnum-label">Marché</span><span class="mnum-val" style="color:var(--muted)">${mpStr}</span></div>`:''}</div></div><div class="mcard-right"><span style="font-size:11px;color:${i.st==='Stock'?'var(--green)':'var(--muted)'};font-weight:600">${i.st==='Stock'?'●':'✓'} ${i.st}</span><div style="display:flex;gap:5px;margin-top:6px"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></div></div>`;
+  
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = filtered.map(i => {
+    const pl = calcPL(i);
+    const plClass = pl > 0 ? 'prix-up' : pl < 0 ? 'prix-down' : '';
+    const mkt = i.prix_marche;
+    const mktDisplay = mkt ? fmt(mkt) : '—';
+    const mktDiff = mkt && i.cout ? ((mkt - i.cout) / i.cout * 100) : null;
+    let mktClass = '';
+    if (mktDiff !== null) mktClass = mktDiff >= 0 ? 'prix-up' : 'prix-down';
+    
+    const venteDisplay = i.statut === 'Vendu' && i.vente != null ? fmt(i.vente) : 
+                         (i.statut === 'Stock' && mkt ? `<span class="${mktClass}">${mktDisplay}</span>` : '—');
+    
+    return `<tr>
+      <td><span class="jeu-badge jeu-${i.jeu}">${i.jeu}</span></td>
+      <td title="${i.expansion || ''}">${truncate(i.nom, 35)}</td>
+      <td>${i.type}</td>
+      <td class="text-center">${i.qte}</td>
+      <td><span class="status-${i.statut.toLowerCase()}">${i.statut}</span></td>
+      <td class="text-right mono">${fmt(i.cout_total)}</td>
+      <td class="text-right mono ${mktClass}">${i.statut === 'Stock' ? mktDisplay : '—'}</td>
+      <td class="text-right mono">${i.statut === 'Vendu' && i.vente != null ? fmt(i.vente) : '—'}</td>
+      <td class="text-right mono ${plClass}">${pl !== null ? (pl >= 0 ? '+' : '') + fmt(pl) : '—'}</td>
+      <td><button class="btn-del" onclick="deleteItem(${i.id})" title="Supprimer">✕</button></td>
+    </tr>`;
   }).join('');
 }
 
-document.getElementById('modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeModal();});
-document.getElementById('keys-modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeKeys();});
-// First visit: auto-open settings if no keys configured
-if(!getApiKey()&&!getApifyToken()){setTimeout(()=>openKeys(),500);}
-render();
+function calcPL(item) {
+  if (item.statut === 'Vendu' && item.vente != null) {
+    const gross = (item.vente_total || item.vente * item.qte);
+    const comm = (item.source || '').includes('Vinted') ? 0 : gross * COMMISSION;
+    return gross - comm - (item.cout_total || 0);
+  }
+  if (item.statut === 'Stock' && item.prix_marche) {
+    return (item.prix_marche * item.qte) - (item.cout_total || 0);
+  }
+  return null;
+}
+
+function fmt(n) { return n != null ? n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €' : '—'; }
+function truncate(s, n) { return s.length > n ? s.substring(0, n) + '…' : s; }
+
+// ═══════════════════════════════════════════
+// FILTERS & SORT
+// ═══════════════════════════════════════════
+function setGameFilter(f, el) {
+  gameFilter = f;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+function setStatusFilter(v) { statusFilter = v; renderTable(); }
+function setTypeFilter(v) { typeFilter = v; renderTable(); }
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  renderTable();
+}
+
+// ═══════════════════════════════════════════
+// ADD / DELETE
+// ═══════════════════════════════════════════
+function showAddModal() { document.getElementById('addModal').classList.add('show'); }
+function closeModal() { document.getElementById('addModal').classList.remove('show'); }
+
+function addItem() {
+  const nom = document.getElementById('fNom').value.trim();
+  if (!nom) return alert('Nom requis');
+  const prix = parseFloat(document.getElementById('fPrix').value) || 0;
+  const qte = parseInt(document.getElementById('fQte').value) || 1;
+  
+  const newItem = {
+    id: Math.max(...items.map(i=>i.id), 0) + 1,
+    jeu: document.getElementById('fJeu').value,
+    nom: nom,
+    nom_en: '',
+    type: document.getElementById('fType').value,
+    qte: qte,
+    statut: 'Stock',
+    cout: prix,
+    cout_total: prix * qte,
+    vente: null,
+    vente_total: null,
+    source: document.getElementById('fSource').value,
+    date_achat: document.getElementById('fDate').value || null,
+    expansion: document.getElementById('fExp').value || null,
+    product_id: null,
+    prix_marche: null
+  };
+  
+  items.push(newItem);
+  save();
+  render();
+  closeModal();
+  
+  // Reset form
+  document.getElementById('fNom').value = '';
+  document.getElementById('fPrix').value = '';
+  document.getElementById('fQte').value = '1';
+  document.getElementById('fExp').value = '';
+}
+
+function deleteItem(id) {
+  if (!confirm('Supprimer cet item ?')) return;
+  items = items.filter(i => i.id !== id);
+  save();
+  render();
+}
+
+// ═══════════════════════════════════════════
+// EXPORT CSV
+// ═══════════════════════════════════════════
+function exportCSV() {
+  const headers = ['Jeu','Nom','Type','Qté','Statut','Coût Unit','Coût Total','Prix Marché','Prix Vente','P&L','Source','Date Achat','Expansion'];
+  const rows = items.map(i => [
+    i.jeu, i.nom, i.type, i.qte, i.statut,
+    i.cout, i.cout_total, i.prix_marche || '',
+    i.vente || '', calcPL(i) || '',
+    i.source || '', i.date_achat || '', i.expansion || ''
+  ]);
+  
+  let csv = headers.join(';') + '\n';
+  rows.forEach(r => {
+    csv += r.map(v => typeof v === 'string' && v.includes(';') ? '"'+v+'"' : v).join(';') + '\n';
+  });
+  
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tcg_tracker_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ═══════════════════════════════════════════
+// PRICE UPDATE (API)
+// ═══════════════════════════════════════════
+async function updatePrices() {
+  const stockCards = items.filter(i => i.statut === 'Stock' && i.type === 'Carte');
+  if (stockCards.length === 0) return alert('Aucune carte en stock à mettre à jour.');
+  
+  const bar = document.getElementById('progressBar');
+  const fill = document.getElementById('progressFill');
+  const text = document.getElementById('progressText');
+  const log = document.getElementById('progressLog');
+  
+  bar.classList.add('show');
+  log.innerHTML = '';
+  document.getElementById('btnMaj').disabled = true;
+  
+  let done = 0;
+  let updated = 0;
+  let errors = 0;
+  const total = stockCards.length;
+  
+  for (const item of stockCards) {
+    done++;
+    const pct = Math.round(done / total * 100);
+    fill.style.width = pct + '%';
+    text.textContent = `Mise à jour: ${done}/${total} (${updated} ok, ${errors} erreurs)`;
+    
+    try {
+      const price = await fetchCardPrice(item);
+      if (price !== null) {
+        item.prix_marche = price;
+        updated++;
+        addLog(log, `✓ ${item.nom}: ${price.toFixed(2)}€`, 'log-ok');
+      } else {
+        addLog(log, `⊘ ${item.nom}: non trouvé`, 'log-skip');
+      }
+    } catch(e) {
+      errors++;
+      addLog(log, `✗ ${item.nom}: ${e.message}`, 'log-err');
+    }
+    
+    // Rate limit: wait 700ms between requests (free plan = ~100/day)
+    if (done < total) await sleep(700);
+  }
+  
+  save();
+  render();
+  text.textContent = `Terminé: ${updated} prix mis à jour, ${errors} erreurs sur ${total} cartes`;
+  document.getElementById('btnMaj').disabled = false;
+}
+
+async function fetchCardPrice(item) {
+  // Determine game path
+  const gamePath = item.jeu === 'OP' ? 'onepiece' : 'pokemon';
+  
+  // Build search query from card name
+  // For OP cards, extract the card number (e.g. "OP13-118") for better matching
+  let searchQuery = '';
+  const nameStr = item.nom_en || item.nom;
+  
+  // Try to extract card number like OP13-118, ST21-014, etc.
+  const cardNumMatch = nameStr.match(/((?:OP|ST|EB|PRB|P)\d+-\d+)/i);
+  if (cardNumMatch) {
+    searchQuery = cardNumMatch[1];
+  } else {
+    // For Pokémon or non-standard names, use the name
+    // Clean up the name: remove version markers, parentheses
+    searchQuery = nameStr
+      .replace(/\(V\.\d+\)/g, '')
+      .replace(/\([^)]*\)/g, '')
+      .trim();
+    // Take first meaningful words
+    const words = searchQuery.split(/\s+/).filter(w => w.length > 1);
+    searchQuery = words.slice(0, 3).join(' ');
+  }
+  
+  if (!searchQuery || searchQuery.length < 2) return null;
+  
+  const url = `https://${API_HOST}/${gamePath}/cards?search=${encodeURIComponent(searchQuery)}`;
+  
+  const resp = await fetch(url, {
+    headers: {
+      'x-rapidapi-key': API_KEY,
+      'x-rapidapi-host': API_HOST
+    }
+  });
+  
+  if (resp.status === 429) {
+    throw new Error('Rate limit - réessayez demain');
+  }
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status}`);
+  }
+  
+  const data = await resp.json();
+  
+  // The API returns an array of cards or an object with results
+  let cards = [];
+  if (Array.isArray(data)) {
+    cards = data;
+  } else if (data.data && Array.isArray(data.data)) {
+    cards = data.data;
+  } else if (data.results && Array.isArray(data.results)) {
+    cards = data.results;
+  } else if (data.cards && Array.isArray(data.cards)) {
+    cards = data.cards;
+  }
+  
+  if (cards.length === 0) return null;
+  
+  // Try to find exact match by card number
+  let bestCard = null;
+  if (cardNumMatch) {
+    const num = cardNumMatch[1].toUpperCase();
+    bestCard = cards.find(c => {
+      const cn = (c.card_number || c.number || c.code || '').toUpperCase();
+      const nn = (c.name_numbered || c.name || '').toUpperCase();
+      return cn.includes(num) || nn.includes(num);
+    });
+  }
+  
+  if (!bestCard) bestCard = cards[0]; // fallback to first result
+  
+  // Extract price - try FR first, then general EU
+  const prices = bestCard.prices || bestCard.price || {};
+  const cm = prices.cardmarket || prices.cm || prices;
+  
+  // Priority: lowest_near_mint_FR > lowest_near_mint > 30d_average > 7d_average
+  const price = cm.lowest_near_mint_FR
+    || cm.lowest_near_mint
+    || cm['30d_average']
+    || cm['7d_average']
+    || cm.trend
+    || cm.low
+    || cm.price
+    || null;
+  
+  if (typeof price === 'number' && price > 0) return price;
+  
+  // Maybe price is nested differently
+  if (typeof cm === 'number') return cm;
+  
+  return null;
+}
+
+function addLog(el, msg, cls) {
+  const d = document.createElement('div');
+  d.className = cls || '';
+  d.textContent = msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════
+// RESET DATA (debug)
+// ═══════════════════════════════════════════
+function resetData() {
+  if (!confirm('Réinitialiser toutes les données ? Cette action est irréversible.')) return;
+  localStorage.removeItem('tcg_tracker_items');
+  items = JSON.parse(JSON.stringify(SEED_DATA));
+  save();
+  render();
+}
+
+// Click outside modal to close
+document.getElementById('addModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Init
+init();
 </script>
 </body>
 </html>
