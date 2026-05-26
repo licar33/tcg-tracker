@@ -147,8 +147,9 @@ tr:hover td { background: var(--surface2); }
   transition: width 0.3s;
 }
 .progress-log {
-  margin-top: 8px; max-height: 120px; overflow-y: auto;
+  margin-top: 8px; max-height: 300px; overflow-y: auto;
   font-family:'JetBrains Mono',monospace; font-size: 11px; color: var(--text2);
+  white-space: pre-wrap; word-break: break-all;
 }
 .progress-log div { padding: 2px 0; }
 .log-ok { color: var(--green); }
@@ -182,6 +183,7 @@ td.editable:hover { background: var(--surface); outline: 1px dashed var(--border
 <div class="header">
   <div class="logo">🃏 TCG <span>Tracker</span></div>
   <div class="header-actions">
+    <button class="btn" onclick="testAPI()" id="btnTest">🧪 Test API</button>
     <button class="btn" onclick="updatePrices()" id="btnMaj">🔄 Màj Prix</button>
     <button class="btn" onclick="exportCSV()">📥 CSV</button>
     <button class="btn btn-accent" onclick="showAddModal()">+ Ajouter</button>
@@ -536,9 +538,112 @@ function exportCSV() {
 // ═══════════════════════════════════════════
 // PRICE UPDATE (API)
 // ═══════════════════════════════════════════
+async function testAPI() {
+  const bar = document.getElementById('progressBar');
+  const log = document.getElementById('progressLog');
+  const text = document.getElementById('progressText');
+  bar.classList.add('show');
+  log.innerHTML = '';
+  text.textContent = '🧪 Test API en cours...';
+  
+  // Try all possible hosts
+  const hosts = [
+    'cardmarket-api.p.rapidapi.com',
+    'cardmarket-api-tcg.p.rapidapi.com'
+  ];
+  
+  for (const host of hosts) {
+    addLog(log, `\n━━━ Test host: ${host} ━━━`, '');
+    
+    // Test One Piece
+    const urlOP = `https://${host}/onepiece/cards?search=OP13-118`;
+    addLog(log, `→ GET ${urlOP}`, '');
+    try {
+      const resp = await fetch(urlOP, {
+        headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': host }
+      });
+      addLog(log, `← Status: ${resp.status} ${resp.statusText}`, resp.ok ? 'log-ok' : 'log-err');
+      if (resp.ok) {
+        const data = await resp.json();
+        const raw = JSON.stringify(data).substring(0, 500);
+        addLog(log, `← Data type: ${typeof data}, isArray: ${Array.isArray(data)}`, 'log-ok');
+        addLog(log, `← Raw (500 chars): ${raw}`, 'log-ok');
+        
+        // Try to extract cards
+        let cards = [];
+        if (Array.isArray(data)) cards = data;
+        else {
+          for (const key of Object.keys(data)) {
+            if (Array.isArray(data[key])) {
+              addLog(log, `← Found array at key "${key}" with ${data[key].length} items`, 'log-ok');
+              cards = data[key];
+              break;
+            }
+          }
+          if (cards.length === 0) addLog(log, `← Object keys: ${Object.keys(data).join(', ')}`, 'log-skip');
+        }
+        
+        if (cards.length > 0) {
+          const c = cards[0];
+          addLog(log, `← First card keys: ${Object.keys(c).join(', ')}`, 'log-ok');
+          if (c.prices) addLog(log, `← prices keys: ${Object.keys(c.prices).join(', ')}`, 'log-ok');
+          if (c.prices?.cardmarket) addLog(log, `← cardmarket: ${JSON.stringify(c.prices.cardmarket).substring(0, 300)}`, 'log-ok');
+          
+          // Try extract price
+          const cm = c.prices?.cardmarket || {};
+          const price = cm.lowest_near_mint_FR || cm.lowest_near_mint || cm['30d_average'] || cm['7d_average'] || cm.trend;
+          addLog(log, `✅ Prix extrait: ${price}€`, 'log-ok');
+          addLog(log, `\n🎉 HOST FONCTIONNEL: ${host}`, 'log-ok');
+          text.textContent = `✅ API OK avec ${host} — prix trouvé: ${price}€. Tu peux cliquer "Màj Prix" !`;
+          
+          // Save working host
+          localStorage.setItem('tcg_api_host', host);
+          return;
+        }
+      } else {
+        const errText = await resp.text();
+        addLog(log, `← Error body: ${errText.substring(0, 200)}`, 'log-err');
+      }
+    } catch(e) {
+      addLog(log, `← Exception: ${e.message}`, 'log-err');
+    }
+    
+    // Test Pokémon too
+    const urlPK = `https://${host}/pokemon/cards?search=charizard+ex`;
+    addLog(log, `→ GET ${urlPK}`, '');
+    try {
+      const resp = await fetch(urlPK, {
+        headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': host }
+      });
+      addLog(log, `← Status: ${resp.status}`, resp.ok ? 'log-ok' : 'log-err');
+      if (resp.ok) {
+        const data = await resp.json();
+        addLog(log, `← Type: ${typeof data}, isArray: ${Array.isArray(data)}, keys: ${typeof data === 'object' && !Array.isArray(data) ? Object.keys(data).join(',') : 'N/A'}`, 'log-ok');
+        
+        let cards = Array.isArray(data) ? data : (data.data || data.results || data.cards || []);
+        if (cards.length > 0) {
+          addLog(log, `← ${cards.length} cards found`, 'log-ok');
+          addLog(log, `\n🎉 HOST FONCTIONNEL: ${host}`, 'log-ok');
+          localStorage.setItem('tcg_api_host', host);
+          text.textContent = `✅ API OK avec ${host}. Tu peux cliquer "Màj Prix" !`;
+          return;
+        }
+      }
+    } catch(e) {
+      addLog(log, `← Exception: ${e.message}`, 'log-err');
+    }
+  }
+  
+  text.textContent = '❌ Aucun host ne fonctionne — vérifie ta clé API sur RapidAPI';
+  addLog(log, '\n❌ Aucun host trouvé. Vérifie sur https://rapidapi.com/tcggopro/api/cardmarket-api-tcg que tu es bien abonné (même au plan gratuit).', 'log-err');
+}
+
 async function updatePrices() {
   const stockCards = items.filter(i => i.statut === 'Stock' && i.type === 'Carte');
   if (stockCards.length === 0) return alert('Aucune carte en stock à mettre à jour.');
+  
+  // Get working host (from test or default)
+  const workingHost = localStorage.getItem('tcg_api_host') || API_HOST;
   
   const bar = document.getElementById('progressBar');
   const fill = document.getElementById('progressFill');
@@ -548,6 +653,8 @@ async function updatePrices() {
   bar.classList.add('show');
   log.innerHTML = '';
   document.getElementById('btnMaj').disabled = true;
+  
+  addLog(log, `Host API: ${workingHost}`, '');
   
   let done = 0;
   let updated = 0;
@@ -561,7 +668,7 @@ async function updatePrices() {
     text.textContent = `Mise à jour: ${done}/${total} (${updated} ok, ${errors} erreurs)`;
     
     try {
-      const price = await fetchCardPrice(item);
+      const price = await fetchCardPrice(item, workingHost);
       if (price !== null) {
         item.prix_marche = price;
         updated++;
@@ -572,10 +679,15 @@ async function updatePrices() {
     } catch(e) {
       errors++;
       addLog(log, `✗ ${item.nom}: ${e.message}`, 'log-err');
+      // If rate limited, stop
+      if (e.message.includes('429') || e.message.includes('Rate limit')) {
+        addLog(log, '🛑 Rate limit atteint — arrêt. Réessaie demain.', 'log-err');
+        break;
+      }
     }
     
-    // Rate limit: wait 700ms between requests (free plan = ~100/day)
-    if (done < total) await sleep(700);
+    // Rate limit: wait 800ms between requests
+    if (done < total) await sleep(800);
   }
   
   save();
@@ -584,96 +696,111 @@ async function updatePrices() {
   document.getElementById('btnMaj').disabled = false;
 }
 
-async function fetchCardPrice(item) {
-  // Determine game path
+async function fetchCardPrice(item, host) {
   const gamePath = item.jeu === 'OP' ? 'onepiece' : 'pokemon';
   
-  // Build search query from card name
-  // For OP cards, extract the card number (e.g. "OP13-118") for better matching
+  // Build search query
   let searchQuery = '';
   const nameStr = item.nom_en || item.nom;
   
-  // Try to extract card number like OP13-118, ST21-014, etc.
-  const cardNumMatch = nameStr.match(/((?:OP|ST|EB|PRB|P)\d+-\d+)/i);
+  // Extract card number (OP13-118, ST21-014, PRB02-005, P-084, EB04-007)
+  const cardNumMatch = nameStr.match(/((?:OP|ST|EB|PRB|P)\d*-\d+)/i);
   if (cardNumMatch) {
     searchQuery = cardNumMatch[1];
   } else {
-    // For Pokémon or non-standard names, use the name
-    // Clean up the name: remove version markers, parentheses
+    // Pokémon: clean name for search
     searchQuery = nameStr
       .replace(/\(V\.\d+\)/g, '')
       .replace(/\([^)]*\)/g, '')
+      .replace(/\d+\/\d+/g, '') // remove 199/197 etc
+      .replace(/gradée?/gi, '')
+      .replace(/PCA\d+/gi, '')
+      .replace(/PSA\d+/gi, '')
+      .replace(/CCC\s*\d+\.?\d*/gi, '')
       .trim();
-    // Take first meaningful words
     const words = searchQuery.split(/\s+/).filter(w => w.length > 1);
     searchQuery = words.slice(0, 3).join(' ');
   }
   
   if (!searchQuery || searchQuery.length < 2) return null;
   
-  const url = `https://${API_HOST}/${gamePath}/cards?search=${encodeURIComponent(searchQuery)}`;
+  const url = `https://${host}/${gamePath}/cards?search=${encodeURIComponent(searchQuery)}`;
   
   const resp = await fetch(url, {
     headers: {
       'x-rapidapi-key': API_KEY,
-      'x-rapidapi-host': API_HOST
+      'x-rapidapi-host': host
     }
   });
   
-  if (resp.status === 429) {
-    throw new Error('Rate limit - réessayez demain');
-  }
-  if (!resp.ok) {
-    throw new Error(`HTTP ${resp.status}`);
-  }
+  if (resp.status === 429) throw new Error('429 Rate limit');
+  if (resp.status === 403) throw new Error('403 Forbidden — clé API invalide?');
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   
   const data = await resp.json();
   
-  // The API returns an array of cards or an object with results
+  // Parse cards from response (try all possible formats)
   let cards = [];
   if (Array.isArray(data)) {
     cards = data;
-  } else if (data.data && Array.isArray(data.data)) {
-    cards = data.data;
-  } else if (data.results && Array.isArray(data.results)) {
-    cards = data.results;
-  } else if (data.cards && Array.isArray(data.cards)) {
-    cards = data.cards;
+  } else if (data && typeof data === 'object') {
+    // Try common wrapper keys
+    for (const key of ['data', 'results', 'cards', 'items']) {
+      if (Array.isArray(data[key])) {
+        cards = data[key];
+        break;
+      }
+    }
+    // If still nothing, maybe the object itself is a single card
+    if (cards.length === 0 && data.prices) {
+      cards = [data];
+    }
   }
   
   if (cards.length === 0) return null;
   
-  // Try to find exact match by card number
+  // Find best match by card number
   let bestCard = null;
   if (cardNumMatch) {
     const num = cardNumMatch[1].toUpperCase();
     bestCard = cards.find(c => {
-      const cn = (c.card_number || c.number || c.code || '').toUpperCase();
-      const nn = (c.name_numbered || c.name || '').toUpperCase();
-      return cn.includes(num) || nn.includes(num);
+      const searchIn = [
+        c.card_number, c.number, c.code, c.id_text,
+        c.name_numbered, c.name, c.full_name
+      ].filter(Boolean).map(s => String(s).toUpperCase()).join(' ');
+      return searchIn.includes(num);
     });
   }
+  if (!bestCard) bestCard = cards[0];
   
-  if (!bestCard) bestCard = cards[0]; // fallback to first result
-  
-  // Extract price - try FR first, then general EU
+  // Extract price — documented format: prices.cardmarket.lowest_near_mint_FR etc.
   const prices = bestCard.prices || bestCard.price || {};
   const cm = prices.cardmarket || prices.cm || prices;
   
-  // Priority: lowest_near_mint_FR > lowest_near_mint > 30d_average > 7d_average
-  const price = cm.lowest_near_mint_FR
-    || cm.lowest_near_mint
-    || cm['30d_average']
-    || cm['7d_average']
-    || cm.trend
-    || cm.low
-    || cm.price
-    || null;
+  // Priority: FR > EU NM > 30d avg > 7d avg > trend
+  const candidates = [
+    cm.lowest_near_mint_FR,
+    cm.lowest_near_mint,
+    cm['30d_average'],
+    cm['7d_average'],
+    cm.trend,
+    cm.avg,
+    cm.low,
+    cm.price,
+    cm.market_price,
+    // Flat price fields on the card itself
+    bestCard.price_from,
+    bestCard.price,
+    bestCard.trend
+  ];
   
-  if (typeof price === 'number' && price > 0) return price;
-  
-  // Maybe price is nested differently
-  if (typeof cm === 'number') return cm;
+  for (const p of candidates) {
+    if (typeof p === 'number' && p > 0) return p;
+    if (typeof p === 'string') {
+      const n = parseFloat(p);
+      if (!isNaN(n) && n > 0) return n;
+    }
+  }
   
   return null;
 }
