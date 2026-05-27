@@ -184,7 +184,10 @@ let items=[],gameF='all',statusF='all',typeF='all',searchQ='',sortC='id',sortD=-
 // INIT
 // ══════════════════════════════════════════
 function init(){
-  const s=localStorage.getItem('tcg_v3');
+  // Try new key first, then migrate from old keys
+  let s=localStorage.getItem('tcg_v3');
+  if(!s) s=localStorage.getItem('tcg_tracker_items');
+  if(!s) s=localStorage.getItem('tcg_tracker');
   if(s){try{items=JSON.parse(s);merge();}catch(e){items=J(SEED)}}
   else items=J(SEED);
   save();render();
