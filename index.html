@@ -607,7 +607,7 @@ async function runVeille(mode){
     msg.textContent='Envoi de la requête Apify...';
     const runRes=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${getApifyToken()}&waitForFinish=180`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({mode:mode,language:'en',maxResults:100})
+      body:JSON.stringify({mode:mode,language:'en',maxResults:100,proxyConfiguration:{useApifyProxy:true,apifyProxyGroups:['RESIDENTIAL']}})
     });
     if(!runRes.ok){const txt=await runRes.text();throw new Error('HTTP '+runRes.status+': '+txt.slice(0,100));}
     const runData=await runRes.json();
