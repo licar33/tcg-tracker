@@ -167,6 +167,8 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
     <div class="veille-tabs">
       <button class="veille-tab active" id="vt-top" onclick="setVeilleTab('top')">Top Cards <span style="opacity:.5" id="vt-top-n">0</span></button>
       <button class="veille-tab" id="vt-bar" onclick="setVeilleTab('bargains')">Bargains <span style="opacity:.5" id="vt-bar-n">0</span></button>
+      <button class="veille-tab" id="vt-port" onclick="setVeilleTab('portfolio')">Mon Portefeuille</button>
+      <button class="veille-tab" id="vt-op16" onclick="setVeilleTab('op16')">Cibles OP16</button>
     </div>
     <div id="veille-info-area"></div>
     <div id="veille-matched-area"></div>
@@ -261,7 +263,7 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-
     <div class="ma"><button class="btn btn-ghost" onclick="closeKeys()">Annuler</button><button class="btn btn-primary" onclick="saveKeys()">Enregistrer</button></div>
   </div>
 </div>
-<footer>TCG Tracker · Màj <strong>21 mai 2026</strong> · Sources: Cardmarket CSV · Vinted · Amazon · Veille Apify</footer>
+<footer>TCG Tracker · Màj <strong>31 mai 2026</strong> · Sources: Cardmarket CSV · Vinted · Amazon · Veille Apify</footer>
 <script>
 /* ══════════════════════════════════════════════
    ITEMS DATA
@@ -587,41 +589,47 @@ function setVeilleGame(g){
 }
 function setVeilleTab(t){
   veilleTab=t;
+  ['top','bar','port','op16'].forEach(k=>document.getElementById('vt-'+k).className='veille-tab'+(t==={top:'top',bar:'bargains',port:'portfolio',op16:'op16'}[k]||k===t?' active':''));
   document.getElementById('vt-top').className='veille-tab'+(t==='top'?' active':'');
   document.getElementById('vt-bar').className='veille-tab'+(t==='bargains'?' active':'');
+  document.getElementById('vt-port').className='veille-tab'+(t==='portfolio'?' active':'');
+  document.getElementById('vt-op16').className='veille-tab'+(t==='op16'?' active':'');
   renderVeille();
 }
 
 async function runVeille(mode){
-  if(!getApifyToken()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ton token Apify');return;}
+  if(!getApifyToken()){openKeys();alert('⚙️ Entre ton token Apify pour utiliser la Veille');return;}
   const spin=document.getElementById('v-spin'),msg=document.getElementById('v-msg');
   spin.style.display='inline-block';
   msg.textContent='Lancement du scraper...';
   const actorId=APIFY_ACTORS[veilleGame];
   try{
+    msg.textContent='Envoi de la requête Apify...';
     const runRes=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${getApifyToken()}&waitForFinish=180`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({mode:mode,language:'en',maxResults:100})
     });
-    if(!runRes.ok)throw new Error('Run failed: '+runRes.status);
+    if(!runRes.ok){const txt=await runRes.text();throw new Error('HTTP '+runRes.status+': '+txt.slice(0,100));}
     const runData=await runRes.json();
     const dsId=runData?.data?.defaultDatasetId;
+    if(!dsId)throw new Error('Pas de dataset. As-tu ajouté le scraper à ton compte Apify ? Va sur apify.com/scrap_them_all/cardmarket-onepiece-trend-scraper et clique Try for free');
     let runStatus=runData?.data?.status,runId=runData?.data?.id;
+    msg.textContent='Scraping Cardmarket en cours...';
     if(runStatus==='RUNNING'||runStatus==='READY'){
       for(let i=0;i<45;i++){
         await new Promise(r=>setTimeout(r,4000));
-        msg.textContent=`Scraping en cours... (${i*4}s)`;
+        msg.textContent=`Scraping en cours... (${(i+1)*4}s)`;
         const poll=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${getApifyToken()}`);
         const pd=await poll.json();runStatus=pd?.data?.status;
         if(runStatus==='SUCCEEDED')break;
-        if(runStatus==='FAILED'||runStatus==='ABORTED')throw new Error('Run '+runStatus);
+        if(runStatus==='FAILED'||runStatus==='ABORTED')throw new Error('Run '+runStatus+'. Vérifie ton compte Apify.');
       }
     }
+    msg.textContent='Récupération des données...';
     const dataRes=await fetch(`https://api.apify.com/v2/datasets/${dsId}/items?token=${getApifyToken()}&format=json`);
     const cards=await dataRes.json();
     if(mode==='weekly-top-cards'){
       veilleData.top=cards;
-      // Match portfolio prices
       const pids=new Set(items.filter(x=>x.pid).map(x=>x.pid));
       let matched=0;
       cards.forEach(c=>{
@@ -641,8 +649,23 @@ async function runVeille(mode){
   }catch(err){
     spin.style.display='none';
     msg.textContent='❌ '+err.message;
+    console.error('Veille error:',err);
   }
 }
+
+// OP16 TARGETS
+const OP16_TARGETS=[
+  {n:'Sakazuki (OP02-099) V.2',s:'OP02',p:4.00,t:'15-25€',u:'https://www.cardmarket.com/fr/OnePiece/Products/Singles/Kingdoms-of-Intrigue/Sakazuki-OP02-099-V2'},
+  {n:'Kuzan (OP02-096) V.2',s:'OP02',p:12.00,t:'35-50€',u:'https://www.cardmarket.com/fr/OnePiece/Products/Singles/Kingdoms-of-Intrigue/Kuzan-OP02-096-V2'},
+  {n:'Kuzan (OP02-121) V.2',s:'OP02',p:13.00,t:'35-50€',u:''},
+  {n:'Borsalino (OP05-051) V.2',s:'OP05',p:2.98,t:'10-15€',u:''},
+  {n:'Edward Newgate (OP02-001) V.2',s:'OP02',p:104.99,t:'150-200€',u:''},
+  {n:'Rebecca (OP05-091) V.2',s:'OP05',p:9.00,t:'15-25€',u:''},
+  {n:'Yamato (OP04-112) V.2',s:'OP04',p:15.00,t:'25-40€',u:''},
+  {n:'Yamato (OP13-054) V.2',s:'OP13',p:12.00,t:'20-30€',u:''},
+  {n:'Ace (OP08-052) V.2',s:'OP08',p:5.39,t:'10-15€',u:''},
+  {n:'Ace (OP07-119) V.2',s:'OP07',p:13.00,t:'20-30€',u:''},
+];
 
 function renderVeille(){
   const area=document.getElementById('veille-results');
@@ -650,13 +673,50 @@ function renderVeille(){
   const matched=document.getElementById('veille-matched-area');
   document.getElementById('vt-top-n').textContent=veilleData.top.length;
   document.getElementById('vt-bar-n').textContent=veilleData.bargains.length;
-  const data=veilleTab==='top'?veilleData.top:veilleData.bargains;
   const pids=new Set(items.filter(x=>x.pid&&x.st==='Stock').map(x=>x.pid));
-  // Info bar
+
+  // ── PORTFOLIO TAB ──
+  if(veilleTab==='portfolio'){
+    info.innerHTML='';matched.innerHTML='';
+    const portItems=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
+    const totInv=portItems.reduce((s,x)=>s+(x.c||0)*x.q,0);
+    const totMkt=portItems.reduce((s,x)=>s+(x.mp||0)*x.q,0);
+    const matchedN=portItems.filter(x=>x.mp).length;
+    let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px">`;
+    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Investi</div><div style="font-size:20px;font-weight:700;font-family:Syne">${fmt(totInv)}</div></div>`;
+    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Valeur marché</div><div style="font-size:20px;font-weight:700;font-family:Syne">${matchedN>0?fmt(totMkt):'—'}</div><div style="font-size:10px;color:var(--muted)">${matchedN}/${portItems.length} matchés</div></div>`;
+    const pnlL=matchedN>0?totMkt-totInv:null;
+    const pnlCol=pnlL!=null?(pnlL>=0?'var(--green)':'var(--red)'):'var(--muted)';
+    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">P&L latent</div><div style="font-size:20px;font-weight:700;font-family:Syne;color:${pnlCol}">${pnlL!=null?(pnlL>=0?'+':'')+fmt(pnlL):'—'}</div></div>`;
+    html+=`</div>`;
+    if(matchedN===0)html+=`<div style="text-align:center;padding:10px;font-size:12px;color:var(--muted)">Lance <strong>⚡ Top Cards</strong> pour matcher les prix de ton portefeuille</div>`;
+    html+=`<div class="vr-head" style="display:grid;grid-template-columns:1fr 70px 80px 80px 70px;gap:6px"><span>Carte</span><span style="text-align:right">Achat</span><span style="text-align:right">Marché</span><span style="text-align:right">P&L</span><span style="text-align:right">ROI</span></div>`;
+    portItems.sort((a,b)=>(b.c||0)-(a.c||0)).forEach(x=>{
+      const mp=x.mp;const diff=mp&&x.c?mp-x.c:null;const roi=diff!=null&&x.c>0?diff/x.c*100:null;
+      const col=diff!=null?(diff>=0?'var(--green)':'var(--red)'):'var(--muted2)';
+      html+=`<div class="vr-row" style="grid-template-columns:1fr 70px 80px 80px 70px"><div><div class="vr-name">${e(x.n)}</div><div class="vr-set">${e(x.s||'')}</div></div><div style="text-align:right;font-family:monospace;font-size:12px">${x.c?fmt(x.c):'—'}</div><div style="text-align:right;font-family:monospace;font-size:12px;font-weight:500">${mp?fmt(mp):'?'}</div><div style="text-align:right;font-family:monospace;font-size:12px;color:${col}">${diff!=null?(diff>=0?'+':'')+diff.toFixed(0)+'€':'—'}</div><div style="text-align:right;font-family:monospace;font-size:11px;color:${col}">${roi!=null?(roi>=0?'+':'')+roi.toFixed(0)+'%':''}</div></div>`;
+    });
+    area.innerHTML=html;
+    return;
+  }
+
+  // ── OP16 TARGETS TAB ──
+  if(veilleTab==='op16'){
+    info.innerHTML=`<div class="veille-info warn">🔥 <strong>OP16 sorti le 30 mai JP / 12 juin EN</strong> — 3 Manga Rares (Akainu, Aokiji, Kizaru) + Yamato leader Noir (8-0 premier tournoi JP). Effet vitrine imminent.</div>`;
+    matched.innerHTML='';
+    let html='';
+    OP16_TARGETS.forEach(t=>{
+      html+=`<div class="vr-row" style="grid-template-columns:1fr 80px 100px 60px;padding:10px 12px"><div><div class="vr-name">${e(t.n)}</div><div class="vr-set">${t.s}</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--muted)">Actuel</div><div style="font-family:monospace;font-weight:600;font-size:14px">${t.p.toFixed(2)}€</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--green)">Cible</div><div style="font-family:monospace;font-weight:600;font-size:14px;color:var(--green)">${t.t}</div></div><div style="text-align:right">${t.u?`<a href="${t.u}" target="_blank" rel="noopener" style="color:var(--accent);font-size:11px;text-decoration:none">Voir ↗</a>`:''}</div></div>`;
+    });
+    area.innerHTML=html;
+    return;
+  }
+
+  // ── TOP / BARGAINS TABS ──
+  const data=veilleTab==='top'?veilleData.top:veilleData.bargains;
   if(veilleTab==='bargains'&&data.length>0){
     info.innerHTML='<div class="veille-info bargain">💡 Ces cartes sont actuellement sous leur tendance historique — opportunités d\'achat potentielles.</div>';
   }else{info.innerHTML='';}
-  // Matched count
   if(veilleTab==='top'&&veilleData.top.length>0){
     const mc=veilleData.top.filter(c=>c.productId&&pids.has(c.productId)).length;
     if(mc>0)matched.innerHTML=`<div class="veille-matched">🎯 ${mc} carte(s) de ton portefeuille apparaissent dans le Top — prix mis à jour automatiquement</div>`;
