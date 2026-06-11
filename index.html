@@ -2,272 +2,251 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TCG Tracker — One Piece & Pokémon</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TCG Tracker — licar92</title>
 <style>
-:root{--bg:#0a0c0f;--surface:#111318;--surface2:#181c24;--border:#1e2330;--border2:#252b3a;--text:#e8eaf0;--muted:#6b7280;--muted2:#4b5563;--accent:#3b82f6;--accent2:#1d4ed8;--green:#10b981;--green-bg:rgba(16,185,129,.08);--red:#ef4444;--red-bg:rgba(239,68,68,.08);--yellow:#f59e0b;--op:#e85d04;--op-bg:rgba(232,93,4,.12);--pk:#3b82f6;--pk-bg:rgba(59,130,246,.12)}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px}
-.logo-badge{background:linear-gradient(135deg,var(--op),var(--pk));padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;color:#fff}
-.header-actions{display:flex;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}.btn-ghost:hover{color:var(--text);border-color:var(--muted2)}
-.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
-main{max-width:1400px;margin:0 auto;padding:24px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.kpi.blue::before{background:var(--accent)}.kpi.green::before{background:var(--green)}.kpi.orange::before{background:var(--op)}.kpi.purple::before{background:#8b5cf6}
-.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin-bottom:8px}
-.kpi-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;line-height:1}
-.kpi-value.positive{color:var(--green)}.kpi-value.negative{color:var(--red)}
-.kpi-sub{font-size:12px;color:var(--muted);margin-top:6px}
-.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;width:fit-content}
-.tab{padding:7px 18px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:'Inter',sans-serif}
-.tab.active{background:var(--surface2);color:var(--text)}
-.tab .count{font-size:11px;background:var(--border);padding:1px 6px;border-radius:4px;margin-left:4px}
-.tab.active .count{background:var(--border2)}
-.toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
-.filter-btn{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
-.filter-btn.active{color:var(--text);background:var(--surface2);border-color:var(--muted2)}
-.filter-btn.stock.active{color:var(--green);border-color:rgba(16,185,129,.4);background:var(--green-bg)}
-.search-input{padding:7px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;width:240px}
-.search-input:focus{border-color:var(--accent)}.search-input::placeholder{color:var(--muted2)}
-select.sort-sel{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;outline:none}
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-table{width:100%;border-collapse:collapse}
-thead th{padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-td{padding:9px 14px;vertical-align:middle}
-.bg{display:inline-flex;align-items:center;justify-content:center;width:28px;height:20px;border-radius:5px;font-size:10px;font-weight:700}
-.bg-op{background:var(--op-bg);color:var(--op)}.bg-pk{background:var(--pk-bg);color:var(--pk)}
-.bs{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.bs-stock{background:var(--green-bg);color:var(--green)}.bs-vendu{background:rgba(107,114,128,.1);color:var(--muted)}
-.bt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface2);color:var(--muted)}
-.in{font-weight:500;color:var(--text);max-width:260px}
-.is{font-size:11px;color:var(--muted);margin-top:2px}
-.price{font-family:'DM Mono',monospace;font-size:13px}
-.price.unk{color:var(--muted2);font-style:italic}
-.pp{font-family:'DM Mono',monospace;color:var(--green);font-size:13px;font-weight:500}
-.pn{font-family:'DM Mono',monospace;color:var(--red);font-size:13px;font-weight:500}
-.pu{font-family:'DM Mono',monospace;color:var(--muted2);font-size:13px}
-.dc{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);white-space:nowrap}
-.row-actions{display:flex;gap:6px;opacity:0;transition:opacity .15s}
-tbody tr:hover .row-actions{opacity:1}
-.ib{width:26px;height:26px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
-.ib:hover{background:var(--surface2);color:var(--text)}.ib.del:hover{color:var(--red);background:var(--red-bg)}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:28px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg div{display:flex;flex-direction:column;gap:6px}
-.fg .full{grid-column:1/-1}
-label{font-size:12px;color:var(--muted);font-weight:500}
-input,select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;width:100%}
-input:focus,select:focus{border-color:var(--accent)}
-.ma{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-.spinner{width:14px;height:14px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-footer{text-align:center;padding:20px;font-size:12px;color:var(--muted2);border-top:1px solid var(--border);margin-top:24px}
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222537;
+    --border: #2e3248;
+    --accent-op: #e8a317;
+    --accent-pk: #6c8ef5;
+    --green: #3ecf8e;
+    --red: #f25f5c;
+    --text: #e8e9f0;
+    --muted: #7b7f9e;
+    --radius: 10px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; padding-bottom: 80px; }
 
-/* ── VEILLE PANEL ── */
-.veille-panel{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
-.veille-panel.open{display:block;max-height:2000px;padding:16px 24px 20px}
-.veille-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-.veille-toggle{display:inline-flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-.veille-toggle button{border:none;background:transparent;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;color:var(--muted);transition:all .15s}
-.veille-toggle button.active{background:var(--accent);color:#fff}
-.veille-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-left:auto}
-.veille-spin{width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:none}
-.veille-tabs{display:flex;gap:6px;margin-bottom:12px}
-.veille-tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
-.veille-tab.active{color:var(--text);background:var(--surface2);border-color:var(--muted2)}
-.veille-results{max-height:500px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
-.vr-row{display:grid;grid-template-columns:36px 1fr 90px 80px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;transition:background .1s}
-.vr-row:last-child{border-bottom:none}
-.vr-row:hover{background:rgba(255,255,255,.02)}
-.vr-row.highlight{background:rgba(232,93,4,.06)}
-.vr-rank{color:var(--muted);font-weight:600;text-align:center;font-family:'DM Mono',monospace;font-size:12px}
-.vr-name{font-weight:500;line-height:1.3}.vr-set{font-size:11px;color:var(--muted)}
-.vr-price{font-family:'DM Mono',monospace;font-weight:500;text-align:right}
-.vr-link{text-align:right}
-.vr-link a{color:var(--accent);font-size:11px;text-decoration:none}
-.vr-link a:hover{text-decoration:underline}
-.vr-head{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2);font-weight:500;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border)}
-.veille-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
-.veille-info{padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:12px}
-.veille-info.bargain{background:rgba(16,185,129,.06);color:var(--green)}
-.veille-info.warn{background:rgba(245,158,11,.08);color:var(--yellow)}
-.veille-matched{font-size:11px;color:var(--muted);padding:6px 12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-@media(max-width:700px){
-  header{padding:0 14px}
-  .logo span:last-child{display:none}
-  main{padding:12px}
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .kpi{padding:12px 14px}
-  .kpi-value{font-size:20px}
-  .tabs{width:100%;overflow-x:auto}
-  .toolbar{gap:8px}
-  .search-input{width:100%}
-  .table-wrap table{display:none}
-  .mobile-cards{display:flex;flex-direction:column;gap:8px;padding:10px}
-  .veille-panel.open{padding:12px 14px 16px}
-  .veille-header{gap:8px}
-  .vr-row{grid-template-columns:28px 1fr 70px 60px;padding:6px 8px;font-size:12px}
-}
-@media(min-width:701px){.mobile-cards{display:none}}
-.mcard{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:start;position:relative}
-.mcard-left{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px}
-.mcard-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
-.mcard-set{font-size:11px;color:var(--muted);margin-top:1px}
-.mcard-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.mcard-nums{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
-.mnum{display:flex;flex-direction:column;align-items:center;gap:1px}
-.mnum-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2)}
-.mnum-val{font-family:monospace;font-size:13px;font-weight:500}
-.mcard-actions{position:absolute;bottom:10px;right:12px;display:flex;gap:6px;opacity:0;transition:opacity .2s}
-.mcard:active .mcard-actions{opacity:1}
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  header h1 { font-size: 15px; font-weight: 700; letter-spacing: .5px; }
+  header h1 span { color: var(--accent-op); }
+  .sync-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .2s; }
+  .sync-btn:hover { border-color: var(--accent-op); color: var(--accent-op); }
+  .sync-btn.syncing { color: var(--accent-op); border-color: var(--accent-op); }
+
+  .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 53px; z-index: 99; }
+  .tab { flex: 1; padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent-op); }
+
+  .page { display: none; padding: 12px; }
+  .page.active { display: block; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+  .stat-card .label { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .stat-card .value { font-size: 20px; font-weight: 700; }
+  .stat-card .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .stat-card.full { grid-column: 1/-1; }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 8px; }
+  .section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+  .filter-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .filter-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
+  .filter-btn.active { background: var(--surface2); color: var(--text); border-color: var(--accent-op); }
+  .filter-btn.op.active { background: rgba(232,163,23,.15); color: var(--accent-op); border-color: var(--accent-op); }
+  .filter-btn.pk.active { background: rgba(108,142,245,.15); color: var(--accent-pk); border-color: var(--accent-pk); }
+
+  .search-box { width: 100%; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 13px; margin-bottom: 10px; outline: none; transition: border-color .2s; }
+  .search-box:focus { border-color: var(--accent-op); }
+  .search-box::placeholder { color: var(--muted); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
+  .card-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+  .jeu-badge { padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: .5px; flex-shrink: 0; margin-top: 2px; }
+  .jeu-badge.OP { background: rgba(232,163,23,.2); color: var(--accent-op); }
+  .jeu-badge.PK { background: rgba(108,142,245,.2); color: var(--accent-pk); }
+  .card-name { font-size: 13px; font-weight: 600; flex: 1; line-height: 1.3; }
+  .card-set { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .price-info { display: flex; align-items: center; gap: 10px; }
+  .price-main { font-size: 13px; font-weight: 600; }
+  .price-date { font-size: 11px; color: var(--muted); }
+  .card-actions { display: flex; gap: 6px; }
+
+  .btn-sell { background: rgba(62,207,142,.15); color: var(--green); border: 1px solid rgba(62,207,142,.3); padding: 5px 11px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .btn-sell:hover { background: rgba(62,207,142,.25); }
+  .btn-del { background: none; color: var(--muted); border: 1px solid var(--border); padding: 5px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all .2s; }
+  .btn-del:hover { color: var(--red); border-color: var(--red); }
+
+  .pnl-badge { padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .pnl-badge.pos { background: rgba(62,207,142,.15); color: var(--green); }
+  .pnl-badge.neg { background: rgba(242,95,92,.15); color: var(--red); }
+  .pnl-badge.unknown { background: rgba(123,127,158,.1); color: var(--muted); }
+
+  .qty-badge { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
+  .fab { position: fixed; bottom: 24px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent-op); color: #000; font-size: 24px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(232,163,23,.4); z-index: 200; transition: transform .2s; }
+  .fab:active { transform: scale(.93); }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 300; align-items: flex-end; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+  .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+  .form-group input, .form-group select { width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; transition: border-color .2s; -webkit-appearance: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent-op); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-primary { width: 100%; padding: 13px; background: var(--accent-op); color: #000; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: opacity .2s; }
+  .btn-primary:active { opacity: .85; }
+
+  .import-area { background: var(--bg); border: 1px dashed var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
+  .import-area textarea { width: 100%; min-height: 80px; background: transparent; border: none; color: var(--text); font-size: 12px; font-family: monospace; resize: vertical; outline: none; }
+  .import-area textarea::placeholder { color: var(--muted); }
+
+  .settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .settings-section h4 { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty .icon { font-size: 36px; margin-bottom: 10px; }
+
+  .info-banner { background: rgba(232,163,23,.1); border: 1px solid rgba(232,163,23,.25); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #f0c060; margin-bottom: 12px; line-height: 1.5; }
+
+  .src-badge { font-size: 10px; color: var(--muted); background: var(--surface2); border-radius: 3px; padding: 1px 5px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (min-width: 600px) { body { max-width: 500px; margin: 0 auto; } }
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo"><span class="logo-badge">TCG</span><span>Tracker</span><span style="color:var(--muted);font-size:13px;font-weight:400">— One Piece & Pokémon</span></div>
-  <div class="header-actions">
-    <button class="btn btn-ghost" onclick="toggleVeillePanel()" title="Veille marché Cardmarket via Apify">🔍 Veille</button>
-    <button class="btn btn-ghost" onclick="togglePricePanel()">⟳ Màj Prix</button>
-    <button class="btn btn-ghost" onclick="openKeys()" title="Configurer les clés API">⚙️</button>
-    <button class="btn btn-ghost" onclick="exportCSV()">⤓ CSV</button>
-    <button class="btn btn-primary" onclick="openModal()">+ Ajouter</button>
-  </div>
+  <h1>TCG <span>licar92</span></h1>
+  <button class="sync-btn" id="syncBtn" onclick="syncGitHub()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c-1.66 0-3-4.03-3-9s1.34-9 3-9m0 18c1.66 0 3-4.03 3-9s-1.34-9-3-9"/></svg>
+    Sync
+  </button>
 </header>
 
-<!-- VEILLE MARCHÉ PANEL -->
-<div id="veille-panel" class="veille-panel">
-  <div style="max-width:1400px;margin:0 auto;">
-    <div class="veille-header">
-      <span style="font-size:14px;font-weight:700;color:var(--text)">🏴‍☠️ Veille Marché</span>
-      <div class="veille-toggle">
-        <button class="active" id="vg-op" onclick="setVeilleGame('op')">One Piece</button>
-        <button id="vg-pk" onclick="setVeilleGame('pk')">Pokémon</button>
-      </div>
-      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('weekly-top-cards')">⚡ Top Cards</button>
-      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="runVeille('best-bargains')">🔍 Bargains</button>
-      <div class="veille-status">
-        <div class="veille-spin" id="v-spin"></div>
-        <span id="v-msg" style="font-size:11px">Prêt · ~0.10$/run</span>
-      </div>
+<nav class="tabs">
+  <div class="tab active" onclick="showPage('dashboard')">📊 Résumé</div>
+  <div class="tab" onclick="showPage('stock')">📦 Stock</div>
+  <div class="tab" onclick="showPage('ventes')">💸 Ventes</div>
+  <div class="tab" onclick="showPage('settings')">⚙️</div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div id="statsGrid" class="stats-grid"></div>
+  <div class="stats-grid" id="repartition"></div>
+</div>
+
+<!-- STOCK -->
+<div class="page" id="page-stock">
+  <div class="filter-row">
+    <button class="filter-btn active" id="sfAll" onclick="setFilter('stock','all')">Tous</button>
+    <button class="filter-btn op" id="sfOP" onclick="setFilter('stock','OP')">One Piece</button>
+    <button class="filter-btn pk" id="sfPK" onclick="setFilter('stock','PK')">Pokémon</button>
+  </div>
+  <input type="text" class="search-box" placeholder="Rechercher..." id="searchStock" oninput="renderStock()">
+  <div id="stockList"></div>
+</div>
+
+<!-- VENTES -->
+<div class="page" id="page-ventes">
+  <div class="info-banner" id="costAlert" style="display:none">
+    ⚠️ <strong id="costCount">0</strong> vente(s) sans coût d'achat — cliquer sur <strong>+ coût</strong> pour compléter le P&L.
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" id="vfAll" onclick="setFilter('vente','all')">Toutes</button>
+    <button class="filter-btn op" id="vfOP" onclick="setFilter('vente','OP')">One Piece</button>
+    <button class="filter-btn pk" id="vfPK" onclick="setFilter('vente','PK')">Pokémon</button>
+  </div>
+  <input type="text" class="search-box" placeholder="Rechercher..." id="searchVente" oninput="renderVentes()">
+  <div id="venteList"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="settings-section">
+    <h4>GitHub Sync</h4>
+    <div class="form-group"><label>Utilisateur GitHub</label><input type="text" id="ghUser" placeholder="licar33"></div>
+    <div class="form-group"><label>Repo</label><input type="text" id="ghRepo" placeholder="tcg-tracker"></div>
+    <div class="form-group"><label>Personal Access Token</label><input type="password" id="ghToken" placeholder="ghp_..."></div>
+    <button class="btn-primary" onclick="saveSettings()">Enregistrer</button>
+  </div>
+  <div class="settings-section">
+    <h4>Import CSV Cardmarket</h4>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Colle le contenu brut d'un export CSV Cardmarket.</p>
+    <div class="import-area"><textarea id="csvInput" placeholder="Shipment nr.;Date of purchase;Article;..."></textarea></div>
+    <div class="form-row">
+      <button class="btn-primary" style="background:var(--green);color:#000" onclick="importCSV('achat')">Importer Achats</button>
+      <button class="btn-primary" style="background:var(--accent-pk)" onclick="importCSV('vente')">Importer Ventes</button>
     </div>
-    <div class="veille-tabs">
-      <button class="veille-tab active" id="vt-top" onclick="setVeilleTab('top')">Top Cards <span style="opacity:.5" id="vt-top-n">0</span></button>
-      <button class="veille-tab" id="vt-bar" onclick="setVeilleTab('bargains')">Bargains <span style="opacity:.5" id="vt-bar-n">0</span></button>
-      <button class="veille-tab" id="vt-port" onclick="setVeilleTab('portfolio')">Mon Portefeuille</button>
-      <button class="veille-tab" id="vt-op16" onclick="setVeilleTab('op16')">Cibles OP16</button>
-    </div>
-    <div id="veille-info-area"></div>
-    <div id="veille-matched-area"></div>
-    <div class="veille-results" id="veille-results">
-      <div class="veille-empty">
-        Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping Cardmarket.<br>
-        <span style="font-size:11px;margin-top:6px;display:inline-block">Powered by Apify · Données EN · ~2min par run</span>
-      </div>
-    </div>
-    <div style="margin-top:8px;font-size:10px;color:var(--muted2);text-align:right">
-      Apify Trend Scraper · Cardmarket EN · Les cartes de ton portefeuille sont surlignées en orange
+    <div id="importResult" style="margin-top:8px;font-size:12px;color:var(--green)"></div>
+  </div>
+  <div class="settings-section">
+    <h4>Données</h4>
+    <div class="form-row">
+      <button class="btn-primary" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="exportJSON()">Exporter JSON</button>
+      <button class="btn-primary" style="background:var(--red)" onclick="resetData()">Réinitialiser</button>
     </div>
   </div>
 </div>
 
-<div id="price-panel" style="display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;">
-  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-    <span style="font-size:13px;font-weight:600;color:var(--text)">Mise à jour prix marché</span>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('OP')">
-      <span style="color:var(--op)">●</span> One Piece (<span id="op-count">0</span> cartes)
-    </button>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('PK')">
-      <span style="color:var(--pk)">●</span> Pokémon (<span id="pk-count">0</span> cartes)
-    </button>
-    <button class="btn btn-ghost" style="font-size:12px" onclick="runUpdate('ALL')">⟳ Tout mettre à jour</button>
-    <div id="upd-progress" style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
-      <div id="upd-spin" style="display:none;width:12px;height:12px;border:2px solid rgba(59,130,246,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div>
-      <span id="upd-msg"></span>
-    </div>
-    <div style="margin-left:auto;font-size:11px;color:var(--muted2)">Plan gratuit : 100 req/jour · Cartes seulement (pas les scellés)</div>
-  </div>
-</div>
+<button class="fab" onclick="openAddModal()">+</button>
 
-<main>
-  <div class="kpi-grid">
-    <div class="kpi blue"><div class="kpi-label">Total Investi (stock)</div><div class="kpi-value" id="k1">—</div><div class="kpi-sub" id="k1s">—</div></div>
-    <div class="kpi orange"><div class="kpi-label">Revenus Ventes</div><div class="kpi-value" id="k2">—</div><div class="kpi-sub" id="k2s">net frais 5% CM</div></div>
-    <div class="kpi green"><div class="kpi-label">P&L Réalisé</div><div class="kpi-value" id="k3">—</div><div class="kpi-sub" id="k3s">—</div></div>
-    <div class="kpi purple"><div class="kpi-label">ROI</div><div class="kpi-value" id="k4">—</div><div class="kpi-sub" id="k4s">—</div></div>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('all')" id="tab-all">Tous <span class="count" id="ca">0</span></button>
-    <button class="tab" onclick="setTab('OP')" id="tab-OP">One Piece <span class="count" id="co">0</span></button>
-    <button class="tab" onclick="setTab('PK')" id="tab-PK">Pokémon <span class="count" id="cp">0</span></button>
-  </div>
-  <div class="toolbar">
-    <div style="display:flex;gap:6px">
-      <button class="filter-btn active" onclick="setStatus('all')" id="f-all">Tous</button>
-      <button class="filter-btn stock" onclick="setStatus('Stock')" id="f-stock">📦 Stock</button>
-      <button class="filter-btn" onclick="setStatus('Vendu')" id="f-vendu">✓ Vendus</button>
-    </div>
-    <input class="search-input" type="text" placeholder="🔍 Rechercher..." id="search" oninput="render()">
-    <select class="sort-sel" id="ss" onchange="render()">
-      <option value="date-desc">Date ↓</option><option value="date-asc">Date ↑</option>
-      <option value="cost-desc">Coût ↓</option><option value="pnl-desc">P&L ↓</option><option value="name-asc">Nom A→Z</option>
-    </select>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Jeu</th><th>Article</th><th>Type</th><th>Qté</th><th>Date</th><th>Coût unit.</th><th>Vente unit.</th><th>P&L net</th><th>📈 Marché</th><th>Source</th><th>Statut</th><th></th></tr></thead>
-      <tbody id="tb"></tbody>
-    </table>
-    <div class="mobile-cards" id="mc"></div>
-  </div>
-</main>
-<div class="modal-overlay" id="modal">
+<!-- MODAL ACHAT -->
+<div class="modal-overlay" id="modalAchat">
   <div class="modal">
-    <div class="modal-title" id="mt">Ajouter</div>
-    <div class="fg">
-      <div><label>Jeu</label><select id="fg"><option value="OP">One Piece</option><option value="PK">Pokémon</option></select></div>
-      <div><label>Type</label><select id="ft"><option>Carte</option><option>Booster</option><option>Display</option><option>ETB</option><option>Bundle</option><option>Coffret</option><option>UPC</option><option>Blister</option><option>Autre</option></select></div>
-      <div class="full"><label>Nom</label><input type="text" id="fn"></div>
-      <div class="full"><label>Set</label><input type="text" id="fse"></div>
-      <div><label>Date</label><input type="date" id="fd"></div>
-      <div><label>Quantité</label><input type="number" id="fq" value="1" min="1"></div>
-      <div><label>Statut</label><select id="fst"><option value="Stock">Stock</option><option value="Vendu">Vendu</option></select></div>
-      <div><label>Source</label><select id="fp"><option>Cardmarket</option><option>Vinted</option><option>Amazon</option><option>Discord</option><option>Autre</option></select></div>
-      <div><label>Prix achat unit. €</label><input type="number" id="fc" step="0.01"></div>
-      <div><label>Prix vente unit. €</label><input type="number" id="fv" step="0.01"></div>
+    <button class="modal-close" onclick="closeModal('modalAchat')">✕</button>
+    <h3>Nouvel achat</h3>
+    <div class="form-group"><label>Nom de la carte / article</label><input type="text" id="a_article" placeholder="Nami (OP09-050) V.2"></div>
+    <div class="form-group"><label>Set / Expansion</label><input type="text" id="a_expansion" placeholder="Emperors in the New World"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Jeu</label><select id="a_jeu"><option value="OP">One Piece</option><option value="PK">Pokémon</option></select></div>
+      <div class="form-group"><label>Type</label><select id="a_type"><option>Carte</option><option>Booster</option><option>Display</option><option>ETB</option><option>Bundle</option><option>Blister</option><option>Coffret</option><option>UPC</option><option>Autre</option></select></div>
     </div>
-    <div class="ma"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveItem()">Enregistrer</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix achat (€)</label><input type="number" id="a_prix" placeholder="25.00" step="0.01" min="0"></div>
+      <div class="form-group"><label>Qté</label><input type="number" id="a_qty" value="1" min="1"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="a_date"></div>
+      <div class="form-group"><label>Plateforme</label><select id="a_plateforme"><option>Cardmarket</option><option>Vinted</option><option>Amazon</option><option>Discord</option><option>Autre</option></select></div>
+    </div>
+    <button class="btn-primary" onclick="addAchat()">Ajouter au stock</button>
   </div>
 </div>
-<div class="modal-overlay" id="keys-modal">
-  <div class="modal" style="width:440px">
-    <div class="modal-title">⚙️ Clés API</div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Tes clés sont stockées dans le localStorage de ton navigateur, jamais dans le code source.</p>
-    <div class="fg" style="grid-template-columns:1fr">
-      <div><label>RapidAPI Key (Màj Prix Cardmarket)</label><input type="text" id="key-rapid" placeholder="Ta clé RapidAPI..."></div>
-      <div><label>Apify Token (Veille Marché)</label><input type="text" id="key-apify" placeholder="apify_api_..."></div>
+
+<!-- MODAL VENTE -->
+<div class="modal-overlay" id="modalVente">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalVente')">✕</button>
+    <h3>Enregistrer une vente</h3>
+    <div id="venteArticleInfo" style="background:var(--bg);border-radius:8px;padding:10px;margin-bottom:14px;font-size:13px;line-height:1.5;"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix de vente (€)</label><input type="number" id="v_prix" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="form-group"><label>Date vente</label><input type="date" id="v_date"></div>
     </div>
-    <div class="ma"><button class="btn btn-ghost" onclick="closeKeys()">Annuler</button><button class="btn btn-primary" onclick="saveKeys()">Enregistrer</button></div>
+    <div class="form-group"><label>Plateforme</label><select id="v_plateforme"><option>Cardmarket</option><option>Vinted</option><option>Discord</option><option>Autre</option></select></div>
+    <button class="btn-primary" onclick="confirmVente()">Confirmer la vente</button>
   </div>
 </div>
-<footer>TCG Tracker · Màj <strong>31 mai 2026</strong> · Sources: Cardmarket CSV · Vinted · Amazon · Veille Apify</footer>
+
+<!-- MODAL EDIT COUT -->
+<div class="modal-overlay" id="modalEditCout">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalEditCout')">✕</button>
+    <h3>Renseigner le coût d'achat</h3>
+    <div id="editVenteInfo" style="background:var(--bg);border-radius:8px;padding:10px;margin-bottom:14px;font-size:13px;line-height:1.5;"></div>
+    <div class="form-group"><label>Prix d'achat (€)</label><input type="number" id="ec_prix" placeholder="0.00" step="0.01" min="0"></div>
+    <button class="btn-primary" onclick="saveEditCout()">Enregistrer</button>
+  </div>
+</div>
+
 <script>
-/* ══════════════════════════════════════════════
-   ITEMS DATA
-   ══════════════════════════════════════════════ */
 let items=[
 {id:1,g:'OP',n:'Monkey D. Luffy (OP13-118) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-01-07',c:55,v:null,st:'Stock',src:'Cardmarket',pid:857338},
 {id:2,g:'OP',n:'Monkey D. Luffy (ST21-014) V.1',s:'Unnumbered Promos',t:'Carte',q:1,d:'2026-01-07',c:99.99,v:null,st:'Stock',src:'Cardmarket',pid:853300},
@@ -425,336 +404,402 @@ let items=[
 {id:307,g:'PK',n:'ETB Heros Transcendants',s:'Mega-Evolution',t:'ETB',q:1,d:'2026-03-29',c:46.66,v:70,st:'Vendu',src:'Vinted'},
 {id:308,g:'OP',n:'Sabo (OP13-004) Leader',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-04-28',c:null,v:13,st:'Vendu',src:'Vinted'},
 {id:309,g:'PK',n:'Seleroc Stamp Mega Evolution',s:'Mega-Evolution Promos',t:'Carte',q:1,d:'2026-05-10',c:19.4,v:17,st:'Vendu',src:'Vinted'},
-];
+]
+// ─── GITHUB CONFIG ───────────────────────────────────────────────────
+const GITHUB_FILE = 'tcg-data.json';
 
-/* ══════════════════════════════════════════════
-   CORE TRACKER LOGIC
-   ══════════════════════════════════════════════ */
-let cTab='all',cStat='all',eId=null,nId=500;
-function fmt(v){if(v==null)return'—';return v.toFixed(2).replace('.',',')+' €'}
-function e(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function pnl(i){if(!i.v)return null;const n=i.v*i.q*0.95;if(i.c==null)return null;return n-i.c*i.q}
-function filtered(){
-  const q=(document.getElementById('search').value||'').toLowerCase();
-  const sv=document.getElementById('ss').value;
-  let r=items.filter(i=>{
-    if(cTab!=='all'&&i.g!==cTab)return false;
-    if(cStat!=='all'&&i.st!==cStat)return false;
-    if(q&&!i.n.toLowerCase().includes(q)&&!(i.s||'').toLowerCase().includes(q))return false;
-    return true;
-  });
-  const[col,dir]=sv.split('-');
-  r.sort((a,b)=>{
-    let va,vb;
-    if(col==='date'){va=a.d||'';vb=b.d||'';}
-    else if(col==='cost'){va=a.c??-1e9;vb=b.c??-1e9;}
-    else if(col==='pnl'){va=pnl(a)??-1e9;vb=pnl(b)??-1e9;}
-    else if(col==='name'){va=a.n.toLowerCase();vb=b.n.toLowerCase();}
-    else{va=a[col];vb=b[col];}
-    if(va<vb)return dir==='asc'?-1:1;if(va>vb)return dir==='asc'?1:-1;return 0;
-  });
-  return r;
-}
-function render(){
-  const rows=filtered();
-  document.getElementById('ca').textContent=items.length;
-  document.getElementById('co').textContent=items.filter(i=>i.g==='OP').length;
-  document.getElementById('cp').textContent=items.filter(i=>i.g==='PK').length;
-  const stk=items.filter(i=>i.st==='Stock'&&i.c!=null);
-  const inv=stk.reduce((s,i)=>s+i.c*i.q,0);
-  const sold=items.filter(i=>i.st==='Vendu');
-  const rev=sold.reduce((s,i)=>s+(i.v||0)*i.q,0)*0.95;
-  const wb=sold.filter(i=>i.c!=null&&i.v!=null);
-  const rp=wb.reduce((s,i)=>s+pnl(i),0);
-  const cs=wb.reduce((s,i)=>s+i.c*i.q,0);
-  const roi=cs>0?rp/cs*100:null;
-  document.getElementById('k1').textContent=fmt(inv);
-  document.getElementById('k1s').textContent=stk.length+' lignes en portefeuille';
-  document.getElementById('k2').textContent=fmt(rev);
-  document.getElementById('k2s').textContent=sold.length+' vendus · net 5%';
-  const pe=document.getElementById('k3');pe.textContent=(rp>=0?'+':'')+fmt(rp);pe.className='kpi-value '+(rp>=0?'positive':'negative');
-  document.getElementById('k3s').textContent=(sold.length-wb.length)+' ventes sans cout';
-  document.getElementById('k4').textContent=roi!=null?(roi>=0?'+':'')+roi.toFixed(1)+'%':'—';
-  document.getElementById('k4s').textContent='Sur '+wb.length+' ventes completement tracees';
-  const tb=document.getElementById('tb');
-  if(!rows.length){tb.innerHTML='<tr><td colspan="12"><div class="empty">Aucun item</div></td></tr>';return;}
-  const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
-  renderMobile(rows);
-  tb.innerHTML=rows.map(i=>{
-    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const ds=i.d?i.d.split('-').reverse().join('/'):'—';const col=sc[i.src]||'#6b7280';
-    const qb=i.q>1?`<span style="font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);padding:1px 6px;border-radius:4px">x${i.q}</span>`:'<span style="color:var(--muted2)">1</span>';
-    return`<tr><td><span class="bg ${gc}">${i.g}</span></td><td><div class="in">${e(i.n)}</div><div class="is">${e(i.s||'')}</div></td><td><span class="bt">${e(i.t)}</span></td><td>${qb}</td><td class="dc">${ds}</td><td>${i.c!=null?`<span class="price">${fmt(i.c)}</span>`:'<span class="price unk">—</span>'}</td><td>${i.v!=null?`<span class="price">${fmt(i.v)}</span>`:'<span class="price unk">—</span>'}</td><td>${p==null?'<span class="pu">?</span>':`<span class="${p>=0?'pp':'pn'}">${p>=0?'+':''}${fmt(p)}</span>`}</td><td>${mkCell(i)}</td><td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${col}22;color:${col}">${e(i.src)}</span></td><td>${i.st==='Stock'?'<span class="bs bs-stock">● Stock</span>':'<span class="bs bs-vendu">✓ Vendu</span>'}</td><td><div class="row-actions"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></td></tr>`;}).join('');
-}
-function setTab(t){cTab=t;['all','OP','PK'].forEach(k=>document.getElementById('tab-'+k).className='tab'+(k===t?' active':''));render();}
-function setStatus(s){cStat=s;document.getElementById('f-all').className='filter-btn'+(s==='all'?' active':'');document.getElementById('f-stock').className='filter-btn stock'+(s==='Stock'?' active':'');document.getElementById('f-vendu').className='filter-btn'+(s==='Vendu'?' active':'');render();}
-function openModal(id){
-  eId=id||null;document.getElementById('mt').textContent=id?'Modifier':'Ajouter';
-  const i=id?items.find(x=>x.id===id):null;
-  document.getElementById('fg').value=i?.g||'PK';document.getElementById('ft').value=i?.t||'Carte';document.getElementById('fn').value=i?.n||'';document.getElementById('fse').value=i?.s||'';document.getElementById('fd').value=i?.d||new Date().toISOString().split('T')[0];document.getElementById('fq').value=i?.q||1;document.getElementById('fst').value=i?.st||'Stock';document.getElementById('fp').value=i?.src||'Cardmarket';document.getElementById('fc').value=i?.c??'';document.getElementById('fv').value=i?.v??'';
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-function saveItem(){
-  const it={id:eId||nId++,g:document.getElementById('fg').value,t:document.getElementById('ft').value,n:document.getElementById('fn').value.trim(),s:document.getElementById('fse').value.trim(),d:document.getElementById('fd').value||null,q:parseInt(document.getElementById('fq').value)||1,st:document.getElementById('fst').value,src:document.getElementById('fp').value,c:parseFloat(document.getElementById('fc').value)||null,v:parseFloat(document.getElementById('fv').value)||null};
-  if(!it.n){alert('Nom requis');return;}
-  if(eId){const idx=items.findIndex(x=>x.id===eId);if(idx>=0)items[idx]=it;}else items.push(it);
-  closeModal();render();
-}
-function editItem(id){openModal(id);}
-function delItem(id){if(confirm('Supprimer ?')){items=items.filter(x=>x.id!==id);render();}}
-function exportCSV(){
-  const cols=['Jeu','Nom','Set','Type','Qte','Date','Cout','Vente','PnL','Source','Statut'];
-  const rows=items.map(i=>[i.g,i.n,i.s,i.t,i.q,i.d||'',i.c??'',i.v??'',pnl(i)!=null?pnl(i).toFixed(2):'',i.src,i.st].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+[cols.join(';'),...rows].join('\n')],{type:'text/csv;charset=utf-8'}));a.download='tcg-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+function getGHConfig() {
+  return {
+    user: localStorage.getItem('gh_user') || 'licar33',
+    repo: localStorage.getItem('gh_repo') || 'tcg-tracker',
+    token: localStorage.getItem('gh_token') || ''
+  };
 }
 
-/* ══════════════════════════════════════════════
-   PRICE UPDATE (RapidAPI)
-   ══════════════════════════════════════════════ */
-function getApiKey(){return localStorage.getItem('tcg_rapidapi_key')||'';}
-function setApiKey(k){localStorage.setItem('tcg_rapidapi_key',k);}
-function getApifyToken(){return localStorage.getItem('tcg_apify_token')||'';}
-function setApifyToken(k){localStorage.setItem('tcg_apify_token',k);}
-function openKeys(){
-  document.getElementById('key-rapid').value=getApiKey();
-  document.getElementById('key-apify').value=getApifyToken();
-  document.getElementById('keys-modal').classList.add('open');
-}
-function closeKeys(){document.getElementById('keys-modal').classList.remove('open');}
-function saveKeys(){
-  const r=document.getElementById('key-rapid').value.trim();
-  const a=document.getElementById('key-apify').value.trim();
-  if(r)setApiKey(r);if(a)setApifyToken(a);closeKeys();
-  alert('✓ Clés enregistrées dans le navigateur');
-}
-function togglePricePanel(){
-  const p=document.getElementById('price-panel');p.style.display=p.style.display==='none'?'block':'none';
-  document.getElementById('veille-panel').classList.remove('open');
-  const opCards=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
-  const pkCards=items.filter(x=>x.g==='PK'&&x.st==='Stock'&&x.t==='Carte');
-  document.getElementById('op-count').textContent=opCards.length;
-  document.getElementById('pk-count').textContent=pkCards.length;
-}
-function mkCell(item){
-  if(item.st!=='Stock'||item.t!=='Carte')return'<span style="color:var(--muted2);font-size:12px">—</span>';
-  if(!item.mp)return'<span style="color:var(--muted2);font-size:12px;font-family:monospace">?</span>';
-  const mp=item.mp;const diff=item.c!=null?mp-item.c:null;
-  let arrow='',col='var(--muted)';
-  if(diff!=null){if(diff>1){arrow=' ↑';col='var(--green)';}else if(diff<-1){arrow=' ↓';col='var(--red)';}else{arrow=' =';col='var(--yellow)';}}
-  const diffStr=diff!=null?(diff>=0?'+':'')+diff.toFixed(1)+'€':'';
-  return`<span style="font-family:monospace;font-size:12px;color:${col}">${mp.toFixed(2).replace('.',',')}€${arrow}<br><span style="font-size:10px;opacity:.7">${diffStr}</span></span>`;
-}
-async function fetchCardPrice(item){
-  try{
-    const g=item.g==='OP'?'onepiece':'pokemon';
-    const r=await fetch(`https://cardmarket-api.p.rapidapi.com/${g}/cards?name=${encodeURIComponent(item.n)}`,{headers:{'x-rapidapi-key':getApiKey(),'x-rapidapi-host':'cardmarket-api.p.rapidapi.com'}});
-    if(r.ok){const d=await r.json();if(d?.length&&d[0].priceGuide){const p=d[0].priceGuide.TREND||d[0].priceGuide.AVG30||d[0].priceGuide.AVG;if(p){item.mp=parseFloat(p);return true;}}}
-  }catch(ex){}
-  return false;
-}
-async function runUpdate(game){
-  if(!getApiKey()){alert('⚙️ Clique sur ⚙️ dans le header pour entrer ta clé RapidAPI');return;}
-  const spin=document.getElementById('upd-spin'),msg=document.getElementById('upd-msg');spin.style.display='inline-block';
-  let targets;
-  if(game==='ALL')targets=items.filter(x=>x.st==='Stock'&&x.t==='Carte');
-  else targets=items.filter(x=>x.g===game&&x.st==='Stock'&&x.t==='Carte');
-  let done=0,success=0;
-  for(const card of targets){
-    msg.textContent=`Mise à jour ${done+1}/${targets.length}...`;
-    const ok=await fetchCardPrice(card);if(ok)success++;done++;
-    await new Promise(r=>setTimeout(r,300));
-    if(done%20===0)render();
+// ─── STATE ───────────────────────────────────────────────────────────
+// items already defined above as let items=[...]
+let stockFilter = 'all';
+let venteFilter = 'all';
+let currentSellId = null;
+let currentEditVenteId = null;
+
+// ─── INIT ─────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  loadSettings();
+  const loaded = await loadFromGitHub();
+  if (loaded) {
+    // items replaced by GitHub data
   }
-  spin.style.display='none';msg.textContent=`✓ ${success} prix mis à jour sur ${targets.length} cartes`;render();
-}
+  document.getElementById('a_date').value = today();
+  document.getElementById('v_date').value = today();
+  renderAll();
+});
 
-/* ══════════════════════════════════════════════
-   VEILLE MARCHÉ (Apify Trend Scraper)
-   ══════════════════════════════════════════════ */
-const APIFY_ACTORS={op:'scrap_them_all~cardmarket-onepiece-trend-scraper',pk:'scrap_them_all~cardmarket-pokemon-trend-scraper'};
-let veilleGame='op',veilleTab='top';
-let veilleData={top:[],bargains:[]};
+function today() { return new Date().toISOString().split('T')[0]; }
 
-function toggleVeillePanel(){
-  const p=document.getElementById('veille-panel');
-  p.classList.toggle('open');
-  document.getElementById('price-panel').style.display='none';
-}
-function setVeilleGame(g){
-  veilleGame=g;
-  document.getElementById('vg-op').className=g==='op'?'active':'';
-  document.getElementById('vg-pk').className=g==='pk'?'active':'';
-  veilleData={top:[],bargains:[]};
-  renderVeille();
-}
-function setVeilleTab(t){
-  veilleTab=t;
-  ['top','bar','port','op16'].forEach(k=>document.getElementById('vt-'+k).className='veille-tab'+(t==={top:'top',bar:'bargains',port:'portfolio',op16:'op16'}[k]||k===t?' active':''));
-  document.getElementById('vt-top').className='veille-tab'+(t==='top'?' active':'');
-  document.getElementById('vt-bar').className='veille-tab'+(t==='bargains'?' active':'');
-  document.getElementById('vt-port').className='veille-tab'+(t==='portfolio'?' active':'');
-  document.getElementById('vt-op16').className='veille-tab'+(t==='op16'?' active':'');
-  renderVeille();
-}
-
-async function runVeille(mode){
-  if(!getApifyToken()){openKeys();alert('⚙️ Entre ton token Apify pour utiliser la Veille');return;}
-  const spin=document.getElementById('v-spin'),msg=document.getElementById('v-msg');
-  spin.style.display='inline-block';
-  msg.textContent='Lancement du scraper...';
-  const actorId=APIFY_ACTORS[veilleGame];
-  try{
-    msg.textContent='Envoi de la requête Apify...';
-    const runRes=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${getApifyToken()}&waitForFinish=180`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({mode:mode,language:'en',maxResults:100,proxyConfiguration:{useApifyProxy:true,apifyProxyGroups:['RESIDENTIAL']}})
+// ─── GITHUB SYNC ──────────────────────────────────────────────────────
+async function loadFromGitHub() {
+  const {user, repo, token} = getGHConfig();
+  if (!token) return false;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${GITHUB_FILE}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
     });
-    if(!runRes.ok){const txt=await runRes.text();throw new Error('HTTP '+runRes.status+': '+txt.slice(0,100));}
-    const runData=await runRes.json();
-    const dsId=runData?.data?.defaultDatasetId;
-    if(!dsId)throw new Error('Pas de dataset. As-tu ajouté le scraper à ton compte Apify ? Va sur apify.com/scrap_them_all/cardmarket-onepiece-trend-scraper et clique Try for free');
-    let runStatus=runData?.data?.status,runId=runData?.data?.id;
-    msg.textContent='Scraping Cardmarket en cours...';
-    if(runStatus==='RUNNING'||runStatus==='READY'){
-      for(let i=0;i<45;i++){
-        await new Promise(r=>setTimeout(r,4000));
-        msg.textContent=`Scraping en cours... (${(i+1)*4}s)`;
-        const poll=await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${getApifyToken()}`);
-        const pd=await poll.json();runStatus=pd?.data?.status;
-        if(runStatus==='SUCCEEDED')break;
-        if(runStatus==='FAILED'||runStatus==='ABORTED')throw new Error('Run '+runStatus+'. Vérifie ton compte Apify.');
-      }
+    if (!r.ok) return false;
+    const json = await r.json();
+    const data = JSON.parse(atob(json.content));
+    if (data && Array.isArray(data.items)) {
+      items = data.items;
+      return true;
     }
-    msg.textContent='Récupération des données...';
-    const dataRes=await fetch(`https://api.apify.com/v2/datasets/${dsId}/items?token=${getApifyToken()}&format=json`);
-    const cards=await dataRes.json();
-    if(mode==='weekly-top-cards'){
-      veilleData.top=cards;
-      const pids=new Set(items.filter(x=>x.pid).map(x=>x.pid));
-      let matched=0;
-      cards.forEach(c=>{
-        if(c.productId&&pids.has(c.productId)){
-          const it=items.find(x=>x.pid===c.productId);
-          if(it){it.mp=c.currentPriceEur;matched++;}
-        }
-      });
-      if(matched>0)render();
-    }else{
-      veilleData.bargains=cards;
+    return false;
+  } catch(e) { return false; }
+}
+
+async function syncGitHub() {
+  const {user, repo, token} = getGHConfig();
+  if (!token) { alert('Configure ton token GitHub dans ⚙️ Settings.'); return; }
+  const btn = document.getElementById('syncBtn');
+  btn.classList.add('syncing');
+  btn.querySelector('svg').style.animation = 'spin 1s linear infinite';
+  try {
+    let sha = null;
+    const check = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${GITHUB_FILE}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (check.ok) { const j = await check.json(); sha = j.sha; }
+    const payload = { items };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const body = { message: 'Sync TCG tracker', content };
+    if (sha) body.sha = sha;
+    const r = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${GITHUB_FILE}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (r.ok) {
+      btn.textContent = '✓ Synced';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c-1.66 0-3-4.03-3-9s1.34-9 3-9m0 18c1.66 0 3-4.03 3-9s-1.34-9-3-9"/></svg> Sync';
+        btn.classList.remove('syncing');
+      }, 2000);
+    } else {
+      alert('Erreur GitHub ' + r.status);
+      btn.classList.remove('syncing');
+      btn.querySelector('svg').style.animation = '';
     }
-    spin.style.display='none';
-    msg.textContent=`✓ ${cards.length} cartes récupérées · ${new Date().toLocaleTimeString('fr-FR')}`;
-    if(mode==='weekly-top-cards')setVeilleTab('top');else setVeilleTab('bargains');
-    renderVeille();
-  }catch(err){
-    spin.style.display='none';
-    msg.textContent='❌ '+err.message;
-    console.error('Veille error:',err);
+  } catch(e) {
+    alert('Erreur réseau');
+    btn.classList.remove('syncing');
+    btn.querySelector('svg').style.animation = '';
   }
 }
 
-// OP16 TARGETS
-const OP16_TARGETS=[
-  {n:'Sakazuki (OP02-099) V.2',s:'OP02',p:4.00,t:'15-25€',u:'https://www.cardmarket.com/fr/OnePiece/Products/Singles/Kingdoms-of-Intrigue/Sakazuki-OP02-099-V2'},
-  {n:'Kuzan (OP02-096) V.2',s:'OP02',p:12.00,t:'35-50€',u:'https://www.cardmarket.com/fr/OnePiece/Products/Singles/Kingdoms-of-Intrigue/Kuzan-OP02-096-V2'},
-  {n:'Kuzan (OP02-121) V.2',s:'OP02',p:13.00,t:'35-50€',u:''},
-  {n:'Borsalino (OP05-051) V.2',s:'OP05',p:2.98,t:'10-15€',u:''},
-  {n:'Edward Newgate (OP02-001) V.2',s:'OP02',p:104.99,t:'150-200€',u:''},
-  {n:'Rebecca (OP05-091) V.2',s:'OP05',p:9.00,t:'15-25€',u:''},
-  {n:'Yamato (OP04-112) V.2',s:'OP04',p:15.00,t:'25-40€',u:''},
-  {n:'Yamato (OP13-054) V.2',s:'OP13',p:12.00,t:'20-30€',u:''},
-  {n:'Ace (OP08-052) V.2',s:'OP08',p:5.39,t:'10-15€',u:''},
-  {n:'Ace (OP07-119) V.2',s:'OP07',p:13.00,t:'20-30€',u:''},
-];
-
-function renderVeille(){
-  const area=document.getElementById('veille-results');
-  const info=document.getElementById('veille-info-area');
-  const matched=document.getElementById('veille-matched-area');
-  document.getElementById('vt-top-n').textContent=veilleData.top.length;
-  document.getElementById('vt-bar-n').textContent=veilleData.bargains.length;
-  const pids=new Set(items.filter(x=>x.pid&&x.st==='Stock').map(x=>x.pid));
-
-  // ── PORTFOLIO TAB ──
-  if(veilleTab==='portfolio'){
-    info.innerHTML='';matched.innerHTML='';
-    const portItems=items.filter(x=>x.g==='OP'&&x.st==='Stock'&&x.t==='Carte');
-    const totInv=portItems.reduce((s,x)=>s+(x.c||0)*x.q,0);
-    const totMkt=portItems.reduce((s,x)=>s+(x.mp||0)*x.q,0);
-    const matchedN=portItems.filter(x=>x.mp).length;
-    let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px">`;
-    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Investi</div><div style="font-size:20px;font-weight:700;font-family:Syne">${fmt(totInv)}</div></div>`;
-    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Valeur marché</div><div style="font-size:20px;font-weight:700;font-family:Syne">${matchedN>0?fmt(totMkt):'—'}</div><div style="font-size:10px;color:var(--muted)">${matchedN}/${portItems.length} matchés</div></div>`;
-    const pnlL=matchedN>0?totMkt-totInv:null;
-    const pnlCol=pnlL!=null?(pnlL>=0?'var(--green)':'var(--red)'):'var(--muted)';
-    html+=`<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">P&L latent</div><div style="font-size:20px;font-weight:700;font-family:Syne;color:${pnlCol}">${pnlL!=null?(pnlL>=0?'+':'')+fmt(pnlL):'—'}</div></div>`;
-    html+=`</div>`;
-    if(matchedN===0)html+=`<div style="text-align:center;padding:10px;font-size:12px;color:var(--muted)">Lance <strong>⚡ Top Cards</strong> pour matcher les prix de ton portefeuille</div>`;
-    html+=`<div class="vr-head" style="display:grid;grid-template-columns:1fr 70px 80px 80px 70px;gap:6px"><span>Carte</span><span style="text-align:right">Achat</span><span style="text-align:right">Marché</span><span style="text-align:right">P&L</span><span style="text-align:right">ROI</span></div>`;
-    portItems.sort((a,b)=>(b.c||0)-(a.c||0)).forEach(x=>{
-      const mp=x.mp;const diff=mp&&x.c?mp-x.c:null;const roi=diff!=null&&x.c>0?diff/x.c*100:null;
-      const col=diff!=null?(diff>=0?'var(--green)':'var(--red)'):'var(--muted2)';
-      html+=`<div class="vr-row" style="grid-template-columns:1fr 70px 80px 80px 70px"><div><div class="vr-name">${e(x.n)}</div><div class="vr-set">${e(x.s||'')}</div></div><div style="text-align:right;font-family:monospace;font-size:12px">${x.c?fmt(x.c):'—'}</div><div style="text-align:right;font-family:monospace;font-size:12px;font-weight:500">${mp?fmt(mp):'?'}</div><div style="text-align:right;font-family:monospace;font-size:12px;color:${col}">${diff!=null?(diff>=0?'+':'')+diff.toFixed(0)+'€':'—'}</div><div style="text-align:right;font-family:monospace;font-size:11px;color:${col}">${roi!=null?(roi>=0?'+':'')+roi.toFixed(0)+'%':''}</div></div>`;
-    });
-    area.innerHTML=html;
-    return;
-  }
-
-  // ── OP16 TARGETS TAB ──
-  if(veilleTab==='op16'){
-    info.innerHTML=`<div class="veille-info warn">🔥 <strong>OP16 sorti le 30 mai JP / 12 juin EN</strong> — 3 Manga Rares (Akainu, Aokiji, Kizaru) + Yamato leader Noir (8-0 premier tournoi JP). Effet vitrine imminent.</div>`;
-    matched.innerHTML='';
-    let html='';
-    OP16_TARGETS.forEach(t=>{
-      html+=`<div class="vr-row" style="grid-template-columns:1fr 80px 100px 60px;padding:10px 12px"><div><div class="vr-name">${e(t.n)}</div><div class="vr-set">${t.s}</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--muted)">Actuel</div><div style="font-family:monospace;font-weight:600;font-size:14px">${t.p.toFixed(2)}€</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--green)">Cible</div><div style="font-family:monospace;font-weight:600;font-size:14px;color:var(--green)">${t.t}</div></div><div style="text-align:right">${t.u?`<a href="${t.u}" target="_blank" rel="noopener" style="color:var(--accent);font-size:11px;text-decoration:none">Voir ↗</a>`:''}</div></div>`;
-    });
-    area.innerHTML=html;
-    return;
-  }
-
-  // ── TOP / BARGAINS TABS ──
-  const data=veilleTab==='top'?veilleData.top:veilleData.bargains;
-  if(veilleTab==='bargains'&&data.length>0){
-    info.innerHTML='<div class="veille-info bargain">💡 Ces cartes sont actuellement sous leur tendance historique — opportunités d\'achat potentielles.</div>';
-  }else{info.innerHTML='';}
-  if(veilleTab==='top'&&veilleData.top.length>0){
-    const mc=veilleData.top.filter(c=>c.productId&&pids.has(c.productId)).length;
-    if(mc>0)matched.innerHTML=`<div class="veille-matched">🎯 ${mc} carte(s) de ton portefeuille apparaissent dans le Top — prix mis à jour automatiquement</div>`;
-    else matched.innerHTML='';
-  }else{matched.innerHTML='';}
-  if(!data.length){
-    area.innerHTML=`<div class="veille-empty">Clique sur <strong>⚡ Top Cards</strong> ou <strong>🔍 Bargains</strong> pour lancer le scraping.<br><span style="font-size:11px;margin-top:6px;display:inline-block">~2min · ~0.10$ par run · Données Cardmarket EN</span></div>`;
-    return;
-  }
-  let html='<div class="vr-head" style="display:grid;grid-template-columns:36px 1fr 90px 80px;gap:8px"><span style="text-align:center">#</span><span>Carte</span><span style="text-align:right">Prix EUR</span><span style="text-align:right">Lien</span></div>';
-  data.forEach((c,i)=>{
-    const hl=c.productId&&pids.has(c.productId);
-    html+=`<div class="vr-row${hl?' highlight':''}"><span class="vr-rank">${c.rank||i+1}</span><div><div class="vr-name">${e(c.cardName||'')}</div><div class="vr-set">${e(c.expansion||'')}</div></div><div class="vr-price">${c.currentPriceEur!=null?c.currentPriceEur.toFixed(2)+'€':'—'}</div><div class="vr-link">${c.url?`<a href="${c.url}" target="_blank" rel="noopener">Voir ↗</a>`:''}</div></div>`;
-  });
-  area.innerHTML=html;
+function saveSettings() {
+  localStorage.setItem('gh_user', document.getElementById('ghUser').value.trim());
+  localStorage.setItem('gh_repo', document.getElementById('ghRepo').value.trim());
+  localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim());
+  alert('Paramètres enregistrés ✓');
 }
 
-/* ══════════════════════════════════════════════
-   MOBILE RENDERING
-   ══════════════════════════════════════════════ */
-function renderMobile(rows){
-  const mc=document.getElementById('mc');if(!mc)return;
-  const sc={'Cardmarket':'#3b82f6','Amazon':'#f59e0b','Vinted':'#10b981','Discord':'#8b5cf6'};
-  if(!rows.length){mc.innerHTML='<div class="empty" style="padding:40px 20px">Aucun item</div>';return;}
-  mc.innerHTML=rows.map(i=>{
-    const p=pnl(i);const gc=i.g==='OP'?'bg-op':'bg-pk';const col=sc[i.src]||'#6b7280';const ds=i.d?i.d.split('-').reverse().join('/'):'—';
-    const costStr=i.c!=null?fmt(i.c):'—';const saleStr=i.v!=null?fmt(i.v):'—';
-    let pnlHtml;if(p==null)pnlHtml='<span style="color:var(--muted2)">?</span>';else pnlHtml=`<span style="color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fmt(p)}</span>`;
-    const mpStr=i.mp&&i.t==='Carte'?fmt(i.mp):'—';const qtyStr=i.q>1?` ×${i.q}`:'';
-    return`<div class="mcard"><div class="mcard-left"><span class="bg ${gc}">${i.g}</span><span style="font-size:9px;padding:2px 5px;border-radius:3px;background:${col}22;color:${col};margin-top:2px">${e(i.src)}</span></div><div><div class="mcard-name">${e(i.n)}${qtyStr}</div><div class="mcard-set">${e(i.s||'')} · ${e(i.t)} · ${ds}</div><div class="mcard-nums"><div class="mnum"><span class="mnum-label">Achat</span><span class="mnum-val" style="color:var(--text)">${costStr}</span></div><div class="mnum"><span class="mnum-label">Vente</span><span class="mnum-val" style="color:var(--text)">${saleStr}</span></div><div class="mnum"><span class="mnum-label">P&L</span><span class="mnum-val">${pnlHtml}</span></div>${i.t==='Carte'&&i.st==='Stock'?`<div class="mnum"><span class="mnum-label">Marché</span><span class="mnum-val" style="color:var(--muted)">${mpStr}</span></div>`:''}</div></div><div class="mcard-right"><span style="font-size:11px;color:${i.st==='Stock'?'var(--green)':'var(--muted)'};font-weight:600">${i.st==='Stock'?'●':'✓'} ${i.st}</span><div style="display:flex;gap:5px;margin-top:6px"><button class="ib" onclick="editItem(${i.id})">✎</button><button class="ib del" onclick="delItem(${i.id})">✕</button></div></div></div>`;
+function loadSettings() {
+  document.getElementById('ghUser').value = localStorage.getItem('gh_user') || 'licar33';
+  document.getElementById('ghRepo').value = localStorage.getItem('gh_repo') || 'tcg-tracker';
+  document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const tabs = ['dashboard','stock','ventes','settings'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  renderAll();
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────
+function renderDashboard() {
+  const stock = items.filter(i => i.st === 'Stock');
+  const ventes = items.filter(i => i.st === 'Vendu');
+
+  const totalStock = stock.reduce((a,b) => a + (b.c||0) * (b.q||1), 0);
+  const totalVentesBrut = ventes.reduce((a,b) => a + (b.v||0) * (b.q||1), 0);
+
+  const ventesWithCost = ventes.filter(v => v.c !== null && v.c !== undefined);
+  const pnl = ventesWithCost.reduce((a,v) => a + ((v.v||0) * 0.95 - (v.c||0)) * (v.q||1), 0);
+  const hasUnknown = ventes.some(v => v.c === null || v.c === undefined);
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Stock investi</div>
+      <div class="value">${fmt(totalStock)}</div>
+      <div class="sub">${stock.length} articles</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Encaissé net</div>
+      <div class="value">${fmt(totalVentesBrut * 0.95)}</div>
+      <div class="sub">${ventes.length} ventes · −5% CM</div>
+    </div>
+    <div class="stat-card full">
+      <div class="label">P&L réalisé ${hasUnknown ? '<span style="color:var(--accent-pk);font-size:10px">(partiel)</span>' : ''}</div>
+      <div class="value ${pnl >= 0 ? 'positive' : 'negative'}">${pnl >= 0 ? '+' : ''}${fmt(pnl)}</div>
+      <div class="sub">Sur ${ventesWithCost.length}/${ventes.length} ventes avec coût connu</div>
+    </div>
+  `;
+
+  const opStock = stock.filter(s => s.g === 'OP');
+  const pkStock = stock.filter(s => s.g === 'PK');
+  const opV = ventes.filter(v => v.g === 'OP');
+  const pkV = ventes.filter(v => v.g === 'PK');
+
+  document.getElementById('repartition').innerHTML = `
+    <div class="stat-card" style="border-color:rgba(232,163,23,.3)">
+      <div class="label" style="color:var(--accent-op)">One Piece</div>
+      <div class="value">${fmt(opStock.reduce((a,b)=>a+(b.c||0)*(b.q||1),0))}</div>
+      <div class="sub">${opStock.length} en stock · ${opV.length} vendus</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(108,142,245,.3)">
+      <div class="label" style="color:var(--accent-pk)">Pokémon</div>
+      <div class="value">${fmt(pkStock.reduce((a,b)=>a+(b.c||0)*(b.q||1),0))}</div>
+      <div class="sub">${pkStock.length} en stock · ${pkV.length} vendus</div>
+    </div>
+  `;
+}
+
+// ─── STOCK ────────────────────────────────────────────────────────────
+function setFilter(mode, f) {
+  if (mode === 'stock') {
+    stockFilter = f;
+    document.querySelectorAll('#sfAll,#sfOP,#sfPK').forEach(b => b.classList.remove('active'));
+    document.getElementById(f==='all'?'sfAll':f==='OP'?'sfOP':'sfPK').classList.add('active');
+    renderStock();
+  } else {
+    venteFilter = f;
+    document.querySelectorAll('#vfAll,#vfOP,#vfPK').forEach(b => b.classList.remove('active'));
+    document.getElementById(f==='all'?'vfAll':f==='OP'?'vfOP':'vfPK').classList.add('active');
+    renderVentes();
+  }
+}
+
+function renderStock() {
+  const q = document.getElementById('searchStock').value.toLowerCase();
+  let list = items.filter(i => i.st === 'Stock').sort((a,b) => (b.d||'').localeCompare(a.d||''));
+  if (stockFilter !== 'all') list = list.filter(i => i.g === stockFilter);
+  if (q) list = list.filter(i => (i.n||'').toLowerCase().includes(q) || (i.s||'').toLowerCase().includes(q));
+
+  const el = document.getElementById('stockList');
+  if (!list.length) { el.innerHTML = `<div class="empty"><div class="icon">📦</div><p>Aucun article en stock</p></div>`; return; }
+
+  el.innerHTML = list.map(item => `
+    <div class="card">
+      <div class="card-top">
+        <span class="jeu-badge ${item.g}">${item.g}</span>
+        <div style="flex:1">
+          <div class="card-name">${item.n}${item.q > 1 ? ` <span class="qty-badge">×${item.q}</span>` : ''}</div>
+          <div class="card-set">${item.s||''}${item.t && item.t!=='Carte' ? ' · <em>'+item.t+'</em>' : ''}</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="price-info">
+          <span class="price-main">${item.c ? fmt(item.c * (item.q||1)) : '—'}</span>
+          <span class="price-date">${item.d ? formatDate(item.d) : ''} <span class="src-badge">${item.src||''}</span></span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sell" onclick="openVenteModal(${item.id})">Vendu</button>
+          <button class="btn-del" onclick="deleteItem(${item.id})">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── VENTES ───────────────────────────────────────────────────────────
+function renderVentes() {
+  const q = document.getElementById('searchVente').value.toLowerCase();
+  let list = items.filter(i => i.st === 'Vendu').sort((a,b) => (b.d||'').localeCompare(a.d||''));
+  if (venteFilter !== 'all') list = list.filter(i => i.g === venteFilter);
+  if (q) list = list.filter(i => (i.n||'').toLowerCase().includes(q) || (i.s||'').toLowerCase().includes(q));
+
+  const unknown = items.filter(i => i.st === 'Vendu' && (i.c === null || i.c === undefined)).length;
+  const banner = document.getElementById('costAlert');
+  if (unknown > 0) { banner.style.display = 'block'; document.getElementById('costCount').textContent = unknown; }
+  else { banner.style.display = 'none'; }
+
+  const el = document.getElementById('venteList');
+  if (!list.length) { el.innerHTML = `<div class="empty"><div class="icon">💸</div><p>Aucune vente</p></div>`; return; }
+
+  el.innerHTML = list.map(item => {
+    let pnlHtml;
+    if (item.c !== null && item.c !== undefined) {
+      const pnl = (item.v||0) * 0.95 * (item.q||1) - (item.c||0) * (item.q||1);
+      const roi = item.c > 0 ? (((item.v||0) * 0.95 - item.c) / item.c * 100).toFixed(0) : '—';
+      pnlHtml = `<span class="pnl-badge ${pnl >= 0 ? 'pos' : 'neg'}">${pnl >= 0 ? '+' : ''}${fmt(pnl)} (${roi}%)</span>`;
+    } else {
+      pnlHtml = `<span class="pnl-badge unknown" onclick="openEditCout(${item.id})">+ coût</span>`;
+    }
+    return `
+      <div class="card">
+        <div class="card-top">
+          <span class="jeu-badge ${item.g}">${item.g}</span>
+          <div style="flex:1">
+            <div class="card-name">${item.n}${item.q > 1 ? ` <span class="qty-badge">×${item.q}</span>` : ''}</div>
+            <div class="card-set">${item.s||''}</div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="price-info">
+            <span class="price-main">${fmt((item.v||0) * (item.q||1))}</span>
+            <span class="price-date">${item.d ? formatDate(item.d) : ''} <span class="src-badge">${item.src||''}</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${pnlHtml}
+            <button class="btn-del" onclick="deleteItem(${item.id})">✕</button>
+          </div>
+        </div>
+        ${item.c !== null && item.c !== undefined ? `<div style="margin-top:4px;font-size:11px;color:var(--muted)">Acheté ${fmt((item.c||0)*(item.q||1))}</div>` : ''}
+      </div>
+    `;
   }).join('');
 }
 
-document.getElementById('modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeModal();});
-document.getElementById('keys-modal').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeKeys();});
-// First visit: auto-open settings if no keys configured
-if(!getApiKey()&&!getApifyToken()){setTimeout(()=>openKeys(),500);}
-render();
+// ─── MODALS ───────────────────────────────────────────────────────────
+function openAddModal() {
+  ['a_article','a_expansion'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('a_prix').value = '';
+  document.getElementById('a_qty').value = '1';
+  document.getElementById('a_date').value = today();
+  document.getElementById('modalAchat').classList.add('open');
+}
+
+function openVenteModal(id) {
+  currentSellId = id;
+  const item = items.find(i => i.id === id);
+  document.getElementById('venteArticleInfo').innerHTML = `
+    <strong>${item.n}</strong><br>
+    <span style="color:var(--muted)">${item.s||''} · ${item.c ? 'Acheté '+fmt(item.c*(item.q||1)) : 'Coût inconnu'}</span>
+  `;
+  document.getElementById('v_prix').value = '';
+  document.getElementById('v_date').value = today();
+  document.getElementById('modalVente').classList.add('open');
+}
+
+function openEditCout(id) {
+  currentEditVenteId = id;
+  const v = items.find(i => i.id === id);
+  document.getElementById('editVenteInfo').innerHTML = `<strong>${v.n}</strong><br><span style="color:var(--muted)">Vendu ${fmt((v.v||0)*(v.q||1))} · ${v.d ? formatDate(v.d) : ''}</span>`;
+  document.getElementById('ec_prix').value = '';
+  document.getElementById('modalEditCout').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────
+function addAchat() {
+  const n = document.getElementById('a_article').value.trim();
+  const c = parseFloat(document.getElementById('a_prix').value);
+  if (!n || isNaN(c)) { alert('Remplis le nom et le prix.'); return; }
+  const newId = Math.max(...items.map(i=>i.id), 0) + 1;
+  items.push({
+    id: newId,
+    g: document.getElementById('a_jeu').value,
+    n,
+    s: document.getElementById('a_expansion').value.trim(),
+    t: document.getElementById('a_type').value,
+    q: parseInt(document.getElementById('a_qty').value) || 1,
+    d: document.getElementById('a_date').value,
+    c,
+    v: null,
+    st: 'Stock',
+    src: document.getElementById('a_plateforme').value
+  });
+  closeModal('modalAchat');
+  renderAll();
+  syncGitHub();
+}
+
+function confirmVente() {
+  const v = parseFloat(document.getElementById('v_prix').value);
+  if (isNaN(v) || v <= 0) { alert('Saisis un prix de vente.'); return; }
+  const item = items.find(i => i.id === currentSellId);
+  item.v = v;
+  item.st = 'Vendu';
+  item.src = document.getElementById('v_plateforme').value;
+  item.d = document.getElementById('v_date').value;
+  closeModal('modalVente');
+  renderAll();
+  syncGitHub();
+}
+
+function saveEditCout() {
+  const c = parseFloat(document.getElementById('ec_prix').value);
+  if (isNaN(c) || c < 0) { alert('Saisis un prix valide.'); return; }
+  const item = items.find(i => i.id === currentEditVenteId);
+  if (item) item.c = c;
+  closeModal('modalEditCout');
+  renderAll();
+  syncGitHub();
+}
+
+function deleteItem(id) {
+  const item = items.find(i => i.id === id);
+  if (!confirm(`Supprimer "${item.n}" ?`)) return;
+  items = items.filter(i => i.id !== id);
+  renderAll();
+  syncGitHub();
+}
+
+// ─── CSV IMPORT ───────────────────────────────────────────────────────
+function importCSV(type) {
+  const raw = document.getElementById('csvInput').value.trim();
+  if (!raw) { alert('Colle d\'abord le CSV.'); return; }
+  const lines = raw.split('\n').filter(l => l.trim() && !l.startsWith('Shipment'));
+  let added = 0, dupes = 0;
+  const maxId = Math.max(...items.map(i=>i.id), 0);
+  lines.forEach((line, idx) => {
+    const p = line.split(';');
+    if (p.length < 9) return;
+    const d = p[1].trim().slice(0,10);
+    const n = p[2].trim();
+    const s = p[5].trim();
+    const cat = p[6].trim();
+    const prix = parseFloat(p[8].trim());
+    const notes = p[10] ? p[10].trim() : '';
+    const g = cat.includes('One Piece') ? 'OP' : 'PK';
+    if (type === 'achat') {
+      if (items.some(i => i.n === n && i.d === d && i.c === prix && i.st === 'Stock')) { dupes++; return; }
+      items.push({ id: maxId+idx+1, g, n, s, t:'Carte', q:1, d, c:prix, v:null, st:'Stock', src:'Cardmarket' });
+    } else {
+      if (items.some(i => i.n === n && i.d === d && i.v === prix && i.st === 'Vendu')) { dupes++; return; }
+      items.push({ id: maxId+idx+1, g, n, s, t:'Carte', q:1, d, c:null, v:prix, st:'Vendu', src:'Cardmarket' });
+    }
+    added++;
+  });
+  document.getElementById('importResult').textContent = `✓ ${added} importé(s)${dupes ? ` · ${dupes} doublon(s) ignoré(s)` : ''}`;
+  document.getElementById('csvInput').value = '';
+  renderAll();
+  if (added > 0) syncGitHub();
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({items}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tcg-data-' + today() + '.json';
+  a.click();
+}
+
+function resetData() {
+  if (!confirm('⚠️ Réinitialiser toutes les données ?')) return;
+  location.reload();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────
+function fmt(v) { return (v||0).toFixed(2).replace('.', ',') + ' €'; }
+function formatDate(d) { if (!d) return ''; const [y,m,day] = d.split('-'); return `${day}/${m}/${y.slice(2)}`; }
+function renderAll() { renderDashboard(); renderStock(); renderVentes(); }
 </script>
 </body>
 </html>
