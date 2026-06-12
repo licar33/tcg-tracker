@@ -2062,6 +2062,19 @@
       "v": null,
       "st": "Stock",
       "src": "Autre"
+    },
+    {
+      "id": 311,
+      "g": "PK",
+      "n": "BOX TOHOKU POKÉMON CENTER",
+      "s": "",
+      "t": "Coffret",
+      "q": 1,
+      "d": "2026-06-12",
+      "c": 137,
+      "v": null,
+      "st": "Stock",
+      "src": "Autre"
     }
   ]
 }
