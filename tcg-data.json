@@ -2335,6 +2335,19 @@
       "v": null,
       "st": "Stock",
       "src": "Vinted"
+    },
+    {
+      "id": 332,
+      "g": "OP",
+      "n": "Borsalino (OP05-051) (V.2)",
+      "s": "Awakening of the New Era",
+      "t": "Carte",
+      "q": 4,
+      "d": "2026-05-20",
+      "c": 3.3,
+      "v": null,
+      "st": "Stock",
+      "src": "Vinted"
     }
   ]
 }
