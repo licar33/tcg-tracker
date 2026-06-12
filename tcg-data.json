@@ -2374,6 +2374,19 @@
       "v": null,
       "st": "Stock",
       "src": "Cardmarket"
+    },
+    {
+      "id": 335,
+      "g": "OP",
+      "n": "Shanks (OP12-008) (V.2)",
+      "s": "Legacy of the Master",
+      "t": "Carte",
+      "q": 1,
+      "d": "2026-06-02",
+      "c": 9,
+      "v": null,
+      "st": "Stock",
+      "src": "Cardmarket"
     }
   ]
 }
