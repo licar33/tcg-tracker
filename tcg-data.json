@@ -494,7 +494,7 @@
       "id": 100,
       "g": "PK",
       "n": "Booster style de combat EB",
-      "s": "Epée et Bouclier",
+      "s": "EpÃ©e et Bouclier",
       "t": "Booster",
       "q": 1,
       "d": null,
@@ -2049,6 +2049,19 @@
       "v": 17,
       "st": "Vendu",
       "src": "Vinted"
+    },
+    {
+      "id": 310,
+      "g": "PK",
+      "n": "BOX POKÉMON CENTER IROSHIMA",
+      "s": "",
+      "t": "Coffret",
+      "q": 1,
+      "d": "2025-12-09",
+      "c": 205,
+      "v": null,
+      "st": "Stock",
+      "src": "Autre"
     }
   ]
 }
