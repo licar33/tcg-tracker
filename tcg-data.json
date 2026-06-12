@@ -2179,6 +2179,19 @@
       "v": null,
       "st": "Stock",
       "src": "Cardmarket"
+    },
+    {
+      "id": 320,
+      "g": "OP",
+      "n": "Base Shop vol.1",
+      "s": "",
+      "t": "Coffret",
+      "q": 1,
+      "d": "2026-05-12",
+      "c": 99,
+      "v": null,
+      "st": "Stock",
+      "src": "Autre"
     }
   ]
 }
