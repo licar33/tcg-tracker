@@ -1,143 +1,3 @@
-
-/
-Claude a terminé la réponse.
-
-index (4).html
-html
-
-
-Exécuté 5 commandes
-Exécuté 5 commandes
-Parfait, j'ai tout. Le vrai tracker avait 163 articles en stock et 109 ventes — bien plus que ce que j'avais. Je reconstruis maintenant avec toutes ces données.
-
-
-Exécuté 2 commandes
-Exécuté 2 commandes
-Parfait, les données sont complètes. Je reconstruis le tracker avec les 87 articles en stock et 69 ventes réels.
-
-
-Exécuté 8 commandes, fichier modifié
-Exécuté 8 commandes, fichier modifié
-Parfait, la structure est correcte. Je vérifie que le fichier est valide et je le copie en output.
-
-
-A exécuté une commande, lu un fichier
-A exécuté une commande, lu un fichier
-Voilà, cette fois avec les vraies données de l'ancien tracker :
-
-88 articles en stock (22 OP + 66 PK — cartes, ETB, bundles, displays, blisters...)
-70 ventes (OP + PK, avec les coûts d'achat déjà renseignés pour la majorité)
-Le P&L est calculé sur toutes les ventes où le coût est connu. Pour les autres, le bouton + coût en orange permet de le renseigner à la volée.
-
-Pour le mettre en ligne : remplace le index.html de ton repo GitHub par ce fichier, puis configure le token dans ⚙️ pour activer la sync multi-appareils.
-
-
-Tracker
-Code · HTML 
-et pour la synch je dois faire quoi deja ?
-
-Pour la sync GitHub, voici les étapes :
-
-1. Créer un Personal Access Token
-
-Va sur github.com → connecte-toi
-Clique sur ton avatar en haut à droite → Settings
-Tout en bas à gauche → Developer settings
-Personal access tokens → Tokens (classic)
-Generate new token (classic)
-Donne-lui un nom (ex: "TCG Tracker")
-Coche uniquement la case repo
-Clique Generate token
-Copie le token (il commence par ghp_) — tu ne le reverras plus après
-2. Le coller dans le tracker
-
-Ouvre le tracker
-Va dans l'onglet ⚙️
-Vérifie que Utilisateur = licar33 et Repo = tcg-tracker
-Colle ton token dans le champ Personal Access Token
-Clique Enregistrer
-3. Tester
-
-Clique sur le bouton Sync en haut à droite
-Si tout est bon, il affiche ✓ Synced après 2-3 secondes
-Un fichier tcg-data.json apparaît dans ton repo GitHub
-À partir de là, chaque ajout d'achat ou de vente déclenche automatiquement une sync. Sur ton iPhone et ton PC, le tracker charge d'abord depuis GitHub au démarrage — donc toujours à jour partout.
-
-j'ai pas "Developer settings" en bas à gauche
-
-Normal, c'est peut-être caché. Voici le chemin direct :
-
-Va sur cette URL directement : github.com/settings/tokens
-
-Tu arrives directement sur la page des tokens sans chercher dans les menus. Ensuite :
-
-Generate new token → Generate new token (classic)
-Nom : "TCG Tracker"
-Coche repo
-Generate token
-Copie le ghp_...
-j'ai besoin que tu rajoutes du stock, je n'arrive pas à le faire du l'interface du tracker, d'ailleurs pourquoi ?
-
-Je veux que tu rajoutes des achats :
-
-une display ME2 de la serie flammes fantasmagorique prix de 235e
-ETB mega evolution : me01 / 75€
-display OP14 the azur sea's seven: 150€
-etb EV10 RIVALITES DESTINEES : 90€
-Attends, avant de modifier quoi que ce soit — ne partage jamais ta clé API en public dans une conversation. Je ne m'en servirai pas et je te conseille de la révoquer et d'en générer une nouvelle sur RapidAPI dès que possible.
-
-Pour le bug du formulaire d'ajout, laisse-moi regarder.
-
-
-Exécuté 2 commandes
-Exécuté 2 commandes
-Le code du modal a l'air correct. Le problème vient probablement du fait que le fichier dans ton repo GitHub est l'ancienne version — tu n'as pas encore remplacé l'index.html sur GitHub avec le nouveau tracker. Donc tu utilises encore l'ancien qui avait un formulaire différent.
-
-En attendant, j'ajoute tes 4 achats directement dans le fichier :
-
-
-Exécuté 3 commandes, fichier modifié, lu un fichier
-Exécuté 3 commandes, fichier modifié, lu un fichier
-Les 4 articles sont ajoutés au stock, datés d'aujourd'hui :
-
-Display ME2 Flammes Fantasmagoriques — 235 €
-ETB Mega Evolution ME01 — 75 €
-Display OP14 The Azure Sea's Seven — 150 €
-ETB EV10 Rivalités Destinées — 90 €
-Pour le bug du formulaire : le bouton + ouvre bien un modal, mais si tu utilises encore l'ancien fichier sur GitHub Pages, c'est normal que ça ne marche pas. Une fois que tu auras remplacé l'index.html sur ton repo avec ce nouveau fichier, ça fonctionnera. Tu veux que je t'explique comment faire ça depuis le téléphone ?
-
-
-Tracker
-Code · HTML 
-c'est quel fichier que je dois remplacer ?
-
-Supprime ce message dès que possible — ta clé RapidAPI est visible publiquement dans cette conversation. Génère-en une nouvelle sur rapidapi.com et ne la partage plus ici.
-
-Pour ta question : tu dois remplacer le fichier index.html dans ton repo licar33/tcg-tracker sur GitHub.
-
-Depuis ton téléphone :
-
-Va sur github.com/licar33/tcg-tracker
-Clique sur index.html
-Clique sur l'icône ✏️ (crayon) en haut à droite
-Sélectionne tout le contenu (Ctrl+A ou tout sélectionner)
-Supprime-le et colle le contenu du nouveau fichier tracker que je t'ai généré
-Clique Commit changes en bas
-Le site se met à jour en 1-2 minutes sur licar33.github.io/tcg-tracker.
-
-
-
-Souhaitez-vous être averti lorsque Claude répond ?
-
-
-
-
-
-
-Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
-
-
-Tracker · HTML
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -161,21 +21,21 @@ Tracker · HTML
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; padding-bottom: 80px; }
- 
+
   header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   header h1 { font-size: 15px; font-weight: 700; letter-spacing: .5px; }
   header h1 span { color: var(--accent-op); }
   .sync-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .2s; }
   .sync-btn:hover { border-color: var(--accent-op); color: var(--accent-op); }
   .sync-btn.syncing { color: var(--accent-op); border-color: var(--accent-op); }
- 
+
   .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 53px; z-index: 99; }
   .tab { flex: 1; padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
   .tab.active { color: var(--text); border-bottom-color: var(--accent-op); }
- 
+
   .page { display: none; padding: 12px; }
   .page.active { display: block; }
- 
+
   .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
   .stat-card .label { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
@@ -184,20 +44,20 @@ Tracker · HTML
   .stat-card.full { grid-column: 1/-1; }
   .positive { color: var(--green); }
   .negative { color: var(--red); }
- 
+
   .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 8px; }
   .section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
- 
+
   .filter-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
   .filter-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
   .filter-btn.active { background: var(--surface2); color: var(--text); border-color: var(--accent-op); }
   .filter-btn.op.active { background: rgba(232,163,23,.15); color: var(--accent-op); border-color: var(--accent-op); }
   .filter-btn.pk.active { background: rgba(108,142,245,.15); color: var(--accent-pk); border-color: var(--accent-pk); }
- 
+
   .search-box { width: 100%; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 13px; margin-bottom: 10px; outline: none; transition: border-color .2s; }
   .search-box:focus { border-color: var(--accent-op); }
   .search-box::placeholder { color: var(--muted); }
- 
+
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
   .card-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
   .jeu-badge { padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: .5px; flex-shrink: 0; margin-top: 2px; }
@@ -210,57 +70,57 @@ Tracker · HTML
   .price-main { font-size: 13px; font-weight: 600; }
   .price-date { font-size: 11px; color: var(--muted); }
   .card-actions { display: flex; gap: 6px; }
- 
+
   .btn-sell { background: rgba(62,207,142,.15); color: var(--green); border: 1px solid rgba(62,207,142,.3); padding: 5px 11px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
   .btn-sell:hover { background: rgba(62,207,142,.25); }
   .btn-del { background: none; color: var(--muted); border: 1px solid var(--border); padding: 5px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all .2s; }
   .btn-del:hover { color: var(--red); border-color: var(--red); }
- 
+
   .pnl-badge { padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; }
   .pnl-badge.pos { background: rgba(62,207,142,.15); color: var(--green); }
   .pnl-badge.neg { background: rgba(242,95,92,.15); color: var(--red); }
   .pnl-badge.unknown { background: rgba(123,127,158,.1); color: var(--muted); }
- 
+
   .qty-badge { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
- 
+
   .fab { position: fixed; bottom: 24px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent-op); color: #000; font-size: 24px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(232,163,23,.4); z-index: 200; transition: transform .2s; }
   .fab:active { transform: scale(.93); }
- 
+
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 300; align-items: flex-end; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
   .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
- 
+
   .form-group { margin-bottom: 12px; }
   .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
   .form-group input, .form-group select { width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; transition: border-color .2s; -webkit-appearance: none; }
   .form-group input:focus, .form-group select:focus { border-color: var(--accent-op); }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
- 
+
   .btn-primary { width: 100%; padding: 13px; background: var(--accent-op); color: #000; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: opacity .2s; }
   .btn-primary:active { opacity: .85; }
- 
+
   .import-area { background: var(--bg); border: 1px dashed var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
   .import-area textarea { width: 100%; min-height: 80px; background: transparent; border: none; color: var(--text); font-size: 12px; font-family: monospace; resize: vertical; outline: none; }
   .import-area textarea::placeholder { color: var(--muted); }
- 
+
   .settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
   .settings-section h4 { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
- 
+
   .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
   .empty .icon { font-size: 36px; margin-bottom: 10px; }
- 
+
   .info-banner { background: rgba(232,163,23,.1); border: 1px solid rgba(232,163,23,.25); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #f0c060; margin-bottom: 12px; line-height: 1.5; }
- 
+
   .src-badge { font-size: 10px; color: var(--muted); background: var(--surface2); border-radius: 3px; padding: 1px 5px; }
- 
+
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (min-width: 600px) { body { max-width: 500px; margin: 0 auto; } }
 </style>
 </head>
 <body>
- 
+
 <header>
   <h1>TCG <span>licar92</span></h1>
   <button class="sync-btn" id="syncBtn" onclick="syncGitHub()">
@@ -268,20 +128,20 @@ Tracker · HTML
     Sync
   </button>
 </header>
- 
+
 <nav class="tabs">
   <div class="tab active" onclick="showPage('dashboard')">📊 Résumé</div>
   <div class="tab" onclick="showPage('stock')">📦 Stock</div>
   <div class="tab" onclick="showPage('ventes')">💸 Ventes</div>
   <div class="tab" onclick="showPage('settings')">⚙️</div>
 </nav>
- 
+
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
   <div id="statsGrid" class="stats-grid"></div>
   <div class="stats-grid" id="repartition"></div>
 </div>
- 
+
 <!-- STOCK -->
 <div class="page" id="page-stock">
   <div class="filter-row">
@@ -292,7 +152,7 @@ Tracker · HTML
   <input type="text" class="search-box" placeholder="Rechercher..." id="searchStock" oninput="renderStock()">
   <div id="stockList"></div>
 </div>
- 
+
 <!-- VENTES -->
 <div class="page" id="page-ventes">
   <div class="info-banner" id="costAlert" style="display:none">
@@ -306,7 +166,7 @@ Tracker · HTML
   <input type="text" class="search-box" placeholder="Rechercher..." id="searchVente" oninput="renderVentes()">
   <div id="venteList"></div>
 </div>
- 
+
 <!-- SETTINGS -->
 <div class="page" id="page-settings">
   <div class="settings-section">
@@ -334,9 +194,9 @@ Tracker · HTML
     </div>
   </div>
 </div>
- 
+
 <button class="fab" onclick="openAddModal()">+</button>
- 
+
 <!-- MODAL ACHAT -->
 <div class="modal-overlay" id="modalAchat">
   <div class="modal">
@@ -359,7 +219,7 @@ Tracker · HTML
     <button class="btn-primary" onclick="addAchat()">Ajouter au stock</button>
   </div>
 </div>
- 
+
 <!-- MODAL VENTE -->
 <div class="modal-overlay" id="modalVente">
   <div class="modal">
@@ -374,7 +234,7 @@ Tracker · HTML
     <button class="btn-primary" onclick="confirmVente()">Confirmer la vente</button>
   </div>
 </div>
- 
+
 <!-- MODAL EDIT COUT -->
 <div class="modal-overlay" id="modalEditCout">
   <div class="modal">
@@ -385,7 +245,7 @@ Tracker · HTML
     <button class="btn-primary" onclick="saveEditCout()">Enregistrer</button>
   </div>
 </div>
- 
+
 <script>
 let items=[
 {id:1,g:'OP',n:'Monkey D. Luffy (OP13-118) V.2',s:'Carrying on his Will',t:'Carte',q:1,d:'2026-01-07',c:55,v:null,st:'Stock',src:'Cardmarket',pid:857338},
@@ -551,7 +411,7 @@ let items=[
 ]
 // ─── GITHUB CONFIG ───────────────────────────────────────────────────
 const GITHUB_FILE = 'tcg-data.json';
- 
+
 function getGHConfig() {
   return {
     user: localStorage.getItem('gh_user') || 'licar33',
@@ -559,14 +419,14 @@ function getGHConfig() {
     token: localStorage.getItem('gh_token') || ''
   };
 }
- 
+
 // ─── STATE ───────────────────────────────────────────────────────────
 // items already defined above as let items=[...]
 let stockFilter = 'all';
 let venteFilter = 'all';
 let currentSellId = null;
 let currentEditVenteId = null;
- 
+
 // ─── INIT ─────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   loadSettings();
@@ -578,9 +438,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('v_date').value = today();
   renderAll();
 });
- 
+
 function today() { return new Date().toISOString().split('T')[0]; }
- 
+
 // ─── GITHUB SYNC ──────────────────────────────────────────────────────
 async function loadFromGitHub() {
   const {user, repo, token} = getGHConfig();
@@ -599,7 +459,7 @@ async function loadFromGitHub() {
     return false;
   } catch(e) { return false; }
 }
- 
+
 async function syncGitHub() {
   const {user, repo, token} = getGHConfig();
   if (!token) { alert('Configure ton token GitHub dans ⚙️ Settings.'); return; }
@@ -638,20 +498,20 @@ async function syncGitHub() {
     btn.querySelector('svg').style.animation = '';
   }
 }
- 
+
 function saveSettings() {
   localStorage.setItem('gh_user', document.getElementById('ghUser').value.trim());
   localStorage.setItem('gh_repo', document.getElementById('ghRepo').value.trim());
   localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim());
   alert('Paramètres enregistrés ✓');
 }
- 
+
 function loadSettings() {
   document.getElementById('ghUser').value = localStorage.getItem('gh_user') || 'licar33';
   document.getElementById('ghRepo').value = localStorage.getItem('gh_repo') || 'tcg-tracker';
   document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 }
- 
+
 // ─── NAVIGATION ───────────────────────────────────────────────────────
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -661,19 +521,19 @@ function showPage(name) {
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   renderAll();
 }
- 
+
 // ─── DASHBOARD ────────────────────────────────────────────────────────
 function renderDashboard() {
   const stock = items.filter(i => i.st === 'Stock');
   const ventes = items.filter(i => i.st === 'Vendu');
- 
+
   const totalStock = stock.reduce((a,b) => a + (b.c||0) * (b.q||1), 0);
   const totalVentesBrut = ventes.reduce((a,b) => a + (b.v||0) * (b.q||1), 0);
- 
+
   const ventesWithCost = ventes.filter(v => v.c !== null && v.c !== undefined);
   const pnl = ventesWithCost.reduce((a,v) => a + ((v.v||0) * 0.95 - (v.c||0)) * (v.q||1), 0);
   const hasUnknown = ventes.some(v => v.c === null || v.c === undefined);
- 
+
   document.getElementById('statsGrid').innerHTML = `
     <div class="stat-card">
       <div class="label">Stock investi</div>
@@ -691,12 +551,12 @@ function renderDashboard() {
       <div class="sub">Sur ${ventesWithCost.length}/${ventes.length} ventes avec coût connu</div>
     </div>
   `;
- 
+
   const opStock = stock.filter(s => s.g === 'OP');
   const pkStock = stock.filter(s => s.g === 'PK');
   const opV = ventes.filter(v => v.g === 'OP');
   const pkV = ventes.filter(v => v.g === 'PK');
- 
+
   document.getElementById('repartition').innerHTML = `
     <div class="stat-card" style="border-color:rgba(232,163,23,.3)">
       <div class="label" style="color:var(--accent-op)">One Piece</div>
@@ -710,7 +570,7 @@ function renderDashboard() {
     </div>
   `;
 }
- 
+
 // ─── STOCK ────────────────────────────────────────────────────────────
 function setFilter(mode, f) {
   if (mode === 'stock') {
@@ -725,16 +585,16 @@ function setFilter(mode, f) {
     renderVentes();
   }
 }
- 
+
 function renderStock() {
   const q = document.getElementById('searchStock').value.toLowerCase();
   let list = items.filter(i => i.st === 'Stock').sort((a,b) => (b.d||'').localeCompare(a.d||''));
   if (stockFilter !== 'all') list = list.filter(i => i.g === stockFilter);
   if (q) list = list.filter(i => (i.n||'').toLowerCase().includes(q) || (i.s||'').toLowerCase().includes(q));
- 
+
   const el = document.getElementById('stockList');
   if (!list.length) { el.innerHTML = `<div class="empty"><div class="icon">📦</div><p>Aucun article en stock</p></div>`; return; }
- 
+
   el.innerHTML = list.map(item => `
     <div class="card">
       <div class="card-top">
@@ -757,22 +617,22 @@ function renderStock() {
     </div>
   `).join('');
 }
- 
+
 // ─── VENTES ───────────────────────────────────────────────────────────
 function renderVentes() {
   const q = document.getElementById('searchVente').value.toLowerCase();
   let list = items.filter(i => i.st === 'Vendu').sort((a,b) => (b.d||'').localeCompare(a.d||''));
   if (venteFilter !== 'all') list = list.filter(i => i.g === venteFilter);
   if (q) list = list.filter(i => (i.n||'').toLowerCase().includes(q) || (i.s||'').toLowerCase().includes(q));
- 
+
   const unknown = items.filter(i => i.st === 'Vendu' && (i.c === null || i.c === undefined)).length;
   const banner = document.getElementById('costAlert');
   if (unknown > 0) { banner.style.display = 'block'; document.getElementById('costCount').textContent = unknown; }
   else { banner.style.display = 'none'; }
- 
+
   const el = document.getElementById('venteList');
   if (!list.length) { el.innerHTML = `<div class="empty"><div class="icon">💸</div><p>Aucune vente</p></div>`; return; }
- 
+
   el.innerHTML = list.map(item => {
     let pnlHtml;
     if (item.c !== null && item.c !== undefined) {
@@ -806,7 +666,7 @@ function renderVentes() {
     `;
   }).join('');
 }
- 
+
 // ─── MODALS ───────────────────────────────────────────────────────────
 function openAddModal() {
   ['a_article','a_expansion'].forEach(id => document.getElementById(id).value = '');
@@ -815,7 +675,7 @@ function openAddModal() {
   document.getElementById('a_date').value = today();
   document.getElementById('modalAchat').classList.add('open');
 }
- 
+
 function openVenteModal(id) {
   currentSellId = id;
   const item = items.find(i => i.id === id);
@@ -827,7 +687,7 @@ function openVenteModal(id) {
   document.getElementById('v_date').value = today();
   document.getElementById('modalVente').classList.add('open');
 }
- 
+
 function openEditCout(id) {
   currentEditVenteId = id;
   const v = items.find(i => i.id === id);
@@ -835,10 +695,10 @@ function openEditCout(id) {
   document.getElementById('ec_prix').value = '';
   document.getElementById('modalEditCout').classList.add('open');
 }
- 
+
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
- 
+
 // ─── ACTIONS ──────────────────────────────────────────────────────────
 function addAchat() {
   const n = document.getElementById('a_article').value.trim();
@@ -862,7 +722,7 @@ function addAchat() {
   renderAll();
   syncGitHub();
 }
- 
+
 function confirmVente() {
   const v = parseFloat(document.getElementById('v_prix').value);
   if (isNaN(v) || v <= 0) { alert('Saisis un prix de vente.'); return; }
@@ -875,7 +735,7 @@ function confirmVente() {
   renderAll();
   syncGitHub();
 }
- 
+
 function saveEditCout() {
   const c = parseFloat(document.getElementById('ec_prix').value);
   if (isNaN(c) || c < 0) { alert('Saisis un prix valide.'); return; }
@@ -885,7 +745,7 @@ function saveEditCout() {
   renderAll();
   syncGitHub();
 }
- 
+
 function deleteItem(id) {
   const item = items.find(i => i.id === id);
   if (!confirm(`Supprimer "${item.n}" ?`)) return;
@@ -893,7 +753,7 @@ function deleteItem(id) {
   renderAll();
   syncGitHub();
 }
- 
+
 // ─── CSV IMPORT ───────────────────────────────────────────────────────
 function importCSV(type) {
   const raw = document.getElementById('csvInput').value.trim();
@@ -925,7 +785,7 @@ function importCSV(type) {
   renderAll();
   if (added > 0) syncGitHub();
 }
- 
+
 // ─── EXPORT ───────────────────────────────────────────────────────────
 function exportJSON() {
   const blob = new Blob([JSON.stringify({items}, null, 2)], {type:'application/json'});
@@ -934,12 +794,12 @@ function exportJSON() {
   a.download = 'tcg-data-' + today() + '.json';
   a.click();
 }
- 
+
 function resetData() {
   if (!confirm('⚠️ Réinitialiser toutes les données ?')) return;
   location.reload();
 }
- 
+
 // ─── HELPERS ──────────────────────────────────────────────────────────
 function fmt(v) { return (v||0).toFixed(2).replace('.', ',') + ' €'; }
 function formatDate(d) { if (!d) return ''; const [y,m,day] = d.split('-'); return `${day}/${m}/${y.slice(2)}`; }
@@ -947,11 +807,3 @@ function renderAll() { renderDashboard(); renderStock(); renderVentes(); }
 </script>
 </body>
 </html>
- 
-
-
-
-
-
-
-
