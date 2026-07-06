@@ -494,7 +494,7 @@
       "id": 100,
       "g": "PK",
       "n": "Booster style de combat EB",
-      "s": "EpÃ©e et Bouclier",
+      "s": "EpÃÂ©e et Bouclier",
       "t": "Booster",
       "q": 1,
       "d": null,
@@ -705,11 +705,11 @@
       "s": "Flamme Blanche",
       "t": "ETB",
       "q": 1,
-      "d": "2025-07-19",
+      "d": "2026-06-30",
       "c": 55.99,
-      "v": null,
-      "st": "Stock",
-      "src": "Amazon"
+      "v": 80,
+      "st": "Vendu",
+      "src": "Vinted"
     },
     {
       "id": 117,
@@ -2053,7 +2053,7 @@
     {
       "id": 310,
       "g": "PK",
-      "n": "BOX POKÉMON CENTER IROSHIMA",
+      "n": "BOX POKÃMON CENTER IROSHIMA",
       "s": "",
       "t": "Coffret",
       "q": 1,
@@ -2066,7 +2066,7 @@
     {
       "id": 311,
       "g": "PK",
-      "n": "BOX TOHOKU POKÉMON CENTER",
+      "n": "BOX TOHOKU POKÃMON CENTER",
       "s": "",
       "t": "Coffret",
       "q": 1,
@@ -2405,7 +2405,7 @@
       "id": 338,
       "g": "OP",
       "n": "display OP11 FR",
-      "s": "Des poings vifs comme l'éclair",
+      "s": "Des poings vifs comme l'Ã©clair",
       "t": "Display",
       "q": 1,
       "d": "2026-01-24",
